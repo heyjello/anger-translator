@@ -232,52 +232,20 @@ class OpenRouterService {
   }
 
   /**
-   * Analyze input text to extract key traits and context
+   * Extract key context from input without repeating it
    */
-  private analyzeInputTraits(text: string): {
-    topic: string;
-    tone: string;
-    urgency: string;
-    context: string;
-    keywords: string[];
-  } {
+  private extractContext(text: string): string {
     const lowerText = text.toLowerCase();
     
-    // Extract topic/subject
-    let topic = 'general request';
-    if (lowerText.includes('meeting') || lowerText.includes('schedule')) topic = 'meeting/scheduling';
-    if (lowerText.includes('document') || lowerText.includes('report') || lowerText.includes('file')) topic = 'document/report';
-    if (lowerText.includes('email') || lowerText.includes('message')) topic = 'communication';
-    if (lowerText.includes('project') || lowerText.includes('task')) topic = 'project/task';
-    if (lowerText.includes('help') || lowerText.includes('assist')) topic = 'assistance request';
-    if (lowerText.includes('review') || lowerText.includes('check')) topic = 'review/feedback';
-    if (lowerText.includes('fix') || lowerText.includes('problem') || lowerText.includes('issue')) topic = 'problem/issue';
+    // Detect main topic
+    if (lowerText.includes('credit') || lowerText.includes('recognition')) return 'credit/recognition';
+    if (lowerText.includes('meeting') || lowerText.includes('schedule')) return 'meeting';
+    if (lowerText.includes('document') || lowerText.includes('report')) return 'document';
+    if (lowerText.includes('help') || lowerText.includes('assist')) return 'assistance';
+    if (lowerText.includes('review') || lowerText.includes('feedback')) return 'review';
+    if (lowerText.includes('fix') || lowerText.includes('problem')) return 'issue';
     
-    // Detect tone
-    let tone = 'neutral';
-    if (lowerText.includes('please') || lowerText.includes('thank')) tone = 'polite';
-    if (lowerText.includes('urgent') || lowerText.includes('asap') || lowerText.includes('immediately')) tone = 'urgent';
-    if (lowerText.includes('when you have time') || lowerText.includes('no rush')) tone = 'casual';
-    
-    // Detect urgency level
-    let urgency = 'normal';
-    if (lowerText.includes('urgent') || lowerText.includes('asap') || lowerText.includes('immediately') || lowerText.includes('deadline')) urgency = 'high';
-    if (lowerText.includes('when you can') || lowerText.includes('no rush') || lowerText.includes('whenever')) urgency = 'low';
-    
-    // Extract context
-    let context = 'workplace';
-    if (lowerText.includes('game') || lowerText.includes('play') || lowerText.includes('match')) context = 'gaming';
-    if (lowerText.includes('school') || lowerText.includes('homework') || lowerText.includes('assignment')) context = 'academic';
-    if (lowerText.includes('family') || lowerText.includes('friend') || lowerText.includes('personal')) context = 'personal';
-    
-    // Extract key action words
-    const keywords = [];
-    const actionWords = ['fix', 'help', 'review', 'check', 'send', 'update', 'complete', 'finish', 'start', 'stop', 'change', 'improve'];
-    actionWords.forEach(word => {
-      if (lowerText.includes(word)) keywords.push(word);
-    });
-    
-    return { topic, tone, urgency, context, keywords };
+    return 'request';
   }
 
   /**
@@ -328,7 +296,7 @@ class OpenRouterService {
   }
 
   /**
-   * Generate a concise rage translation using AI with input blending (optimized for Mixtral)
+   * Generate ultra-concise rage translation (optimized for Mixtral)
    */
   async translateText(
     text: string, 
@@ -339,25 +307,22 @@ class OpenRouterService {
       throw new Error('OpenRouter API key not configured. Please set up your API key from https://openrouter.ai/keys');
     }
 
-    // Analyze input to extract traits and context
-    const traits = this.analyzeInputTraits(text);
-    console.log('🔍 Input analysis:', traits);
+    const context = this.extractContext(text);
+    const systemPrompt = this.buildUltraConcisePrompt(style, intensity);
+    const userPrompt = `Create a brief ${style} rage response about ${context}. Maximum 2 sentences.`;
 
-    const systemPrompt = this.buildConcisePrompt(style, intensity, traits);
-    const userPrompt = `Create a brief ${style} rage response about ${traits.topic} with ${traits.urgency} urgency. Keep it to one paragraph with 2-3 sentences maximum.`;
-
-    // Optimized parameters for concise responses
+    // Ultra-restrictive parameters for minimal output
     const request: OpenRouterRequest = {
       model: this.config.model,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt }
       ],
-      max_tokens: 150, // Reduced for concise responses
-      temperature: 0.8,
-      top_p: 0.9,
-      frequency_penalty: 0.2,
-      presence_penalty: 0.1
+      max_tokens: 80, // Drastically reduced
+      temperature: 0.7,
+      top_p: 0.8,
+      frequency_penalty: 0.3,
+      presence_penalty: 0.2
     };
 
     try {
@@ -368,8 +333,12 @@ class OpenRouterService {
         throw new Error('No content received from AI model');
       }
 
-      console.log('🎭 Concise translation generated successfully');
-      return content.trim();
+      // Additional length check - truncate if too long
+      const sentences = content.split(/[.!?]+/).filter(s => s.trim());
+      const truncated = sentences.slice(0, 2).join('. ').trim();
+      
+      console.log('🎭 Ultra-concise translation generated');
+      return truncated + (truncated.endsWith('.') || truncated.endsWith('!') || truncated.endsWith('?') ? '' : '!');
     } catch (error) {
       console.error('❌ Translation failed:', error);
       throw error;
@@ -377,59 +346,26 @@ class OpenRouterService {
   }
 
   /**
-   * Build system prompt for concise blended responses (optimized for Mixtral)
+   * Build ultra-concise system prompt
    */
-  private buildConcisePrompt(
-    style: string, 
-    intensity: number, 
-    traits: { topic: string; tone: string; urgency: string; context: string; keywords: string[] }
-  ): string {
-    const basePrompt = `You are a comedic rage translator. Create brief, hilarious angry responses that capture the essence of frustration WITHOUT directly quoting the original input.
-
-CRITICAL INSTRUCTIONS:
-- NEVER repeat or quote the original text
-- Create ONE PARAGRAPH with 2-3 sentences maximum
-- Blend the meaning into a natural rage response
-- Make it funny and over-the-top, never genuinely offensive
-- Maintain the original tone while adding relevant context
-- Keep responses under 100 words
-- Focus on authentic emotional reactions`;
-
-    const styleInstructions = {
-      corporate: `CORPORATE MELTDOWN STYLE:
-Create a brief passive-aggressive corporate response about ${traits.topic}. Use professional language with barely contained rage. Include corporate phrases like "As per my previous email" or "Please advise" but keep it concise.`,
-
-      gamer: `EPIC GAMER RAGE STYLE:
-Create a short explosive gaming-style rant about ${traits.topic}. Use strategic CAPS LOCK, gaming terminology, and phrases like "BRUH" or "ARE YOU KIDDING ME" but keep it brief.`,
-
-      sarcastic: `SARCASTIC ROAST STYLE:
-Create a concise witty response about ${traits.topic}. Use sophisticated sarcasm and irony with phrases like "How absolutely delightful" but keep it short and sharp.`
+  private buildUltraConcisePrompt(style: string, intensity: number): string {
+    const intensityLevel = intensity <= 3 ? 'mild' : intensity <= 6 ? 'moderate' : intensity <= 8 ? 'high' : 'extreme';
+    
+    const stylePrompts = {
+      corporate: `Create a brief corporate rage response. Use phrases like "As per my previous email" or "Please advise". Keep it professional but frustrated. ${intensityLevel} intensity.`,
+      gamer: `Create a short gamer rage response. Use "BRUH" or "ARE YOU KIDDING ME" with strategic caps. Gaming terminology. ${intensityLevel} intensity.`,
+      sarcastic: `Create a concise sarcastic response. Use sophisticated irony and backhanded compliments. Witty and cutting. ${intensityLevel} intensity.`
     };
 
-    const intensityGuidance = this.getConciseIntensityGuidance(intensity);
+    return `You create ultra-brief rage responses. MAXIMUM 2 sentences. NO repetition of input text. Focus on authentic emotional reaction.
 
-    return `${basePrompt}
+${stylePrompts[style as keyof typeof stylePrompts]}
 
-${styleInstructions[style as keyof typeof styleInstructions]}
-
-INTENSITY LEVEL: ${intensity}/10 - ${intensityGuidance}
-
-SITUATION CONTEXT:
-- Topic: ${traits.topic}
-- Urgency: ${traits.urgency}
-- Context: ${traits.context}
-
-Create a natural reaction someone would have in this situation. Expand on the frustration with 2-3 additional sentences that flow naturally from the core emotion.`;
-  }
-
-  /**
-   * Get concise intensity guidance
-   */
-  private getConciseIntensityGuidance(intensity: number): string {
-    if (intensity <= 3) return "Mild frustration with subtle annoyance";
-    if (intensity <= 6) return "Clear anger with dramatic emphasis";
-    if (intensity <= 8) return "Intense fury with explosive language";
-    return "Nuclear rage with maximum dramatic flair";
+Rules:
+- NEVER quote or repeat the original text
+- Maximum 2 sentences, under 50 words
+- Make it funny, not offensive
+- Natural emotional reaction only`;
   }
 
   /**

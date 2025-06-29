@@ -342,4 +342,22 @@ export const VOICE_CHARACTERISTICS = {
     age: 'Middle-aged',
     tone: 'Elegant, Refined'
   },
-  [A
+  [ALL_VOICE_IDS.karen]: {
+    gender: 'Female',
+    accent: 'American',
+    age: 'Middle-aged',
+    tone: 'Entitled, Demanding'
+  },
+  [ALL_VOICE_IDS.arnold]: {
+    gender: 'Male',
+    accent: 'Scottish',
+    age: 'Middle-aged',
+    tone: 'Gruff, Disappointed'
+  },
+  [ALL_VOICE_IDS.vinny]: {
+    gender: 'Male',
+    accent: 'New York',
+    age: 'Middle-aged',
+    tone: 'Fast-talking, Animated'
+  }
+} as const;

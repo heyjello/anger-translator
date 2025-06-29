@@ -13,7 +13,7 @@ import {
   StatsPanel,
   type TranslationHistory
 } from './components';
-import { ParticleEffect, EnhancedFooter, AIStatusIndicator, VoiceIndicator } from './components/ui';
+import { ParticleEffect, EnhancedFooter, AIStatusIndicator } from './components/ui';
 import { CircularRageMeter } from './components/ui/CircularRageMeter';
 import { RageStyle } from './types/translation';
 import './App.css';
@@ -306,15 +306,6 @@ function App() {
                   selectedStyle={selectedStyle}
                   onStyleSelect={setSelectedStyle}
                   isLoading={isLoading}
-                />
-              </div>
-
-              {/* Voice Indicator */}
-              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6">
-                <VoiceIndicator 
-                  style={selectedStyle} 
-                  intensity={rageLevel}
-                  className="justify-center flex"
                 />
               </div>
 

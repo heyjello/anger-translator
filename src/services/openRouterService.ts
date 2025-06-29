@@ -2,7 +2,7 @@
  * OpenRouter AI Service
  * 
  * Provides real AI translation capabilities using OpenRouter's unified API.
- * Supports multiple models including GPT-4, Claude, and others.
+ * Optimized for Mixtral-8x7b-instruct and other high-quality models.
  */
 
 export interface OpenRouterConfig {
@@ -44,44 +44,62 @@ export interface OpenRouterResponse {
   };
 }
 
-// Default configuration
+// Default configuration optimized for Mixtral
 const DEFAULT_CONFIG: OpenRouterConfig = {
   apiKey: '', // Will be set from environment or user input
-  model: 'anthropic/claude-3-haiku', // Fast and cost-effective model
+  model: 'mistralai/mixtral-8x7b-instruct', // Your specified model
   baseUrl: 'https://openrouter.ai/api/v1'
 };
 
-// Available models with their characteristics
+// Available models with their characteristics (Mixtral featured prominently)
 export const AVAILABLE_MODELS = {
+  'mistralai/mixtral-8x7b-instruct': {
+    name: 'Mixtral 8x7B Instruct',
+    description: 'High-quality instruction-following model with excellent reasoning',
+    maxTokens: 32768,
+    costPer1kTokens: 0.00024,
+    recommended: true,
+    strengths: ['Creative writing', 'Instruction following', 'Humor generation']
+  },
   'anthropic/claude-3-haiku': {
     name: 'Claude 3 Haiku',
     description: 'Fast, intelligent, and cost-effective',
     maxTokens: 4096,
-    costPer1kTokens: 0.00025
+    costPer1kTokens: 0.00025,
+    recommended: true,
+    strengths: ['Speed', 'Cost efficiency', 'General tasks']
   },
   'anthropic/claude-3-sonnet': {
     name: 'Claude 3 Sonnet',
     description: 'Balanced performance and intelligence',
     maxTokens: 4096,
-    costPer1kTokens: 0.003
+    costPer1kTokens: 0.003,
+    recommended: false,
+    strengths: ['Balanced performance', 'Reasoning', 'Analysis']
   },
   'openai/gpt-4o-mini': {
     name: 'GPT-4o Mini',
     description: 'OpenAI\'s efficient model',
     maxTokens: 4096,
-    costPer1kTokens: 0.00015
+    costPer1kTokens: 0.00015,
+    recommended: true,
+    strengths: ['Cost efficiency', 'General tasks', 'Speed']
   },
   'openai/gpt-4o': {
     name: 'GPT-4o',
     description: 'OpenAI\'s most capable model',
     maxTokens: 4096,
-    costPer1kTokens: 0.005
+    costPer1kTokens: 0.005,
+    recommended: false,
+    strengths: ['Highest capability', 'Complex reasoning', 'Multimodal']
   },
   'meta-llama/llama-3.1-8b-instruct:free': {
     name: 'Llama 3.1 8B (Free)',
     description: 'Free open-source model',
     maxTokens: 2048,
-    costPer1kTokens: 0
+    costPer1kTokens: 0,
+    recommended: true,
+    strengths: ['Free usage', 'Open source', 'Good performance']
   }
 } as const;
 
@@ -102,9 +120,16 @@ class OpenRouterService {
   private loadConfiguration(): void {
     // Try to load from environment variables (for production)
     const envApiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
+    const envModel = import.meta.env.VITE_OPENROUTER_MODEL;
+    
     if (envApiKey) {
       this.config.apiKey = envApiKey;
+      if (envModel && envModel in AVAILABLE_MODELS) {
+        this.config.model = envModel;
+      }
       this.isConfigured = true;
+      console.log('🤖 OpenRouter configured from environment variables');
+      console.log(`📋 Using model: ${this.config.model}`);
       return;
     }
 
@@ -115,6 +140,10 @@ class OpenRouterService {
         const parsed = JSON.parse(savedConfig);
         this.config = { ...this.config, ...parsed };
         this.isConfigured = !!this.config.apiKey;
+        if (this.isConfigured) {
+          console.log('🤖 OpenRouter configured from localStorage');
+          console.log(`📋 Using model: ${this.config.model}`);
+        }
       }
     } catch (error) {
       console.warn('Failed to load OpenRouter config from localStorage:', error);
@@ -130,6 +159,7 @@ class OpenRouterService {
         apiKey: this.config.apiKey,
         model: this.config.model
       }));
+      console.log('💾 OpenRouter configuration saved');
     } catch (error) {
       console.warn('Failed to save OpenRouter config to localStorage:', error);
     }
@@ -138,11 +168,13 @@ class OpenRouterService {
   /**
    * Configure the service with API key and model
    */
-  configure(apiKey: string, model: ModelId = 'anthropic/claude-3-haiku'): void {
+  configure(apiKey: string, model: ModelId = 'mistralai/mixtral-8x7b-instruct'): void {
     this.config.apiKey = apiKey;
     this.config.model = model;
     this.isConfigured = true;
     this.saveConfiguration();
+    console.log('✅ OpenRouter service configured successfully');
+    console.log(`📋 Model set to: ${model}`);
   }
 
   /**
@@ -169,13 +201,21 @@ class OpenRouterService {
   setModel(model: ModelId): void {
     this.config.model = model;
     this.saveConfiguration();
+    console.log(`📋 Model changed to: ${model}`);
   }
 
   /**
    * Get information about the current model
    */
   getCurrentModel(): typeof AVAILABLE_MODELS[ModelId] {
-    return AVAILABLE_MODELS[this.config.model as ModelId] || AVAILABLE_MODELS['anthropic/claude-3-haiku'];
+    return AVAILABLE_MODELS[this.config.model as ModelId] || AVAILABLE_MODELS['mistralai/mixtral-8x7b-instruct'];
+  }
+
+  /**
+   * Get all available models
+   */
+  getAvailableModels(): typeof AVAILABLE_MODELS {
+    return AVAILABLE_MODELS;
   }
 
   /**
@@ -186,13 +226,17 @@ class OpenRouterService {
       throw new Error('OpenRouter service not configured. Please provide an API key.');
     }
 
+    const appName = import.meta.env.VITE_OPENROUTER_APP_NAME || 'Anger Translator';
+
+    console.log(`🚀 Making request to OpenRouter with ${this.config.model}`);
+
     const response = await fetch(`${this.config.baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${this.config.apiKey}`,
         'Content-Type': 'application/json',
         'HTTP-Referer': window.location.origin,
-        'X-Title': 'Anger Translator'
+        'X-Title': appName
       },
       body: JSON.stringify({
         ...request,
@@ -202,34 +246,40 @@ class OpenRouterService {
 
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
+      console.error('❌ OpenRouter API error:', errorData);
       throw new Error(
         errorData.error?.message || 
         `OpenRouter API error: ${response.status} ${response.statusText}`
       );
     }
 
-    return await response.json();
+    const result = await response.json();
+    console.log('✅ OpenRouter request successful');
+    console.log(`📊 Tokens used: ${result.usage?.total_tokens || 'unknown'}`);
+    
+    return result;
   }
 
   /**
-   * Generate a rage translation using AI
+   * Generate a rage translation using AI (optimized for Mixtral)
    */
   async translateText(
     text: string, 
     style: 'corporate' | 'gamer' | 'sarcastic', 
     intensity: number
   ): Promise<string> {
-    const systemPrompt = this.buildSystemPrompt(style, intensity);
-    const userPrompt = `Transform this polite message: "${text}"`;
+    const systemPrompt = this.buildMixtralOptimizedPrompt(style, intensity);
+    const userPrompt = `Transform this polite message into a ${style} rage response at intensity level ${intensity}/10: "${text}"`;
 
+    // Optimized parameters for Mixtral
     const request: OpenRouterRequest = {
       model: this.config.model,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt }
       ],
-      max_tokens: 300,
-      temperature: 0.8,
+      max_tokens: 400, // Increased for Mixtral's longer context
+      temperature: 0.8, // Good balance for creative but controlled output
       top_p: 0.9,
       frequency_penalty: 0.1,
       presence_penalty: 0.1
@@ -243,99 +293,111 @@ class OpenRouterService {
         throw new Error('No content received from AI model');
       }
 
+      console.log('🎭 Translation generated successfully');
       return content.trim();
     } catch (error) {
-      console.error('OpenRouter translation failed:', error);
+      console.error('❌ Translation failed:', error);
       throw error;
     }
   }
 
   /**
-   * Build system prompt based on style and intensity
+   * Build system prompt optimized for Mixtral's instruction-following capabilities
    */
-  private buildSystemPrompt(style: string, intensity: number): string {
-    const basePrompt = `You are an expert at transforming polite messages into comedic rage responses. Your job is to take polite, professional text and convert it into humorous angry responses while maintaining the core message.
+  private buildMixtralOptimizedPrompt(style: string, intensity: number): string {
+    const basePrompt = `You are a comedic rage translator. Your task is to transform polite messages into hilarious angry responses while keeping the core message intact.
 
-IMPORTANT RULES:
-1. Keep the core message intact but transform the tone completely
-2. Make it funny and over-the-top, not genuinely offensive
-3. Use appropriate language for the chosen style
-4. Match the intensity level requested (1-10 scale)
-5. Keep it under 200 words
-6. Make it entertaining and comedic, not actually mean-spirited
-7. Avoid genuinely harmful or offensive content`;
+CRITICAL INSTRUCTIONS:
+- Transform the tone completely while preserving the original meaning
+- Make it funny and over-the-top, never genuinely offensive or harmful
+- Use appropriate language for the chosen style
+- Match the exact intensity level requested (1-10 scale)
+- Keep responses under 200 words
+- Focus on entertainment value, not actual anger
+- Avoid genuinely hurtful or discriminatory content`;
 
-    const stylePrompts = {
-      corporate: `
-STYLE: Corporate Meltdown
-Transform the message into a passive-aggressive corporate email response. Use professional language but with barely contained frustration. Include phrases like:
+    const styleInstructions = {
+      corporate: `CORPORATE MELTDOWN STYLE:
+Transform into a passive-aggressive corporate email response. Use professional language with barely contained frustration.
+
+Key phrases to include:
 - "As per my previous email"
 - "Please advise"
 - "Moving forward"
 - "Per our discussion"
 - "I trust this clarifies"
 - Corporate buzzwords and formal language
-Make it sound like someone who's had enough but still needs to maintain professionalism.`,
 
-      gamer: `
-STYLE: Epic Gamer Rage
-Transform the message into an over-the-top gamer rage response. Use gaming terminology, internet slang, and emphasis. Include expressions like:
+Make it sound like a professional who's reached their limit but must maintain workplace decorum.`,
+
+      gamer: `EPIC GAMER RAGE STYLE:
+Transform into an over-the-top gaming rage response. Use gaming terminology, internet slang, and strategic CAPS LOCK.
+
+Key expressions to include:
 - "BRUH"
 - "ARE YOU KIDDING ME"
 - "GET REKT"
 - "NOOB"
 - "THIS IS UNREAL"
 - Gaming references and internet culture
-Make it sound like someone who just lost an important match.`,
 
-      sarcastic: `
-STYLE: Sarcastic Roast
-Transform the message into a witty, sarcastic response dripping with irony. Use sophisticated vocabulary mixed with cutting sarcasm. Include:
-- Phrases that sound complimentary but are actually insulting
-- Intellectual superiority tone
-- Irony and wit-based humor
-- Sophisticated vocabulary
+Make it sound like someone who just experienced the most frustrating gaming moment ever.`,
+
+      sarcastic: `SARCASTIC ROAST STYLE:
+Transform into a witty, sarcastic response dripping with sophisticated irony. Use intelligent vocabulary with cutting wit.
+
+Key elements to include:
 - Backhanded compliments
-Make it sound like someone who's intellectually superior and isn't afraid to show it.`
+- Intellectual superiority tone
+- Sophisticated vocabulary
+- Irony and wit-based humor
+- Phrases that sound nice but are actually insulting
+
+Make it sound like someone who's intellectually superior and uses wit as their weapon.`
     };
 
-    const intensityModifier = this.getIntensityModifier(intensity);
+    const intensityGuidance = this.getMixtralIntensityGuidance(intensity);
 
     return `${basePrompt}
 
-${stylePrompts[style as keyof typeof stylePrompts]}
+${styleInstructions[style as keyof typeof styleInstructions]}
 
-INTENSITY LEVEL: ${intensity}/10 - ${intensityModifier}
+INTENSITY LEVEL: ${intensity}/10
+${intensityGuidance}
 
-Remember: Be funny and over-the-top, but never genuinely mean or offensive.`;
+Remember: Your goal is comedy and entertainment, not genuine anger or offense.`;
   }
 
   /**
-   * Get intensity modifier description
+   * Get intensity guidance optimized for Mixtral's understanding
    */
-  private getIntensityModifier(intensity: number): string {
-    if (intensity <= 3) return "Keep it relatively mild and restrained with subtle frustration.";
-    if (intensity <= 6) return "Make it moderately intense with clear frustration and emphasis.";
-    if (intensity <= 8) return "Make it quite intense and heated with strong language and emotion.";
-    return "Make it absolutely explosive and over-the-top with maximum intensity and drama.";
+  private getMixtralIntensityGuidance(intensity: number): string {
+    if (intensity <= 2) return "VERY MILD: Keep it subtle with gentle frustration. Think 'slightly annoyed but polite.'";
+    if (intensity <= 4) return "MILD: Show clear frustration but remain relatively restrained. Think 'visibly annoyed but controlled.'";
+    if (intensity <= 6) return "MODERATE: Make it obviously frustrated with strong emphasis. Think 'clearly angry but not explosive.'";
+    if (intensity <= 8) return "HIGH: Make it quite intense and heated with dramatic language. Think 'very angry and showing it.'";
+    return "MAXIMUM: Make it absolutely explosive and over-the-top with maximum drama and intensity. Think 'nuclear meltdown level rage.'";
   }
 
   /**
-   * Test the API connection
+   * Test the API connection with a simple request
    */
   async testConnection(): Promise<{ success: boolean; model: string; error?: string }> {
     try {
+      console.log('🧪 Testing OpenRouter connection...');
       const response = await this.translateText(
         "Hello, this is a test message.",
         "corporate",
         3
       );
       
+      console.log('✅ Connection test successful');
       return {
         success: true,
         model: this.config.model
       };
     } catch (error) {
+      console.error('❌ Connection test failed:', error);
       return {
         success: false,
         model: this.config.model,
@@ -361,9 +423,27 @@ Remember: Be funny and over-the-top, but never genuinely mean or offensive.`;
     this.isConfigured = false;
     try {
       localStorage.removeItem('openrouter-config');
+      console.log('🗑️ OpenRouter configuration cleared');
     } catch (error) {
       console.warn('Failed to clear OpenRouter config from localStorage:', error);
     }
+  }
+
+  /**
+   * Get model recommendations based on use case
+   */
+  getModelRecommendations(): {
+    best: ModelId;
+    fastest: ModelId;
+    cheapest: ModelId;
+    free: ModelId;
+  } {
+    return {
+      best: 'mistralai/mixtral-8x7b-instruct', // Your choice - excellent for creative tasks
+      fastest: 'anthropic/claude-3-haiku',
+      cheapest: 'openai/gpt-4o-mini',
+      free: 'meta-llama/llama-3.1-8b-instruct:free'
+    };
   }
 }
 

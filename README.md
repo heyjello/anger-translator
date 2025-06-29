@@ -6,6 +6,7 @@ A modern React-based web application that transforms polite messages into comedi
 
 ### Core Translation
 - **AI-Powered Translation**: Real AI integration via OpenRouter with fallback to mock service
+- **Mixtral-8x7b-instruct Optimized**: Specifically optimized for Mixtral's instruction-following capabilities
 - **Multiple AI Models**: Support for GPT-4, Claude, Llama, and other models
 - **Three Rage Styles**:
   - 💼 **Corporate Meltdown**: Professional passive-aggressive responses
@@ -18,6 +19,7 @@ A modern React-based web application that transforms polite messages into comedi
 - **Seamless Fallback**: Automatic fallback to mock service if AI unavailable
 - **Model Selection**: Choose from various AI models based on cost and performance
 - **Real-time Status**: Live AI service status indicator and configuration
+- **Mixtral Optimization**: Special prompts and parameters optimized for Mixtral-8x7b-instruct
 
 ### User Experience
 - **Interactive Emoji Mascot**: Changes expression based on rage level
@@ -31,7 +33,7 @@ A modern React-based web application that transforms polite messages into comedi
 - **Frontend**: React 18.3.1 with TypeScript
 - **Styling**: Tailwind CSS with custom animations
 - **UI Components**: Shadcn/ui library
-- **AI Service**: OpenRouter API integration
+- **AI Service**: OpenRouter API integration (optimized for Mixtral)
 - **Build Tool**: Vite
 - **Icons**: Lucide React
 
@@ -63,7 +65,7 @@ A modern React-based web application that transforms polite messages into comedi
 4. **Open in browser**
    Navigate to `http://localhost:5173`
 
-### AI Configuration (Optional)
+### AI Configuration (Recommended for Mixtral)
 
 1. **Get OpenRouter API Key**
    - Visit [OpenRouter.ai](https://openrouter.ai)
@@ -71,14 +73,19 @@ A modern React-based web application that transforms polite messages into comedi
    - Keys start with `sk-or-v1-...`
 
 2. **Configure in App**
-   - Click the settings icon in the AI status indicator
+   - Click the AI status indicator in the app
    - Enter your API key
-   - Select your preferred AI model
+   - Select "Mixtral 8x7B Instruct" (recommended and pre-optimized)
    - Test the connection
 
 3. **Environment Variables** (Production)
    ```bash
+   # Copy the example file
+   cp .env.example .env
+   
+   # Edit .env with your settings
    VITE_OPENROUTER_API_KEY=your_api_key_here
+   VITE_OPENROUTER_MODEL=mistralai/mixtral-8x7b-instruct
    ```
 
 ## 🎯 Usage
@@ -93,7 +100,7 @@ A modern React-based web application that transforms polite messages into comedi
 ### AI Features
 - **AI Toggle**: Switch between AI and mock translation
 - **Model Selection**: Choose from various AI models
-- **Cost Tracking**: Monitor usage and costs
+- **Mixtral Optimization**: Enjoy enhanced performance with Mixtral-8x7b-instruct
 - **Status Monitoring**: Real-time service status
 
 ### History & Stats
@@ -105,13 +112,21 @@ A modern React-based web application that transforms polite messages into comedi
 
 ### AI Models Available
 
-| Model | Description | Cost/1k tokens | Speed |
-|-------|-------------|----------------|-------|
-| Claude 3 Haiku | Fast and cost-effective | $0.00025 | ⚡⚡⚡ |
-| Claude 3 Sonnet | Balanced performance | $0.003 | ⚡⚡ |
-| GPT-4o Mini | OpenAI efficient | $0.00015 | ⚡⚡⚡ |
-| GPT-4o | Most capable | $0.005 | ⚡ |
-| Llama 3.1 8B | Free open-source | Free | ⚡⚡ |
+| Model | Description | Cost/1k tokens | Speed | Recommended |
+|-------|-------------|----------------|-------|-------------|
+| **Mixtral 8x7B Instruct** | High-quality instruction-following | $0.00024 | ⚡⚡ | ⭐ **Your Choice** |
+| Claude 3 Haiku | Fast and cost-effective | $0.00025 | ⚡⚡⚡ | ⭐ |
+| GPT-4o Mini | OpenAI efficient | $0.00015 | ⚡⚡⚡ | ⭐ |
+| GPT-4o | Most capable | $0.005 | ⚡ | |
+| Llama 3.1 8B | Free open-source | Free | ⚡⚡ | ⭐ |
+
+### Mixtral-8x7b-instruct Optimization
+
+This app is specifically optimized for Mixtral with:
+- **Enhanced Prompts**: Instruction-following prompts tailored for Mixtral
+- **Optimal Parameters**: Temperature, top_p, and token limits tuned for best results
+- **Creative Focus**: Leverages Mixtral's strengths in creative and humorous text generation
+- **Intensity Scaling**: Sophisticated intensity guidance that Mixtral understands well
 
 ### Rate Limiting
 - **Mock Service**: 10 requests per minute
@@ -130,7 +145,7 @@ src/
 ├── hooks/              # Custom React hooks
 ├── services/           # API and external services
 │   ├── translationService.ts      # Mock translation
-│   ├── openRouterService.ts       # OpenRouter AI integration
+│   ├── openRouterService.ts       # OpenRouter AI integration (Mixtral optimized)
 │   └── enhancedTranslationService.ts # Combined service
 ├── types/              # TypeScript definitions
 └── App.tsx            # Main application
@@ -162,6 +177,7 @@ src/
 - **First Contentful Paint**: ~1.2s
 - **AI Response Time**: 1-3 seconds (varies by model)
 - **Mock Response Time**: 0.8-2s (simulated)
+- **Mixtral Performance**: Optimized for fast, high-quality responses
 
 ## 🤝 Contributing
 
@@ -185,6 +201,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - **OpenRouter**: For providing unified AI model access
+- **Mixtral**: For excellent instruction-following capabilities
 - **Shadcn/ui**: For beautiful, accessible UI components
 - **Tailwind CSS**: For utility-first styling
 - **Lucide React**: For consistent iconography
@@ -199,7 +216,7 @@ For issues, feature requests, or questions:
 ## 🔮 Roadmap
 
 ### v1.1.0 (Next Release)
-- [ ] Enhanced AI model selection
+- [ ] Enhanced Mixtral prompt optimization
 - [ ] Usage analytics and cost tracking
 - [ ] Improved error handling
 - [ ] Performance optimizations
@@ -218,6 +235,7 @@ For issues, feature requests, or questions:
 
 ---
 
-**Built with ❤️ and a lot of rage** 🔥
+**Built with ❤️ and a lot of rage** 🔥  
+**Powered by Mixtral-8x7b-instruct** 🤖
 
 *Transform your politeness into comedic fury!*

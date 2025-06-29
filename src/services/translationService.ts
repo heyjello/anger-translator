@@ -14,27 +14,27 @@ export interface TranslationResponse {
 const STYLE_PROMPTS = {
   corporate: {
     name: "Corporate Meltdown",
-    prompt: "Create a passive-aggressive corporate response that captures workplace frustration. Use professional language but with barely contained rage. Include phrases like 'As per my previous email', 'Please advise', 'Moving forward', and corporate buzzwords. Make it sound like someone who's had enough but still needs to maintain professionalism."
+    prompt: "Create a brief passive-aggressive corporate response that captures workplace frustration. Use professional language but with barely contained rage. Include phrases like 'As per my previous email' or 'Please advise'. Keep it to 2-3 sentences maximum."
   },
   gamer: {
     name: "Epic Gamer Rage",
-    prompt: "Create an over-the-top gamer rage response that captures gaming frustration. Use gaming terminology, internet slang, and ALL CAPS for emphasis. Include words like 'BRUH', 'NOOB', 'GET REKT', 'ARE YOU KIDDING ME', and other gaming expressions. Make it sound like someone who just lost an important match."
+    prompt: "Create a short over-the-top gamer rage response that captures gaming frustration. Use gaming terminology, internet slang, and strategic CAPS LOCK. Include words like 'BRUH' or 'ARE YOU KIDDING ME'. Keep it to 2-3 sentences maximum."
   },
   sarcastic: {
     name: "Sarcastic Roast",
-    prompt: "Create a witty, sarcastic response dripping with irony that captures intellectual frustration. Use sophisticated vocabulary mixed with cutting sarcasm. Include phrases that sound complimentary but are actually insulting. Make it sound like someone who's intellectually superior and isn't afraid to show it."
+    prompt: "Create a concise witty, sarcastic response dripping with irony that captures intellectual frustration. Use sophisticated vocabulary with cutting sarcasm. Include phrases that sound complimentary but are insulting. Keep it to 2-3 sentences maximum."
   }
 };
 
 // Intensity modifiers
 const getIntensityModifier = (intensity: number): string => {
-  if (intensity <= 3) return "Keep it relatively mild and restrained.";
-  if (intensity <= 6) return "Make it moderately intense with clear frustration.";
-  if (intensity <= 8) return "Make it quite intense and heated.";
-  return "Make it absolutely explosive and over-the-top with maximum intensity.";
+  if (intensity <= 3) return "Keep it mild and restrained.";
+  if (intensity <= 6) return "Make it moderately intense.";
+  if (intensity <= 8) return "Make it quite heated.";
+  return "Make it explosive and over-the-top.";
 };
 
-// Enhanced mock translation with input blending
+// Enhanced mock translation with concise input blending
 const mockTranslate = async (request: TranslationRequest): Promise<TranslationResponse> => {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1200));
@@ -63,40 +63,40 @@ const mockTranslate = async (request: TranslationRequest): Promise<TranslationRe
   };
   
   const { context, urgency } = analyzeInput(text);
-  const exclamationMarks = '!'.repeat(Math.max(1, Math.floor(intensity / 2)));
+  const exclamationMarks = '!'.repeat(Math.max(1, Math.floor(intensity / 3)));
   
   let translatedText = '';
   
   switch (style) {
     case 'corporate':
       const corporateResponses = [
-        `AS PER MY PREVIOUS EMAIL regarding ${context}${exclamationMarks} I SHOULDN'T HAVE TO EXPLAIN THIS AGAIN but here we are dealing with ${urgency} requests${exclamationMarks} PLEASE ADVISE how we can move forward with some actual competence${exclamationMarks} Looking forward to your prompt response.`,
-        `Per our discussion about ${context}, I find myself once again having to clarify what should be obvious${exclamationMarks} Moving forward, perhaps we could implement some basic communication protocols${exclamationMarks} I trust this clarifies the situation${exclamationMarks}`,
-        `I'm reaching out AGAIN about this ${context} matter${exclamationMarks} As previously discussed, this ${urgency} situation requires immediate attention${exclamationMarks} Please advise on next steps so we can actually make progress${exclamationMarks}`
+        `AS PER MY PREVIOUS EMAIL regarding ${context}${exclamationMarks} I shouldn't have to explain this again, but here we are dealing with ${urgency} requests. Please advise how we can move forward with some actual competence${exclamationMarks}`,
+        `Per our discussion about ${context}, I find myself once again clarifying what should be obvious${exclamationMarks} Moving forward, perhaps we could implement basic communication protocols. I trust this clarifies the situation${exclamationMarks}`,
+        `I'm reaching out AGAIN about this ${context} matter${exclamationMarks} This ${urgency} situation requires immediate attention, so please advise on next steps. We need to actually make progress here${exclamationMarks}`
       ];
       translatedText = corporateResponses[Math.floor(Math.random() * corporateResponses.length)];
       break;
       
     case 'gamer':
       const gamerResponses = [
-        `BRUH${exclamationMarks} This ${context} situation is absolutely UNREAL${exclamationMarks} ARE YOU KIDDING ME with this ${urgency} nonsense${exclamationMarks} GET REKT and learn how to handle basic tasks${exclamationMarks} NOOB MOVE${exclamationMarks}`,
-        `ARE YOU SERIOUS RIGHT NOW${exclamationMarks} This ${context} thing is driving me INSANE${exclamationMarks} BRUH, how is this ${urgency} situation even happening${exclamationMarks} GET YOUR GAME TOGETHER${exclamationMarks}`,
-        `WHAT THE ACTUAL HECK${exclamationMarks} This ${context} mess is beyond frustrating${exclamationMarks} BRUH, I can't even deal with this ${urgency} chaos${exclamationMarks} TIME TO STEP UP YOUR GAME${exclamationMarks}`
+        `BRUH${exclamationMarks} This ${context} situation is absolutely UNREAL${exclamationMarks} ARE YOU KIDDING ME with this ${urgency} nonsense? GET REKT and learn how to handle basic tasks${exclamationMarks}`,
+        `ARE YOU SERIOUS RIGHT NOW${exclamationMarks} This ${context} thing is driving me INSANE${exclamationMarks} How is this ${urgency} situation even happening? GET YOUR GAME TOGETHER${exclamationMarks}`,
+        `WHAT THE ACTUAL HECK${exclamationMarks} This ${context} mess is beyond frustrating${exclamationMarks} I can't even deal with this ${urgency} chaos anymore. TIME TO STEP UP YOUR GAME${exclamationMarks}`
       ];
       translatedText = gamerResponses[Math.floor(Math.random() * gamerResponses.length)];
       break;
       
     case 'sarcastic':
       const sarcasticResponses = [
-        `Oh WOW, another ${context} situation${exclamationMarks} How absolutely RIVETING${exclamationMarks} I'm just THRILLED to deal with this ${urgency} masterpiece of communication${exclamationMarks} Truly, the efficiency here knows no bounds${exclamationMarks}`,
-        `How absolutely DELIGHTFUL${exclamationMarks} Another ${context} scenario that's clearly been handled with such remarkable competence${exclamationMarks} I'm just OVERJOYED by this ${urgency} display of organizational skills${exclamationMarks}`,
-        `Oh, MAGNIFICENT${exclamationMarks} This ${context} situation is exactly what I hoped to encounter today${exclamationMarks} Such a ${urgency} and well-thought-out approach${exclamationMarks} What a delightful way to spend my time${exclamationMarks}`
+        `Oh WOW, another ${context} situation${exclamationMarks} How absolutely RIVETING${exclamationMarks} I'm just thrilled to deal with this ${urgency} masterpiece of communication. Truly, the efficiency here knows no bounds${exclamationMarks}`,
+        `How absolutely DELIGHTFUL${exclamationMarks} Another ${context} scenario handled with such remarkable competence${exclamationMarks} I'm overjoyed by this ${urgency} display of organizational skills. What a wonderful use of everyone's time${exclamationMarks}`,
+        `Oh, MAGNIFICENT${exclamationMarks} This ${context} situation is exactly what I hoped to encounter today${exclamationMarks} Such a ${urgency} and well-thought-out approach. What a delightful way to spend my precious time${exclamationMarks}`
       ];
       translatedText = sarcasticResponses[Math.floor(Math.random() * sarcasticResponses.length)];
       break;
       
     default:
-      translatedText = `This ${context} situation is quite frustrating${exclamationMarks}`;
+      translatedText = `This ${context} situation is quite frustrating${exclamationMarks} The ${urgency} nature of this request is really testing my patience. I need this resolved properly${exclamationMarks}`;
   }
   
   return {
@@ -120,14 +120,15 @@ Intensity Level: ${intensity}/10 - ${intensityModifier}
 
 Rules:
 1. NEVER repeat or quote the original text
-2. Analyze the context and create a natural rage response
-3. Make it funny and over-the-top, not genuinely offensive
-4. Use appropriate language for the chosen style
-5. Match the intensity level requested
-6. Keep it under 300 words
-7. Make it entertaining and comedic, not actually mean-spirited`;
+2. Create ONE PARAGRAPH with 2-3 sentences maximum
+3. Analyze the context and create a natural rage response
+4. Make it funny and over-the-top, not genuinely offensive
+5. Use appropriate language for the chosen style
+6. Match the intensity level requested
+7. Keep it under 150 words
+8. Expand naturally on the core frustration with relevant details`;
 
-    const userPrompt = `Analyze this situation and create a ${style} rage response: "${text}"`;
+    const userPrompt = `Analyze this situation and create a brief ${style} rage response: "${text}"`;
 
     // This would be the actual OpenAI API call
     // const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -142,7 +143,7 @@ Rules:
     //       { role: 'system', content: systemPrompt },
     //       { role: 'user', content: userPrompt }
     //     ],
-    //     max_tokens: 300,
+    //     max_tokens: 150,
     //     temperature: 0.8,
     //   }),
     // });

@@ -328,7 +328,7 @@ class OpenRouterService {
   }
 
   /**
-   * Generate a rage translation using AI with input blending (optimized for Mixtral)
+   * Generate a concise rage translation using AI with input blending (optimized for Mixtral)
    */
   async translateText(
     text: string, 
@@ -343,20 +343,20 @@ class OpenRouterService {
     const traits = this.analyzeInputTraits(text);
     console.log('🔍 Input analysis:', traits);
 
-    const systemPrompt = this.buildBlendedPrompt(style, intensity, traits);
-    const userPrompt = `Create a ${style} rage response about ${traits.topic} with ${traits.urgency} urgency in a ${traits.context} context. The response should reflect someone who is frustrated about ${traits.keywords.join(', ') || 'the situation'}.`;
+    const systemPrompt = this.buildConcisePrompt(style, intensity, traits);
+    const userPrompt = `Create a brief ${style} rage response about ${traits.topic} with ${traits.urgency} urgency. Keep it to one paragraph with 2-3 sentences maximum.`;
 
-    // Optimized parameters for Mixtral
+    // Optimized parameters for concise responses
     const request: OpenRouterRequest = {
       model: this.config.model,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt }
       ],
-      max_tokens: 400,
-      temperature: 0.85, // Slightly higher for more creative blending
+      max_tokens: 150, // Reduced for concise responses
+      temperature: 0.8,
       top_p: 0.9,
-      frequency_penalty: 0.2, // Encourage variety
+      frequency_penalty: 0.2,
       presence_penalty: 0.1
     };
 
@@ -368,7 +368,7 @@ class OpenRouterService {
         throw new Error('No content received from AI model');
       }
 
-      console.log('🎭 Blended translation generated successfully');
+      console.log('🎭 Concise translation generated successfully');
       return content.trim();
     } catch (error) {
       console.error('❌ Translation failed:', error);
@@ -377,115 +377,59 @@ class OpenRouterService {
   }
 
   /**
-   * Build system prompt for blended responses (optimized for Mixtral)
+   * Build system prompt for concise blended responses (optimized for Mixtral)
    */
-  private buildBlendedPrompt(
+  private buildConcisePrompt(
     style: string, 
     intensity: number, 
     traits: { topic: string; tone: string; urgency: string; context: string; keywords: string[] }
   ): string {
-    const basePrompt = `You are a comedic rage translator. Create hilarious angry responses that capture the essence and frustration of the situation WITHOUT directly quoting or repeating the original input.
+    const basePrompt = `You are a comedic rage translator. Create brief, hilarious angry responses that capture the essence of frustration WITHOUT directly quoting the original input.
 
 CRITICAL INSTRUCTIONS:
 - NEVER repeat or quote the original text
-- Blend the meaning and context into a natural rage response
+- Create ONE PARAGRAPH with 2-3 sentences maximum
+- Blend the meaning into a natural rage response
 - Make it funny and over-the-top, never genuinely offensive
-- Create original content that feels authentic to the situation
-- Focus on the emotional response someone would have
-- Keep responses under 200 words
-- Make it entertaining, not actually hurtful`;
+- Maintain the original tone while adding relevant context
+- Keep responses under 100 words
+- Focus on authentic emotional reactions`;
 
     const styleInstructions = {
       corporate: `CORPORATE MELTDOWN STYLE:
-Create a passive-aggressive corporate response about ${traits.topic}. Channel the frustration of a professional dealing with ${traits.urgency} urgency situations.
-
-Essential elements:
-- "As per my previous email" energy
-- Professional language with barely contained rage
-- Corporate buzzwords and formal structure
-- Escalation through proper channels
-- Passive-aggressive politeness
-
-Context: ${traits.context} environment with ${traits.tone} original tone.`,
+Create a brief passive-aggressive corporate response about ${traits.topic}. Use professional language with barely contained rage. Include corporate phrases like "As per my previous email" or "Please advise" but keep it concise.`,
 
       gamer: `EPIC GAMER RAGE STYLE:
-Create an explosive gaming-style rant about ${traits.topic}. Channel the energy of someone who just experienced peak gaming frustration.
-
-Essential elements:
-- Strategic CAPS LOCK usage
-- Gaming terminology and internet slang
-- "BRUH" and "ARE YOU KIDDING ME" energy
-- References to skill levels and competition
-- Over-the-top dramatic reactions
-
-Context: ${traits.context} situation with ${traits.urgency} pressure.`,
+Create a short explosive gaming-style rant about ${traits.topic}. Use strategic CAPS LOCK, gaming terminology, and phrases like "BRUH" or "ARE YOU KIDDING ME" but keep it brief.`,
 
       sarcastic: `SARCASTIC ROAST STYLE:
-Create a witty, intellectually superior response about ${traits.topic}. Channel sophisticated frustration with cutting sarcasm.
-
-Essential elements:
-- Backhanded compliments and irony
-- Sophisticated vocabulary with sharp wit
-- "How absolutely delightful" energy
-- Intellectual superiority complex
-- Elegant verbal destruction
-
-Context: ${traits.context} scenario requiring ${traits.urgency} attention.`
+Create a concise witty response about ${traits.topic}. Use sophisticated sarcasm and irony with phrases like "How absolutely delightful" but keep it short and sharp.`
     };
 
-    const intensityGuidance = this.getBlendedIntensityGuidance(intensity, traits);
+    const intensityGuidance = this.getConciseIntensityGuidance(intensity);
 
     return `${basePrompt}
 
 ${styleInstructions[style as keyof typeof styleInstructions]}
 
-INTENSITY LEVEL: ${intensity}/10
-${intensityGuidance}
+INTENSITY LEVEL: ${intensity}/10 - ${intensityGuidance}
 
-SITUATION ANALYSIS:
+SITUATION CONTEXT:
 - Topic: ${traits.topic}
-- Original tone: ${traits.tone}
 - Urgency: ${traits.urgency}
 - Context: ${traits.context}
-- Key frustrations: ${traits.keywords.join(', ') || 'general situation'}
 
-Create a response that someone would naturally have in this situation, not a translation of specific words.`;
+Create a natural reaction someone would have in this situation. Expand on the frustration with 2-3 additional sentences that flow naturally from the core emotion.`;
   }
 
   /**
-   * Get intensity guidance for blended responses
+   * Get concise intensity guidance
    */
-  private getBlendedIntensityGuidance(
-    intensity: number, 
-    traits: { topic: string; tone: string; urgency: string; context: string; keywords: string[] }
-  ): string {
-    const baseGuidance = {
-      1: "Mild annoyance - subtle frustration with professional restraint",
-      2: "Light irritation - noticeable but controlled displeasure", 
-      3: "Clear frustration - obvious annoyance but still measured",
-      4: "Growing anger - frustration starting to show through",
-      5: "Moderate rage - clear anger with dramatic emphasis",
-      6: "High frustration - intense displeasure with strong language",
-      7: "Serious anger - heated response with dramatic flair",
-      8: "Intense fury - explosive reaction with maximum drama",
-      9: "Nuclear rage - absolutely over-the-top response",
-      10: "Apocalyptic meltdown - complete emotional explosion"
-    };
-
-    let guidance = baseGuidance[intensity as keyof typeof baseGuidance] || baseGuidance[5];
-
-    // Adjust based on context and urgency
-    if (traits.urgency === 'high' && intensity >= 6) {
-      guidance += " Amplify the urgency-driven frustration.";
-    }
-    if (traits.context === 'gaming' && intensity >= 7) {
-      guidance += " Channel peak gaming rage energy.";
-    }
-    if (traits.tone === 'polite' && intensity >= 5) {
-      guidance += " Contrast the original politeness with explosive frustration.";
-    }
-
-    return guidance;
+  private getConciseIntensityGuidance(intensity: number): string {
+    if (intensity <= 3) return "Mild frustration with subtle annoyance";
+    if (intensity <= 6) return "Clear anger with dramatic emphasis";
+    if (intensity <= 8) return "Intense fury with explosive language";
+    return "Nuclear rage with maximum dramatic flair";
   }
 
   /**

@@ -28,18 +28,44 @@ export const RageSlider: React.FC<RageSliderProps> = ({
     onChange(newValue);
   };
 
-  const getRageLevelDescription = (level: number) => {
-    if (level <= 3) return 'Mildly Annoyed';
-    if (level <= 6) return 'Getting Heated';
-    if (level <= 8) return 'Seriously Angry';
-    return 'PURE RAGE';
+  const getAuthenticRageDescription = (level: number) => {
+    switch (level) {
+      case 1: return 'Meh, Chillin';
+      case 2: return 'Slightly Annoyed';
+      case 3: return 'Getting Irritated';
+      case 4: return 'Clearly Frustrated';
+      case 5: return 'Pretty Angry';
+      case 6: return 'Really Mad';
+      case 7: return 'Seriously Pissed';
+      case 8: return 'Extremely Angry';
+      case 9: return 'Absolutely Furious';
+      case 10: return 'NUCLEAR RAGE';
+      default: return 'Pretty Angry';
+    }
   };
 
   const getRageLevelColor = (level: number) => {
-    if (level <= 3) return 'text-green-400 neon-green';
+    if (level <= 2) return 'text-blue-400 neon-blue';
+    if (level <= 4) return 'text-green-400 neon-green';
     if (level <= 6) return 'text-yellow-400 neon-yellow';
     if (level <= 8) return 'text-orange-400 neon-orange';
     return 'text-red-400 neon-red';
+  };
+
+  const getIntensityExamples = (level: number) => {
+    const examples = {
+      1: '"I wanted to follow up..." / "ugh, this is kinda annoying" / "how lovely..."',
+      2: '"As mentioned..." / "come on, really?" / "that\'s just great"',
+      3: '"As I stated previously..." / "what the heck?" / "how delightful"',
+      4: '"This is the third time..." / "are you serious?" / "how precious"',
+      5: '"I NEED this NOW!" / "WHAT is going on?!" / "OH how WONDERFUL"',
+      6: '"THIS IS UNACCEPTABLE!" / "BRUH! This is INSANE!" / "OH MAGNIFICENT!"',
+      7: '"I AM DONE!" / "WHAT THE HELL?!" / "absolutely SPECTACULAR!"',
+      8: '"I\'VE HAD ENOUGH!" / "WHAT IS WRONG?!" / "absolutely DIVINE!"',
+      9: '"ABSOLUTELY LIVID!" / "OUT OF YOUR MIND?!" / "absolutely EXQUISITE!"',
+      10: '"COMPLETE NONSENSE!" / "LOSING MY MIND!" / "F***ING PERFECT!"'
+    };
+    return examples[level as keyof typeof examples] || examples[5];
   };
 
   return (
@@ -51,7 +77,7 @@ export const RageSlider: React.FC<RageSliderProps> = ({
           {value}
         </span>
         <span className={`text-lg font-semibold ${getRageLevelColor(value)}`}>
-          ({getRageLevelDescription(value)})
+          ({getAuthenticRageDescription(value)})
         </span>
       </label>
       
@@ -75,7 +101,7 @@ export const RageSlider: React.FC<RageSliderProps> = ({
                 value={value}
                 onChange={handleChange}
                 disabled={isLoading}
-                className="w-full h-3 bg-gradient-to-r from-green-300 via-yellow-300 to-red-500 rounded-lg appearance-none cursor-pointer slider shadow-lg"
+                className="w-full h-3 bg-gradient-to-r from-blue-300 via-green-300 via-yellow-300 via-orange-300 to-red-500 rounded-lg appearance-none cursor-pointer slider shadow-lg"
                 aria-label={`Rage level: ${value} out of ${max}`}
               />
               {/* Number display positioned over the thumb */}
@@ -93,8 +119,16 @@ export const RageSlider: React.FC<RageSliderProps> = ({
         </div>
         
         <div className="flex justify-between text-sm text-gray-400 mt-6 font-medium">
-          <span className="neon-green">Zen Mode</span>
-          <span className="neon-red font-bold">NUCLEAR MELTDOWN</span>
+          <span className="neon-blue">Meh, Chillin</span>
+          <span className="neon-red font-bold">NUCLEAR RAGE</span>
+        </div>
+
+        {/* Authentic Examples */}
+        <div className="mt-4 p-3 bg-[#0a0f1b]/50 rounded-lg border border-[#1e293b]">
+          <p className="text-xs text-gray-500 mb-1">Level {value} Examples:</p>
+          <p className="text-sm text-gray-300 italic">
+            {getIntensityExamples(value)}
+          </p>
         </div>
       </div>
     </div>

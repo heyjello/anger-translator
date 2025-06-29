@@ -308,7 +308,7 @@ class OpenRouterService {
     }
 
     const context = this.extractContext(text);
-    const systemPrompt = this.buildUltraConcisePrompt(style, intensity);
+    const systemPrompt = this.buildAuthenticRagePrompt(style, intensity);
     const userPrompt = `Create a brief ${style} rage response about ${context}. Maximum 2 sentences.`;
 
     // Ultra-restrictive parameters for minimal output
@@ -346,18 +346,18 @@ class OpenRouterService {
   }
 
   /**
-   * Build ultra-concise system prompt
+   * Build authentic rage prompt based on real anger patterns
    */
-  private buildUltraConcisePrompt(style: string, intensity: number): string {
-    const intensityLevel = intensity <= 3 ? 'mild' : intensity <= 6 ? 'moderate' : intensity <= 8 ? 'high' : 'extreme';
+  private buildAuthenticRagePrompt(style: string, intensity: number): string {
+    const rageLevel = this.getAuthenticRageLevel(intensity);
     
     const stylePrompts = {
-      corporate: `Create a brief corporate rage response. Use phrases like "As per my previous email" or "Please advise". Keep it professional but frustrated. ${intensityLevel} intensity.`,
-      gamer: `Create a short gamer rage response. Use "BRUH" or "ARE YOU KIDDING ME" with strategic caps. Gaming terminology. ${intensityLevel} intensity.`,
-      sarcastic: `Create a concise sarcastic response. Use sophisticated irony and backhanded compliments. Witty and cutting. ${intensityLevel} intensity.`
+      corporate: `Create a brief corporate rage response. ${rageLevel.corporate}`,
+      gamer: `Create a short gamer rage response. ${rageLevel.gamer}`,
+      sarcastic: `Create a concise sarcastic response. ${rageLevel.sarcastic}`
     };
 
-    return `You create ultra-brief rage responses. MAXIMUM 2 sentences. NO repetition of input text. Focus on authentic emotional reaction.
+    return `You create ultra-brief rage responses that sound like real angry people. MAXIMUM 2 sentences. NO repetition of input text.
 
 ${stylePrompts[style as keyof typeof stylePrompts]}
 
@@ -365,7 +365,91 @@ Rules:
 - NEVER quote or repeat the original text
 - Maximum 2 sentences, under 50 words
 - Make it funny, not offensive
-- Natural emotional reaction only`;
+- Sound like authentic human anger at level ${intensity}/10`;
+  }
+
+  /**
+   * Get authentic rage level descriptions
+   */
+  private getAuthenticRageLevel(intensity: number): {
+    corporate: string;
+    gamer: string;
+    sarcastic: string;
+  } {
+    switch (intensity) {
+      case 1:
+        return {
+          corporate: "Slightly annoyed but professional. Use 'I wanted to follow up' or 'Just checking in'.",
+          gamer: "Mildly frustrated. Use 'ugh' or 'seriously?' with minimal caps.",
+          sarcastic: "Gentle irony. Use 'how lovely' or 'that's great' with subtle sarcasm."
+        };
+      
+      case 2:
+        return {
+          corporate: "Politely irritated. Use 'As mentioned' or 'Per my email' with slight edge.",
+          gamer: "Getting annoyed. Use 'come on' or 'really?' with some emphasis.",
+          sarcastic: "Light mockery. Use 'wonderful' or 'fantastic' with obvious sarcasm."
+        };
+      
+      case 3:
+        return {
+          corporate: "Clearly frustrated. Use 'As I stated previously' with firm tone.",
+          gamer: "Visibly annoyed. Use 'dude' or 'what the heck' with moderate caps.",
+          sarcastic: "Clear disdain. Use 'how delightful' or 'absolutely brilliant' with bite."
+        };
+      
+      case 4:
+        return {
+          corporate: "Losing patience. Use 'I need to reiterate' or 'This is the third time' with urgency.",
+          gamer: "Getting heated. Use 'are you serious' or 'this is ridiculous' with some CAPS.",
+          sarcastic: "Sharp wit. Use 'how absolutely precious' or 'what a masterpiece' with cutting tone."
+        };
+      
+      case 5:
+        return {
+          corporate: "Clearly angry. Use 'I NEED' or 'This is UNACCEPTABLE' with strategic caps.",
+          gamer: "Properly mad. Use 'WHAT' or 'ARE YOU KIDDING ME' with caps and emphasis.",
+          sarcastic: "Biting sarcasm. Use 'OH how WONDERFUL' or 'absolutely RIVETING' with caps for emphasis."
+        };
+      
+      case 6:
+        return {
+          corporate: "Very frustrated. Use 'THIS IS RIDICULOUS' or 'I CANNOT BELIEVE' with caps and exclamation.",
+          gamer: "Really angry. Use 'BRUH' or 'THIS IS INSANE' with multiple caps words.",
+          sarcastic: "Scathing mockery. Use 'OH MAGNIFICENT' or 'how absolutely THRILLING' with heavy sarcasm."
+        };
+      
+      case 7:
+        return {
+          corporate: "Extremely angry. Use 'I AM DONE' or 'THIS IS ABSOLUTELY UNACCEPTABLE' with multiple caps.",
+          gamer: "Seriously pissed. Use 'WHAT THE HELL' or 'ARE YOU FREAKING SERIOUS' with lots of caps.",
+          sarcastic: "Savage wit. Use 'OH how absolutely SPECTACULAR' or 'what a BRILLIANT display' with venom."
+        };
+      
+      case 8:
+        return {
+          corporate: "Furious but professional. Use 'I HAVE HAD ENOUGH' or 'THIS ENDS NOW' with caps and urgency.",
+          gamer: "Really mad. Use 'WHAT IS WRONG WITH YOU' or 'THIS IS ABSOLUTELY INSANE' with heavy caps.",
+          sarcastic: "Brutal sarcasm. Use 'OH how absolutely DIVINE' or 'what a STUNNING example' with pure venom."
+        };
+      
+      case 9:
+        return {
+          corporate: "Barely contained rage. Use 'I AM ABSOLUTELY LIVID' or 'THIS IS BEYOND UNACCEPTABLE' with full caps.",
+          gamer: "Extremely pissed. Use 'WHAT THE ACTUAL HELL' or 'ARE YOU OUT OF YOUR MIND' with maximum caps.",
+          sarcastic: "Devastating wit. Use 'OH how absolutely EXQUISITE' or 'what a PHENOMENAL disaster' with pure hatred."
+        };
+      
+      case 10:
+        return {
+          corporate: "Nuclear meltdown. Use 'I AM DONE WITH THIS NONSENSE' or 'THIS IS COMPLETELY UNACCEPTABLE' with full rage.",
+          gamer: "Absolute fury. Use 'WHAT THE F*** IS THIS' or 'I AM LOSING MY MIND' with maximum intensity.",
+          sarcastic: "Pure destruction. Use 'OH how absolutely F***ING PERFECT' or 'what a GODDAMN MASTERPIECE' with nuclear sarcasm."
+        };
+      
+      default:
+        return this.getAuthenticRageLevel(5);
+    }
   }
 
   /**

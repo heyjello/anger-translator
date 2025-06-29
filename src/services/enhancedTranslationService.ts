@@ -3,6 +3,7 @@
  * 
  * Integrates OpenRouter AI service with fallback to mock translation.
  * Provides seamless switching between AI and mock modes.
+ * Now prioritizes AI translation for dynamic responses.
  */
 
 import { openRouterService } from './openRouterService';
@@ -15,7 +16,7 @@ export interface EnhancedTranslationResponse extends TranslationResponse {
 }
 
 class EnhancedTranslationService {
-  private useAI: boolean = false;
+  private useAI: boolean = true; // Default to AI enabled
 
   constructor() {
     // Check if OpenRouter is configured on initialization
@@ -26,7 +27,14 @@ class EnhancedTranslationService {
    * Update AI status based on OpenRouter configuration
    */
   updateAIStatus(): void {
-    this.useAI = openRouterService.isReady();
+    const isAIReady = openRouterService.isReady();
+    this.useAI = isAIReady; // Auto-enable AI if available
+    
+    if (isAIReady) {
+      console.log('🤖 AI translation enabled - dynamic responses active');
+    } else {
+      console.log('⚠️ AI not configured - using fallback responses');
+    }
   }
 
   /**
@@ -48,9 +56,9 @@ class EnhancedTranslationService {
     const openRouterStatus = openRouterService.getStatus();
     return {
       aiAvailable: this.isAIAvailable(),
-      usingAI: this.useAI,
+      usingAI: this.useAI && this.isAIAvailable(),
       model: openRouterStatus.model,
-      service: this.useAI ? 'openrouter' : 'mock'
+      service: (this.useAI && this.isAIAvailable()) ? 'openrouter' : 'mock'
     };
   }
 
@@ -62,10 +70,11 @@ class EnhancedTranslationService {
       throw new Error('AI service not configured. Please set up OpenRouter first.');
     }
     this.useAI = useAI;
+    console.log(`🔄 AI translation ${useAI ? 'enabled' : 'disabled'}`);
   }
 
   /**
-   * Main translation function with AI/mock fallback
+   * Main translation function with AI prioritized for dynamic responses
    */
   async translateText(request: TranslationRequest): Promise<EnhancedTranslationResponse> {
     // Input validation
@@ -101,10 +110,10 @@ class EnhancedTranslationService {
     // Update AI status in case configuration changed
     this.updateAIStatus();
 
-    // Try AI translation first if available and enabled
+    // Prioritize AI translation for dynamic responses
     if (this.useAI && this.isAIAvailable()) {
       try {
-        console.log('🤖 Using AI translation via OpenRouter');
+        console.log('🤖 Using AI translation for dynamic response generation');
         const translatedText = await openRouterService.translateText(
           request.text,
           request.style,
@@ -118,24 +127,25 @@ class EnhancedTranslationService {
           model: openRouterService.getCurrentModel().name
         };
       } catch (error) {
-        console.warn('AI translation failed, falling back to mock:', error);
+        console.warn('⚠️ AI translation failed, falling back to mock:', error);
         
-        // Fall back to mock translation
+        // Fall back to mock translation with clear indication
         const mockResponse = await mockTranslate(request);
         return {
           ...mockResponse,
           usedAI: false,
-          error: mockResponse.error || `AI translation failed: ${error instanceof Error ? error.message : 'Unknown error'}. Using mock translation.`
+          error: `AI unavailable - using fallback. Configure OpenRouter for dynamic responses.`
         };
       }
     }
 
-    // Use mock translation
-    console.log('🎭 Using mock translation service');
+    // Use mock translation with clear indication that AI should be used
+    console.log('📝 Using mock translation - configure AI for dynamic responses');
     const mockResponse = await mockTranslate(request);
     return {
       ...mockResponse,
-      usedAI: false
+      usedAI: false,
+      error: mockResponse.success ? 'Using mock responses. Enable AI for dynamic generation.' : mockResponse.error
     };
   }
 

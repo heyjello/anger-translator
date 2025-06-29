@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { useTranslation } from './hooks/useTranslation';
+import { useEnhancedTranslation } from './hooks/useEnhancedTranslation';
 import { 
   BackgroundAnimation,
   ErrorDisplay,
@@ -14,7 +14,7 @@ import {
   StatsPanel,
   type TranslationHistory
 } from './components';
-import { ParticleEffect, EnhancedFooter } from './components/ui';
+import { ParticleEffect, EnhancedFooter, AIStatusIndicator } from './components/ui';
 import { RageStyle } from './types/translation';
 import './App.css';
 
@@ -34,7 +34,7 @@ function App() {
   const [translationHistory, setTranslationHistory] = useState<TranslationHistory[]>([]);
   const [showParticles, setShowParticles] = useState(false);
 
-  // Translation hook
+  // Enhanced translation hook with AI capabilities
   const { 
     translate, 
     isLoading, 
@@ -43,8 +43,14 @@ function App() {
     isRateLimited,
     timeUntilNextRequest,
     clearResult,
-    clearError 
-  } = useTranslation();
+    clearError,
+    usedAI,
+    aiModel,
+    isAIAvailable,
+    serviceStatus,
+    refreshAIStatus,
+    setUseAI
+  } = useEnhancedTranslation();
 
   // Input validation
   const validateInput = (text: string): string => {
@@ -126,7 +132,7 @@ function App() {
     
     console.log('⏳ Starting translation...');
 
-    // Call the translation service
+    // Call the enhanced translation service
     await translate({
       text: inputText,
       style: selectedStyle,
@@ -219,6 +225,18 @@ function App() {
           onToggleHistory={() => setShowHistory(!showHistory)}
           onToggleStats={() => setShowStats(!showStats)}
         />
+
+        {/* AI Status Indicator */}
+        <div className="flex justify-center mb-6">
+          <AIStatusIndicator
+            isAIAvailable={isAIAvailable}
+            usedAI={usedAI}
+            aiModel={aiModel}
+            serviceStatus={serviceStatus}
+            onRefreshStatus={refreshAIStatus}
+            onToggleAI={setUseAI}
+          />
+        </div>
 
         {/* History Panel */}
         {showHistory && (

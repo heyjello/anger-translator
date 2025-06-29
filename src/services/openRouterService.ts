@@ -3,6 +3,7 @@
  * 
  * Provides real AI translation capabilities using OpenRouter's unified API.
  * Optimized for Mixtral-8x7b-instruct and other high-quality models.
+ * Now includes Karen translator with proper profanity handling.
  */
 
 export interface OpenRouterConfig {
@@ -361,7 +362,7 @@ class OpenRouterService {
       karen: `Create a brief Karen-style suburban entitlement rant. ${rageLevel.karen}`
     };
 
-    return `You create ultra-brief rage responses that sound like real angry people. MAXIMUM 2 sentences. NO repetition of input text.
+    const baseRules = `You create ultra-brief rage responses that sound like real angry people. MAXIMUM 2 sentences. NO repetition of input text.
 
 ${stylePrompts[style as keyof typeof stylePrompts]}
 
@@ -369,8 +370,25 @@ Rules:
 - NEVER quote or repeat the original text
 - Maximum 2 sentences, under 50 words
 - Make it funny, not offensive
-- Sound like authentic human anger at level ${intensity}/10
-- Use profanity appropriately for high intensity levels (8-10)`;
+- Sound like authentic human anger at level ${intensity}/10`;
+
+    // Add Karen-specific profanity rules
+    if (style === 'karen') {
+      return baseRules + `
+- For rage levels 8-10, use censored profanity: **FUCKING**, **DAMN**, **SHIT**, **BLEEP**
+- Use tone cues: [screeching], [fake-nice], [condescending], [threatening]
+- Escalate from polite entitlement to complete meltdown
+- Include Karen classics: "speak to manager", "call corporate", "my husband", "taxpayer"`;
+    }
+
+    // Add profanity rules for other styles at high levels
+    if (intensity >= 8) {
+      return baseRules + `
+- Use profanity appropriately for high intensity levels (8-10)
+- Keep it authentic but not gratuitously offensive`;
+    }
+
+    return baseRules;
   }
 
   /**
@@ -388,7 +406,7 @@ Rules:
           corporate: "Slightly annoyed but professional. Use 'I wanted to follow up' or 'Just checking in'.",
           gamer: "Mildly frustrated. Use 'ugh' or 'seriously?' with minimal caps.",
           sarcastic: "Gentle irony. Use 'how lovely' or 'that's great' with subtle sarcasm.",
-          karen: "Polite but entitled. Use '[fake-nice]' tone with 'Excuse me, but...' and mention being a customer."
+          karen: "Polite but entitled. Use '[fake-nice]' tone with 'Excuse me, but...' and mention being a valued customer."
         };
       
       case 2:
@@ -444,7 +462,7 @@ Rules:
           corporate: "Furious but professional. Use 'I HAVE HAD ENOUGH' or 'THIS ENDS NOW' with caps and urgency. Light profanity acceptable: 'damn', 'hell'.",
           gamer: "Really mad. Use 'WHAT IS WRONG WITH YOU' or 'THIS IS ABSOLUTELY INSANE' with heavy caps. Use 'damn', 'hell', 'crap'.",
           sarcastic: "Brutal sarcasm. Use 'OH how absolutely DIVINE' or 'what a STUNNING example' with pure venom. Light profanity for emphasis.",
-          karen: "Hysterical meltdown. Use '[screaming]' tone, threaten BBB/lawyers, use **BLEEP** for profanity, demand names."
+          karen: "Hysterical meltdown. Use '[screaming]' tone, threaten BBB/lawyers, use **DAMN** and **HELL** for profanity, demand names and badge numbers."
         };
       
       case 9:
@@ -452,7 +470,7 @@ Rules:
           corporate: "Barely contained professional rage. Use 'I AM ABSOLUTELY LIVID' or 'THIS IS BEYOND UNACCEPTABLE' with full caps. Moderate profanity: 'damn', 'hell', 'shit'.",
           gamer: "Extremely pissed. Use 'WHAT THE ACTUAL HELL' or 'ARE YOU OUT OF YOUR MIND' with maximum caps. Strong profanity: 'shit', 'damn', 'hell'.",
           sarcastic: "Devastating wit. Use 'OH how absolutely EXQUISITE' or 'what a PHENOMENAL disaster' with pure hatred. Moderate profanity for impact.",
-          karen: "Complete psychotic break. Use '[completely losing it]' tone, threaten health department/police, use **BLEEP**ING for strong profanity."
+          karen: "Complete psychotic break. Use '[completely losing it]' tone, threaten health department/police, use **SHIT** and **DAMN** for strong profanity."
         };
       
       case 10:
@@ -460,7 +478,7 @@ Rules:
           corporate: "Nuclear professional meltdown. Use 'I AM DONE WITH THIS BULLSHIT' or 'THIS IS COMPLETE FUCKING NONSENSE' with full rage. Strong profanity acceptable: 'fucking', 'bullshit', 'goddamn'.",
           gamer: "Absolute nuclear fury. Use 'WHAT THE FUCK IS THIS SHIT' or 'I'M LOSING MY FUCKING MIND' with maximum intensity. Full profanity: 'fuck', 'shit', 'goddamn'.",
           sarcastic: "Pure nuclear destruction. Use 'OH how absolutely FUCKING PERFECT' or 'what a GODDAMN MASTERPIECE' with nuclear sarcasm. Strong profanity for maximum impact.",
-          karen: "Absolute insanity. Use '[complete psychotic break]' tone, threaten to burn place down, call FBI, use **BLEEP**ING for maximum profanity."
+          karen: "Absolute insanity. Use '[complete psychotic break]' tone, threaten to burn place down, call FBI, use **FUCKING**, **GODDAMN**, **SHIT** for maximum censored profanity."
         };
       
       default:

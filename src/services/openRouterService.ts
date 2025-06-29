@@ -122,7 +122,7 @@ class OpenRouterService {
     const envApiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
     const envModel = import.meta.env.VITE_OPENROUTER_MODEL;
     
-    if (envApiKey) {
+    if (envApiKey && envApiKey !== 'your_api_key_here') {
       this.config.apiKey = envApiKey;
       if (envModel && envModel in AVAILABLE_MODELS) {
         this.config.model = envModel;
@@ -138,15 +138,24 @@ class OpenRouterService {
       const savedConfig = localStorage.getItem('openrouter-config');
       if (savedConfig) {
         const parsed = JSON.parse(savedConfig);
-        this.config = { ...this.config, ...parsed };
-        this.isConfigured = !!this.config.apiKey;
-        if (this.isConfigured) {
-          console.log('🤖 OpenRouter configured from localStorage');
-          console.log(`📋 Using model: ${this.config.model}`);
+        if (parsed.apiKey && parsed.apiKey !== 'your_api_key_here') {
+          this.config = { ...this.config, ...parsed };
+          this.isConfigured = !!this.config.apiKey;
+          if (this.isConfigured) {
+            console.log('🤖 OpenRouter configured from localStorage');
+            console.log(`📋 Using model: ${this.config.model}`);
+          }
         }
       }
     } catch (error) {
       console.warn('Failed to load OpenRouter config from localStorage:', error);
+    }
+
+    // If still not configured, log helpful message
+    if (!this.isConfigured) {
+      console.log('⚠️ OpenRouter not configured. Please set up your API key.');
+      console.log('💡 Get your API key from: https://openrouter.ai/keys');
+      console.log('💡 Configure via the AI status indicator in the app or set VITE_OPENROUTER_API_KEY in .env');
     }
   }
 
@@ -169,6 +178,10 @@ class OpenRouterService {
    * Configure the service with API key and model
    */
   configure(apiKey: string, model: ModelId = 'mistralai/mixtral-8x7b-instruct'): void {
+    if (!apiKey || apiKey === 'your_api_key_here') {
+      throw new Error('Please provide a valid OpenRouter API key');
+    }
+    
     this.config.apiKey = apiKey;
     this.config.model = model;
     this.isConfigured = true;
@@ -181,7 +194,7 @@ class OpenRouterService {
    * Check if the service is properly configured
    */
   isReady(): boolean {
-    return this.isConfigured && !!this.config.apiKey;
+    return this.isConfigured && !!this.config.apiKey && this.config.apiKey !== 'your_api_key_here';
   }
 
   /**
@@ -191,7 +204,7 @@ class OpenRouterService {
     return {
       configured: this.isConfigured,
       model: this.config.model,
-      hasApiKey: !!this.config.apiKey
+      hasApiKey: !!this.config.apiKey && this.config.apiKey !== 'your_api_key_here'
     };
   }
 
@@ -223,7 +236,7 @@ class OpenRouterService {
    */
   private async makeRequest(request: OpenRouterRequest): Promise<OpenRouterResponse> {
     if (!this.isReady()) {
-      throw new Error('OpenRouter service not configured. Please provide an API key.');
+      throw new Error('OpenRouter service not configured. Please provide a valid API key from https://openrouter.ai/keys');
     }
 
     const appName = import.meta.env.VITE_OPENROUTER_APP_NAME || 'Anger Translator';
@@ -247,6 +260,11 @@ class OpenRouterService {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error('❌ OpenRouter API error:', errorData);
+      
+      if (response.status === 401) {
+        throw new Error('Invalid API key. Please check your OpenRouter API key from https://openrouter.ai/keys');
+      }
+      
       throw new Error(
         errorData.error?.message || 
         `OpenRouter API error: ${response.status} ${response.statusText}`
@@ -268,6 +286,10 @@ class OpenRouterService {
     style: 'corporate' | 'gamer' | 'sarcastic', 
     intensity: number
   ): Promise<string> {
+    if (!this.isReady()) {
+      throw new Error('OpenRouter API key not configured. Please set up your API key from https://openrouter.ai/keys');
+    }
+
     const systemPrompt = this.buildMixtralOptimizedPrompt(style, intensity);
     const userPrompt = `Transform this polite message into a ${style} rage response at intensity level ${intensity}/10: "${text}"`;
 

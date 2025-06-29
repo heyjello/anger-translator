@@ -14,6 +14,7 @@ export interface VoiceStyleMap {
   corporate: VoiceConfig;
   gamer: VoiceConfig;
   sarcastic: VoiceConfig;
+  karen: VoiceConfig;
 }
 
 // Pre-made ElevenLabs voices optimized for each style
@@ -50,6 +51,17 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
       style: 0.5,
       use_speaker_boost: true
     }
+  },
+  karen: {
+    voice_id: "EXAVITQu4vr4xnSDxMaL", // Bella
+    name: "Bella",
+    description: "Entitled suburban mom voice for Karen rants",
+    voice_settings: {
+      stability: 0.6,
+      similarity_boost: 0.7,
+      style: 0.7,
+      use_speaker_boost: true
+    }
   }
 };
 
@@ -57,11 +69,12 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
 export const ALTERNATIVE_VOICES = {
   corporate: ["VR6AewLTigWG4xSOukaG"], // Arnold
   gamer: ["21m00Tcm4TlvDq8ikWAM"], // Rachel
-  sarcastic: ["2EiwWnXFnvU5JabPnv8n"] // Clyde
+  sarcastic: ["2EiwWnXFnvU5JabPnv8n"], // Clyde
+  karen: ["ThT5KcBeYPX3keUQqHPh"] // Dorothy
 };
 
 // Get voice configuration based on style
-export const getVoiceForStyle = (style: 'corporate' | 'gamer' | 'sarcastic'): VoiceConfig => {
+export const getVoiceForStyle = (style: 'corporate' | 'gamer' | 'sarcastic' | 'karen'): VoiceConfig => {
   return VOICE_CONFIGS[style];
 };
 
@@ -125,7 +138,7 @@ export const getEmotionalPreset = (rageLevel: number): keyof typeof EMOTIONAL_PR
 
 // Advanced voice configuration with style-specific adjustments
 export const getAdvancedVoiceConfig = (
-  style: 'corporate' | 'gamer' | 'sarcastic',
+  style: 'corporate' | 'gamer' | 'sarcastic' | 'karen',
   intensity: number
 ): VoiceConfig => {
   const baseConfig = getVoiceForStyle(style);
@@ -170,7 +183,7 @@ export const VOICE_MODELS = {
 // Text preprocessing for better speech synthesis
 export const preprocessTextForStyle = (
   text: string, 
-  style: 'corporate' | 'gamer' | 'sarcastic',
+  style: 'corporate' | 'gamer' | 'sarcastic' | 'karen',
   intensity: number
 ): string => {
   let processedText = text;
@@ -203,6 +216,16 @@ export const preprocessTextForStyle = (
       processedText = processedText.replace(/\"/g, '"<break time="0.3s"/>');
       processedText = `<prosody rate="0.9">${processedText}</prosody>`;
       break;
+      
+    case 'karen':
+      // Add Karen-specific emphasis and dramatic pauses
+      processedText = processedText.replace(/\[([^\]]+)\]/g, '<break time="0.3s"/>'); // Remove tone cues but add pauses
+      processedText = processedText.replace(/(EXCUSE ME|MANAGER|UNACCEPTABLE|RIDICULOUS)/g, '<emphasis level="strong">$1</emphasis>');
+      processedText = processedText.replace(/\*\*([^*]+)\*\*/g, '<emphasis level="strong">$1</emphasis>'); // Convert **text** to emphasis
+      if (intensity >= 6) {
+        processedText = `<prosody rate="1.1" pitch="+10%">${processedText}</prosody>`;
+      }
+      break;
   }
 
   // Intensity-based adjustments
@@ -214,11 +237,12 @@ export const preprocessTextForStyle = (
 };
 
 // Voice testing utilities
-export const createTestPhrase = (style: 'corporate' | 'gamer' | 'sarcastic'): string => {
+export const createTestPhrase = (style: 'corporate' | 'gamer' | 'sarcastic' | 'karen'): string => {
   const testPhrases = {
     corporate: "As per my previous email, I need you to review this document immediately. Please advise how we can move forward with some actual competence!",
     gamer: "BRUH! Are you kidding me right now?! This is absolutely unreal! Get rekt and learn to play, noob!",
-    sarcastic: "Oh, how absolutely riveting! I'm just thrilled to deal with this masterpiece of communication. Truly, your eloquence knows no bounds!"
+    sarcastic: "Oh, how absolutely riveting! I'm just thrilled to deal with this masterpiece of communication. Truly, your eloquence knows no bounds!",
+    karen: "Excuse me, I want to speak to your manager RIGHT NOW! This is completely unacceptable and I'm calling corporate!"
   };
   
   return testPhrases[style];

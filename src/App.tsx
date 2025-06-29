@@ -24,7 +24,7 @@ const MIN_CHARACTERS = 5;
 function App() {
   // State management
   const [inputText, setInputText] = useState('');
-  const [selectedStyle, setSelectedStyle] = useState<RageStyle>('corporate');
+  const [selectedStyle, setSelectedStyle] = useState<RageStyle>('karen');
   const [rageLevel, setRageLevel] = useState(5);
   const [isCopied, setIsCopied] = useState(false);
   const [inputError, setInputError] = useState('');

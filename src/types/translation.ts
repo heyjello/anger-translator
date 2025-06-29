@@ -2,7 +2,7 @@
  * Core translation types and interfaces
  */
 
-export type RageStyle = 'corporate' | 'gamer' | 'sarcastic';
+export type RageStyle = 'corporate' | 'gamer' | 'sarcastic' | 'karen';
 
 export interface TranslationRequest {
   text: string;

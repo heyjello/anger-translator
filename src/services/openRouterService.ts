@@ -244,6 +244,9 @@ class OpenRouterService {
     if (lowerText.includes('help') || lowerText.includes('assist')) return 'assistance';
     if (lowerText.includes('review') || lowerText.includes('feedback')) return 'review';
     if (lowerText.includes('fix') || lowerText.includes('problem')) return 'issue';
+    if (lowerText.includes('service') || lowerText.includes('customer')) return 'service';
+    if (lowerText.includes('manager') || lowerText.includes('speak')) return 'manager';
+    if (lowerText.includes('wait') || lowerText.includes('time')) return 'waiting';
     
     return 'request';
   }
@@ -300,7 +303,7 @@ class OpenRouterService {
    */
   async translateText(
     text: string, 
-    style: 'corporate' | 'gamer' | 'sarcastic', 
+    style: 'corporate' | 'gamer' | 'sarcastic' | 'karen', 
     intensity: number
   ): Promise<string> {
     if (!this.isReady()) {
@@ -354,7 +357,8 @@ class OpenRouterService {
     const stylePrompts = {
       corporate: `Create a brief corporate rage response. ${rageLevel.corporate}`,
       gamer: `Create a short gamer rage response. ${rageLevel.gamer}`,
-      sarcastic: `Create a concise sarcastic response. ${rageLevel.sarcastic}`
+      sarcastic: `Create a concise sarcastic response. ${rageLevel.sarcastic}`,
+      karen: `Create a brief Karen-style suburban entitlement rant. ${rageLevel.karen}`
     };
 
     return `You create ultra-brief rage responses that sound like real angry people. MAXIMUM 2 sentences. NO repetition of input text.
@@ -376,76 +380,87 @@ Rules:
     corporate: string;
     gamer: string;
     sarcastic: string;
+    karen: string;
   } {
     switch (intensity) {
       case 1:
         return {
           corporate: "Slightly annoyed but professional. Use 'I wanted to follow up' or 'Just checking in'.",
           gamer: "Mildly frustrated. Use 'ugh' or 'seriously?' with minimal caps.",
-          sarcastic: "Gentle irony. Use 'how lovely' or 'that's great' with subtle sarcasm."
+          sarcastic: "Gentle irony. Use 'how lovely' or 'that's great' with subtle sarcasm.",
+          karen: "Polite but entitled. Use '[fake-nice]' tone with 'Excuse me, but...' and mention being a customer."
         };
       
       case 2:
         return {
           corporate: "Politely irritated. Use 'As mentioned' or 'Per my email' with slight edge.",
           gamer: "Getting annoyed. Use 'come on' or 'really?' with some emphasis.",
-          sarcastic: "Light mockery. Use 'wonderful' or 'fantastic' with obvious sarcasm."
+          sarcastic: "Light mockery. Use 'wonderful' or 'fantastic' with obvious sarcasm.",
+          karen: "Slightly condescending. Use '[passive-aggressive]' tone and mention 'standards' or 'back in my day'."
         };
       
       case 3:
         return {
           corporate: "Clearly frustrated. Use 'As I stated previously' with firm tone.",
           gamer: "Visibly annoyed. Use 'dude' or 'what the heck' with moderate caps.",
-          sarcastic: "Clear disdain. Use 'how delightful' or 'absolutely brilliant' with bite."
+          sarcastic: "Clear disdain. Use 'how delightful' or 'absolutely brilliant' with bite.",
+          karen: "Getting snippy. Use '[condescending]' tone, mention knowing the owner, and demand the manager."
         };
       
       case 4:
         return {
           corporate: "Losing patience. Use 'I need to reiterate' or 'This is the third time' with urgency.",
           gamer: "Getting heated. Use 'are you serious' or 'this is ridiculous' with some CAPS.",
-          sarcastic: "Sharp wit. Use 'how absolutely precious' or 'what a masterpiece' with cutting tone."
+          sarcastic: "Sharp wit. Use 'how absolutely precious' or 'what a masterpiece' with cutting tone.",
+          karen: "Demanding mode. Use '[entitled]' tone, mention being a taxpayer/mother, and threaten to call corporate."
         };
       
       case 5:
         return {
           corporate: "Clearly angry. Use 'I NEED' or 'This is UNACCEPTABLE' with strategic caps.",
           gamer: "Properly mad. Use 'WHAT' or 'ARE YOU KIDDING ME' with caps and emphasis.",
-          sarcastic: "Biting sarcasm. Use 'OH how WONDERFUL' or 'absolutely RIVETING' with caps for emphasis."
+          sarcastic: "Biting sarcasm. Use 'OH how WONDERFUL' or 'absolutely RIVETING' with caps for emphasis.",
+          karen: "Full Karen mode. Use '[screeching]' tone, threaten Facebook posts, and demand immediate action."
         };
       
       case 6:
         return {
           corporate: "Very frustrated. Use 'THIS IS RIDICULOUS' or 'I CANNOT BELIEVE' with caps and exclamation.",
           gamer: "Really angry. Use 'BRUH' or 'THIS IS INSANE' with multiple caps words.",
-          sarcastic: "Scathing mockery. Use 'OH MAGNIFICENT' or 'how absolutely THRILLING' with heavy sarcasm."
+          sarcastic: "Scathing mockery. Use 'OH MAGNIFICENT' or 'how absolutely THRILLING' with heavy sarcasm.",
+          karen: "Nuclear Karen. Use '[threatening]' tone, mention husband's importance, and threaten lawyers."
         };
       
       case 7:
         return {
           corporate: "Extremely angry. Use 'I AM DONE' or 'THIS IS ABSOLUTELY UNACCEPTABLE' with multiple caps.",
           gamer: "Seriously pissed. Use 'WHAT THE HELL' or 'ARE YOU FREAKING SERIOUS' with lots of caps.",
-          sarcastic: "Savage wit. Use 'OH how absolutely SPECTACULAR' or 'what a BRILLIANT display' with venom."
+          sarcastic: "Savage wit. Use 'OH how absolutely SPECTACULAR' or 'what a BRILLIANT display' with venom.",
+          karen: "Completely unhinged. Use '[nuclear Karen]' tone, threaten police/news, and claim discrimination."
         };
       
       case 8:
         return {
           corporate: "Furious but professional. Use 'I HAVE HAD ENOUGH' or 'THIS ENDS NOW' with caps and urgency. Light profanity acceptable: 'damn', 'hell'.",
           gamer: "Really mad. Use 'WHAT IS WRONG WITH YOU' or 'THIS IS ABSOLUTELY INSANE' with heavy caps. Use 'damn', 'hell', 'crap'.",
-          sarcastic: "Brutal sarcasm. Use 'OH how absolutely DIVINE' or 'what a STUNNING example' with pure venom. Light profanity for emphasis."
+          sarcastic: "Brutal sarcasm. Use 'OH how absolutely DIVINE' or 'what a STUNNING example' with pure venom. Light profanity for emphasis.",
+          karen: "Hysterical meltdown. Use '[screaming]' tone, threaten BBB/lawyers, use **BLEEP** for profanity, demand names."
         };
       
       case 9:
         return {
           corporate: "Barely contained professional rage. Use 'I AM ABSOLUTELY LIVID' or 'THIS IS BEYOND UNACCEPTABLE' with full caps. Moderate profanity: 'damn', 'hell', 'shit'.",
           gamer: "Extremely pissed. Use 'WHAT THE ACTUAL HELL' or 'ARE YOU OUT OF YOUR MIND' with maximum caps. Strong profanity: 'shit', 'damn', 'hell'.",
-          sarcastic: "Devastating wit. Use 'OH how absolutely EXQUISITE' or 'what a PHENOMENAL disaster' with pure hatred. Moderate profanity for impact."
+          sarcastic: "Devastating wit. Use 'OH how absolutely EXQUISITE' or 'what a PHENOMENAL disaster' with pure hatred. Moderate profanity for impact.",
+          karen: "Complete psychotic break. Use '[completely losing it]' tone, threaten health department/police, use **BLEEP**ING for strong profanity."
         };
       
       case 10:
         return {
           corporate: "Nuclear professional meltdown. Use 'I AM DONE WITH THIS BULLSHIT' or 'THIS IS COMPLETE FUCKING NONSENSE' with full rage. Strong profanity acceptable: 'fucking', 'bullshit', 'goddamn'.",
           gamer: "Absolute nuclear fury. Use 'WHAT THE FUCK IS THIS SHIT' or 'I'M LOSING MY FUCKING MIND' with maximum intensity. Full profanity: 'fuck', 'shit', 'goddamn'.",
-          sarcastic: "Pure nuclear destruction. Use 'OH how absolutely FUCKING PERFECT' or 'what a GODDAMN MASTERPIECE' with nuclear sarcasm. Strong profanity for maximum impact."
+          sarcastic: "Pure nuclear destruction. Use 'OH how absolutely FUCKING PERFECT' or 'what a GODDAMN MASTERPIECE' with nuclear sarcasm. Strong profanity for maximum impact.",
+          karen: "Absolute insanity. Use '[complete psychotic break]' tone, threaten to burn place down, call FBI, use **BLEEP**ING for maximum profanity."
         };
       
       default:

@@ -47,6 +47,14 @@ const STYLE_OPTIONS: StyleOption[] = [
     description: 'Witty destruction',
     color: 'purple',
     glowColor: 'rgba(147, 51, 234, 0.3)'
+  },
+  {
+    id: 'karen',
+    name: 'Karen Translator',
+    emoji: '💇‍♀️',
+    description: 'Suburban entitlement',
+    color: 'pink',
+    glowColor: 'rgba(236, 72, 153, 0.3)'
   }
 ];
 
@@ -62,7 +70,7 @@ export const StyleSelector: React.FC<StyleSelectorProps> = ({
         Choose your rage style:
       </label>
       
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {STYLE_OPTIONS.map((option) => (
           <button 
             key={option.id}

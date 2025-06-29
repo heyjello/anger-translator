@@ -1,6 +1,6 @@
 export interface TranslationRequest {
   text: string;
-  style: 'corporate' | 'gamer' | 'sarcastic';
+  style: 'corporate' | 'gamer' | 'sarcastic' | 'karen';
   intensity: number;
 }
 
@@ -26,6 +26,9 @@ const mockTranslate = async (request: TranslationRequest): Promise<TranslationRe
     if (lowerText.includes('help')) return 'assistance';
     if (lowerText.includes('review')) return 'review';
     if (lowerText.includes('fix') || lowerText.includes('problem')) return 'issue';
+    if (lowerText.includes('service') || lowerText.includes('customer')) return 'service';
+    if (lowerText.includes('manager') || lowerText.includes('speak')) return 'manager';
+    if (lowerText.includes('wait') || lowerText.includes('time')) return 'waiting';
     return 'request';
   };
   
@@ -46,6 +49,10 @@ const mockTranslate = async (request: TranslationRequest): Promise<TranslationRe
       translatedText = getSarcasticRage(context, intensity);
       break;
       
+    case 'karen':
+      translatedText = getKarenRage(context, intensity);
+      break;
+      
     default:
       translatedText = `This ${context} situation is frustrating. I need this resolved.`;
   }
@@ -54,6 +61,55 @@ const mockTranslate = async (request: TranslationRequest): Promise<TranslationRe
     translatedText,
     success: true
   };
+};
+
+// Karen rage responses with escalating suburban entitlement
+const getKarenRage = (context: string, intensity: number): string => {
+  const responses = {
+    1: [
+      `[fake-nice] Excuse me, but I think there might be a little mix-up with this ${context}? I'm sure it's just an oversight.`,
+      `[polite but firm] Hi there! I was wondering if we could sort out this ${context} situation? I'm a very reasonable person.`
+    ],
+    2: [
+      `[slightly condescending] I'm sorry, but this ${context} really isn't acceptable. I've been a customer here for YEARS.`,
+      `[passive-aggressive] Well, I suppose this ${context} is just how things are done now? Back in my day, we had standards.`
+    ],
+    3: [
+      `[getting snippy] Look, I don't think you understand - this ${context} is completely unacceptable! I know the owner personally.`,
+      `[condescending] Sweetie, I think you need to get your manager because this ${context} is NOT how you treat paying customers.`
+    ],
+    4: [
+      `[demanding] This is RIDICULOUS! I want to speak to your manager RIGHT NOW about this ${context}! Do you know who I am?`,
+      `[entitled] I am a TAXPAYER and a MOTHER, and this ${context} is absolutely UNACCEPTABLE! Where is your supervisor?`
+    ],
+    5: [
+      `[screeching] **EXCUSE ME?!** This ${context} is the WORST service I have EVER experienced! I'm calling corporate!`,
+      `[outraged] I am NEVER shopping here again! This ${context} is DISGUSTING and I'm posting about this on Facebook!`
+    ],
+    6: [
+      `[full Karen mode] **ARE YOU KIDDING ME RIGHT NOW?!** This ${context} is UNBELIEVABLE! I'm getting my lawyer involved!`,
+      `[threatening] You have NO IDEA who you're dealing with! My husband is very important and this ${context} will NOT stand!`
+    ],
+    7: [
+      `[nuclear Karen] **I AM CALLING THE POLICE!** This ${context} is HARASSMENT and I will NOT be treated this way! **MANAGER NOW!**`,
+      `[completely unhinged] **THIS IS DISCRIMINATION!** I'm calling the news about this ${context}! You'll be SORRY you messed with me!`
+    ],
+    8: [
+      `[screaming] **I'M CALLING MY LAWYER AND THE BETTER BUSINESS BUREAU!** This ${context} is a **BLEEP**ing DISGRACE! **SHUT THIS PLACE DOWN!**`,
+      `[hysterical] **YOU'RE ALL GOING TO BE FIRED!** This ${context} is the most **BLEEP**ed up thing I've ever seen! **I WANT NAMES!**`
+    ],
+    9: [
+      `[completely losing it] **I'M CALLING THE **BLEEP**ING POLICE AND THE HEALTH DEPARTMENT!** This ${context} is **BLEEP**ING CRIMINAL! **YOU'RE ALL **BLEEP**ED!**`,
+      `[nuclear meltdown] **THIS IS **BLEEP**ING INSANE!** I'm suing EVERYONE over this ${context}! **YOU'LL HEAR FROM MY **BLEEP**ING LAWYER!**`
+    ],
+    10: [
+      `[complete psychotic break] **I'M GOING TO **BLEEP**ING DESTROY THIS PLACE!** This ${context} has RUINED MY **BLEEP**ING LIFE! **I'LL BURN THIS **BLEEP**HOLE DOWN!**`,
+      `[absolute insanity] **YOU'RE ALL **BLEEP**ING DEAD TO ME!** This ${context} is the WORST **BLEEP**ING THING EVER! **I'M CALLING THE **BLEEP**ING FBI!**`
+    ]
+  };
+  
+  const levelResponses = responses[intensity as keyof typeof responses] || responses[5];
+  return levelResponses[Math.floor(Math.random() * levelResponses.length)];
 };
 
 // Corporate rage responses by intensity level with REAL profanity at high levels

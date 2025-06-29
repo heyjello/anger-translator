@@ -21,23 +21,23 @@ const getErrorStyles = (type: ErrorType) => {
   switch (type) {
     case 'error':
       return {
-        container: 'text-red-700 bg-red-50 border-red-200',
-        icon: 'text-red-600'
+        container: 'text-red-400 bg-red-500/10 border-red-500/30',
+        icon: 'text-red-400'
       };
     case 'warning':
       return {
-        container: 'text-orange-700 bg-orange-50 border-orange-200',
-        icon: 'text-orange-600'
+        container: 'text-orange-400 bg-orange-500/10 border-orange-500/30',
+        icon: 'text-orange-400'
       };
     case 'info':
       return {
-        container: 'text-blue-700 bg-blue-50 border-blue-200',
-        icon: 'text-blue-600'
+        container: 'text-blue-400 bg-blue-500/10 border-blue-500/30',
+        icon: 'text-blue-400'
       };
     default:
       return {
-        container: 'text-gray-700 bg-gray-50 border-gray-200',
-        icon: 'text-gray-600'
+        container: 'text-gray-400 bg-gray-500/10 border-gray-500/30',
+        icon: 'text-gray-400'
       };
   }
 };
@@ -66,18 +66,18 @@ export const ErrorDisplay: React.FC<ErrorDisplayProps> = ({
   const displayIcon = icon || getDefaultIcon(type);
 
   return (
-    <div className={`flex items-center gap-3 border rounded-lg p-4 animate-slide-in ${styles.container} ${className}`}>
+    <div className={`flex items-center gap-3 border rounded-lg p-4 animate-slide-in backdrop-blur-sm ${styles.container} ${className}`}>
       <div className={styles.icon}>
         {displayIcon}
       </div>
       <div className="flex-1">
         <div className="font-semibold capitalize">{type}</div>
-        <div className="text-sm">{message}</div>
+        <div className="text-sm opacity-90">{message}</div>
       </div>
       {onDismiss && (
         <button
           onClick={onDismiss}
-          className="ml-auto hover:opacity-70 font-medium text-sm transition-opacity"
+          className="ml-auto hover:opacity-70 font-medium text-sm transition-opacity p-1 hover:bg-white/10 rounded"
           aria-label="Dismiss"
         >
           <X size={18} />

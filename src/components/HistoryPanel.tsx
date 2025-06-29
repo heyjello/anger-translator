@@ -27,10 +27,10 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
 }) => {
   if (history.length === 0) {
     return (
-      <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6">
+      <div className="cyber-card rounded-2xl shadow-cyber p-6">
         <div className="flex items-center gap-2 mb-4">
-          <Clock size={24} className="text-gray-600" />
-          <h3 className="text-xl font-bold text-gray-800">Translation History</h3>
+          <Clock size={24} className="text-gray-400" />
+          <h3 className="text-xl font-bold text-gray-100">Translation History</h3>
         </div>
         <div className="text-center py-8 text-gray-500">
           <Clock size={48} className="mx-auto mb-4 opacity-50" />
@@ -42,18 +42,18 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
   }
 
   return (
-    <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-xl border border-white/20 p-6">
+    <div className="cyber-card rounded-2xl shadow-cyber p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-2">
-          <Clock size={24} className="text-gray-600" />
-          <h3 className="text-xl font-bold text-gray-800">Translation History</h3>
-          <span className="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm font-medium">
+          <Clock size={24} className="text-gray-400" />
+          <h3 className="text-xl font-bold text-gray-100">Translation History</h3>
+          <span className="bg-blue-500/20 text-blue-400 px-2 py-1 rounded-full text-sm font-medium border border-blue-500/30">
             {history.length}
           </span>
         </div>
         <button
           onClick={onClear}
-          className="flex items-center gap-2 px-3 py-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded-lg transition-all duration-300"
+          className="flex items-center gap-2 px-3 py-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-all duration-300 border border-transparent hover:border-red-500/30"
         >
           <Trash2 size={16} />
           Clear All
@@ -64,15 +64,15 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
         {history.map((item) => (
           <div
             key={item.id}
-            className="border border-gray-200 rounded-xl p-4 hover:shadow-md transition-all duration-300 cursor-pointer"
+            className="border border-[#1e293b] rounded-xl p-4 hover:border-blue-500/30 hover:shadow-[0_0_20px_rgba(59,130,246,0.1)] transition-all duration-300 cursor-pointer bg-[#0a0f1b]/30"
             onClick={() => onReuse(item)}
           >
             <div className="flex items-start justify-between mb-3">
               <div className="flex items-center gap-2">
-                <span className="text-sm font-medium text-gray-600">
+                <span className="text-sm font-medium text-gray-400">
                   {item.style} • Level {item.rageLevel}
                 </span>
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-gray-500">
                   {item.timestamp.toLocaleTimeString()}
                 </span>
               </div>
@@ -82,7 +82,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
                     e.stopPropagation();
                     onCopyTranslation(item.translatedText);
                   }}
-                  className="p-1 hover:bg-gray-100 rounded transition-colors"
+                  className="p-1 hover:bg-blue-500/20 hover:text-blue-400 rounded transition-colors text-gray-500"
                   title="Copy translation"
                 >
                   <Copy size={14} />
@@ -92,7 +92,7 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
                     e.stopPropagation();
                     onShareTranslation(item);
                   }}
-                  className="p-1 hover:bg-gray-100 rounded transition-colors"
+                  className="p-1 hover:bg-purple-500/20 hover:text-purple-400 rounded transition-colors text-gray-500"
                   title="Share translation"
                 >
                   <Share2 size={14} />
@@ -103,13 +103,13 @@ export const HistoryPanel: React.FC<HistoryPanelProps> = ({
             <div className="space-y-2">
               <div>
                 <p className="text-xs text-gray-500 mb-1">Original:</p>
-                <p className="text-sm text-gray-700 line-clamp-2">
+                <p className="text-sm text-gray-300 line-clamp-2">
                   {item.originalText}
                 </p>
               </div>
               <div>
                 <p className="text-xs text-gray-500 mb-1">Translation:</p>
-                <p className="text-sm font-medium text-gray-800 line-clamp-2">
+                <p className="text-sm font-medium text-gray-100 line-clamp-2">
                   {item.translatedText}
                 </p>
               </div>

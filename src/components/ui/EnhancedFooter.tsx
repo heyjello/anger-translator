@@ -1,69 +1,22 @@
-/**
- * EnhancedFooter Component
- * 
- * Branded footer with social links and enhanced styling
- */
-
 import React from 'react';
-import { Github, Twitter, Heart, Zap } from 'lucide-react';
+import { Zap } from 'lucide-react';
 
 export const EnhancedFooter: React.FC = () => {
   return (
-    <footer className="text-center mt-12 animate-fade-in">
-      <div className="max-w-4xl mx-auto">
-        {/* Main footer content */}
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 p-8 mb-6">
-          <div className="flex flex-col items-center gap-6">
-            
-            {/* Built with Bolt badge */}
-            <div className="flex items-center gap-3 text-white">
-              <span className="text-lg font-medium">Built with</span>
-              <div className="flex items-center gap-2 bg-gradient-to-r from-yellow-400 to-orange-500 px-4 py-2 rounded-full shadow-lg animate-pulse-glow">
-                <Zap size={20} className="text-white animate-bounce" />
-                <span className="font-black text-white text-xl">Bolt</span>
-                <Zap size={20} className="text-white animate-bounce" style={{ animationDelay: '0.2s' }} />
-              </div>
-            </div>
-
-            {/* Tagline */}
-            <p className="text-white/80 text-lg font-medium max-w-md">
-              Transform your politeness into comedic rage with AI-powered translation magic
-            </p>
-
-            {/* Social links placeholders */}
-            <div className="flex items-center gap-4">
-              <a
-                href="#"
-                className="group flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
-                aria-label="Follow on Twitter"
-              >
-                <Twitter size={18} className="text-white group-hover:text-blue-300 transition-colors" />
-                <span className="text-white text-sm font-medium">Twitter</span>
-              </a>
-              
-              <a
-                href="#"
-                className="group flex items-center gap-2 bg-white/20 hover:bg-white/30 px-4 py-2 rounded-full transition-all duration-300 transform hover:scale-105 hover:shadow-lg"
-                aria-label="View on GitHub"
-              >
-                <Github size={18} className="text-white group-hover:text-gray-300 transition-colors" />
-                <span className="text-white text-sm font-medium">GitHub</span>
-              </a>
-            </div>
-
-            {/* Made with love */}
-            <div className="flex items-center gap-2 text-white/60 text-sm">
-              <span>Made with</span>
-              <Heart size={16} className="text-red-400 animate-pulse" />
-              <span>for frustrated humans everywhere</span>
-            </div>
-          </div>
+    <footer className="mt-12 text-center">
+      <div className="inline-flex items-center gap-2 glass rounded-full px-6 py-3 border border-[#1e293b]/50 hover:border-blue-500/30 transition-all duration-300 hover:shadow-[0_0_30px_rgba(59,130,246,0.15)]">
+        <span className="text-gray-300 text-sm font-medium">Built with</span>
+        <div className="flex items-center gap-1">
+          <Zap size={16} className="text-blue-400 animate-pulse" />
+          <span className="font-bold text-blue-400 neon-blue">Bolt</span>
+          <Zap size={16} className="text-blue-400 animate-pulse" />
         </div>
-
-        {/* Copyright */}
-        <div className="text-white/50 text-sm">
-          © 2025 Anger Translator. All rights reserved. • Powered by AI Magic ✨
-        </div>
+        <span className="text-gray-300 text-sm font-medium">& a lot of rage</span>
+        <span className="text-xl animate-bounce">🔥</span>
+      </div>
+      
+      <div className="mt-4 text-xs text-gray-500">
+        <p>Transform your politeness into comedic fury!</p>
       </div>
     </footer>
   );

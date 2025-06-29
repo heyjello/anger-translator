@@ -232,6 +232,55 @@ class OpenRouterService {
   }
 
   /**
+   * Analyze input text to extract key traits and context
+   */
+  private analyzeInputTraits(text: string): {
+    topic: string;
+    tone: string;
+    urgency: string;
+    context: string;
+    keywords: string[];
+  } {
+    const lowerText = text.toLowerCase();
+    
+    // Extract topic/subject
+    let topic = 'general request';
+    if (lowerText.includes('meeting') || lowerText.includes('schedule')) topic = 'meeting/scheduling';
+    if (lowerText.includes('document') || lowerText.includes('report') || lowerText.includes('file')) topic = 'document/report';
+    if (lowerText.includes('email') || lowerText.includes('message')) topic = 'communication';
+    if (lowerText.includes('project') || lowerText.includes('task')) topic = 'project/task';
+    if (lowerText.includes('help') || lowerText.includes('assist')) topic = 'assistance request';
+    if (lowerText.includes('review') || lowerText.includes('check')) topic = 'review/feedback';
+    if (lowerText.includes('fix') || lowerText.includes('problem') || lowerText.includes('issue')) topic = 'problem/issue';
+    
+    // Detect tone
+    let tone = 'neutral';
+    if (lowerText.includes('please') || lowerText.includes('thank')) tone = 'polite';
+    if (lowerText.includes('urgent') || lowerText.includes('asap') || lowerText.includes('immediately')) tone = 'urgent';
+    if (lowerText.includes('when you have time') || lowerText.includes('no rush')) tone = 'casual';
+    
+    // Detect urgency level
+    let urgency = 'normal';
+    if (lowerText.includes('urgent') || lowerText.includes('asap') || lowerText.includes('immediately') || lowerText.includes('deadline')) urgency = 'high';
+    if (lowerText.includes('when you can') || lowerText.includes('no rush') || lowerText.includes('whenever')) urgency = 'low';
+    
+    // Extract context
+    let context = 'workplace';
+    if (lowerText.includes('game') || lowerText.includes('play') || lowerText.includes('match')) context = 'gaming';
+    if (lowerText.includes('school') || lowerText.includes('homework') || lowerText.includes('assignment')) context = 'academic';
+    if (lowerText.includes('family') || lowerText.includes('friend') || lowerText.includes('personal')) context = 'personal';
+    
+    // Extract key action words
+    const keywords = [];
+    const actionWords = ['fix', 'help', 'review', 'check', 'send', 'update', 'complete', 'finish', 'start', 'stop', 'change', 'improve'];
+    actionWords.forEach(word => {
+      if (lowerText.includes(word)) keywords.push(word);
+    });
+    
+    return { topic, tone, urgency, context, keywords };
+  }
+
+  /**
    * Make a request to OpenRouter API
    */
   private async makeRequest(request: OpenRouterRequest): Promise<OpenRouterResponse> {
@@ -279,7 +328,7 @@ class OpenRouterService {
   }
 
   /**
-   * Generate a rage translation using AI (optimized for Mixtral)
+   * Generate a rage translation using AI with input blending (optimized for Mixtral)
    */
   async translateText(
     text: string, 
@@ -290,8 +339,12 @@ class OpenRouterService {
       throw new Error('OpenRouter API key not configured. Please set up your API key from https://openrouter.ai/keys');
     }
 
-    const systemPrompt = this.buildMixtralOptimizedPrompt(style, intensity);
-    const userPrompt = `Transform this polite message into a ${style} rage response at intensity level ${intensity}/10: "${text}"`;
+    // Analyze input to extract traits and context
+    const traits = this.analyzeInputTraits(text);
+    console.log('🔍 Input analysis:', traits);
+
+    const systemPrompt = this.buildBlendedPrompt(style, intensity, traits);
+    const userPrompt = `Create a ${style} rage response about ${traits.topic} with ${traits.urgency} urgency in a ${traits.context} context. The response should reflect someone who is frustrated about ${traits.keywords.join(', ') || 'the situation'}.`;
 
     // Optimized parameters for Mixtral
     const request: OpenRouterRequest = {
@@ -300,10 +353,10 @@ class OpenRouterService {
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt }
       ],
-      max_tokens: 400, // Increased for Mixtral's longer context
-      temperature: 0.8, // Good balance for creative but controlled output
+      max_tokens: 400,
+      temperature: 0.85, // Slightly higher for more creative blending
       top_p: 0.9,
-      frequency_penalty: 0.1,
+      frequency_penalty: 0.2, // Encourage variety
       presence_penalty: 0.1
     };
 
@@ -315,7 +368,7 @@ class OpenRouterService {
         throw new Error('No content received from AI model');
       }
 
-      console.log('🎭 Translation generated successfully');
+      console.log('🎭 Blended translation generated successfully');
       return content.trim();
     } catch (error) {
       console.error('❌ Translation failed:', error);
@@ -324,61 +377,63 @@ class OpenRouterService {
   }
 
   /**
-   * Build system prompt optimized for Mixtral's instruction-following capabilities
+   * Build system prompt for blended responses (optimized for Mixtral)
    */
-  private buildMixtralOptimizedPrompt(style: string, intensity: number): string {
-    const basePrompt = `You are a comedic rage translator. Your task is to transform polite messages into hilarious angry responses while keeping the core message intact.
+  private buildBlendedPrompt(
+    style: string, 
+    intensity: number, 
+    traits: { topic: string; tone: string; urgency: string; context: string; keywords: string[] }
+  ): string {
+    const basePrompt = `You are a comedic rage translator. Create hilarious angry responses that capture the essence and frustration of the situation WITHOUT directly quoting or repeating the original input.
 
 CRITICAL INSTRUCTIONS:
-- Transform the tone completely while preserving the original meaning
-- Make it funny and over-the-top, never genuinely offensive or harmful
-- Use appropriate language for the chosen style
-- Match the exact intensity level requested (1-10 scale)
+- NEVER repeat or quote the original text
+- Blend the meaning and context into a natural rage response
+- Make it funny and over-the-top, never genuinely offensive
+- Create original content that feels authentic to the situation
+- Focus on the emotional response someone would have
 - Keep responses under 200 words
-- Focus on entertainment value, not actual anger
-- Avoid genuinely hurtful or discriminatory content`;
+- Make it entertaining, not actually hurtful`;
 
     const styleInstructions = {
       corporate: `CORPORATE MELTDOWN STYLE:
-Transform into a passive-aggressive corporate email response. Use professional language with barely contained frustration.
+Create a passive-aggressive corporate response about ${traits.topic}. Channel the frustration of a professional dealing with ${traits.urgency} urgency situations.
 
-Key phrases to include:
-- "As per my previous email"
-- "Please advise"
-- "Moving forward"
-- "Per our discussion"
-- "I trust this clarifies"
-- Corporate buzzwords and formal language
+Essential elements:
+- "As per my previous email" energy
+- Professional language with barely contained rage
+- Corporate buzzwords and formal structure
+- Escalation through proper channels
+- Passive-aggressive politeness
 
-Make it sound like a professional who's reached their limit but must maintain workplace decorum.`,
+Context: ${traits.context} environment with ${traits.tone} original tone.`,
 
       gamer: `EPIC GAMER RAGE STYLE:
-Transform into an over-the-top gaming rage response. Use gaming terminology, internet slang, and strategic CAPS LOCK.
+Create an explosive gaming-style rant about ${traits.topic}. Channel the energy of someone who just experienced peak gaming frustration.
 
-Key expressions to include:
-- "BRUH"
-- "ARE YOU KIDDING ME"
-- "GET REKT"
-- "NOOB"
-- "THIS IS UNREAL"
-- Gaming references and internet culture
+Essential elements:
+- Strategic CAPS LOCK usage
+- Gaming terminology and internet slang
+- "BRUH" and "ARE YOU KIDDING ME" energy
+- References to skill levels and competition
+- Over-the-top dramatic reactions
 
-Make it sound like someone who just experienced the most frustrating gaming moment ever.`,
+Context: ${traits.context} situation with ${traits.urgency} pressure.`,
 
       sarcastic: `SARCASTIC ROAST STYLE:
-Transform into a witty, sarcastic response dripping with sophisticated irony. Use intelligent vocabulary with cutting wit.
+Create a witty, intellectually superior response about ${traits.topic}. Channel sophisticated frustration with cutting sarcasm.
 
-Key elements to include:
-- Backhanded compliments
-- Intellectual superiority tone
-- Sophisticated vocabulary
-- Irony and wit-based humor
-- Phrases that sound nice but are actually insulting
+Essential elements:
+- Backhanded compliments and irony
+- Sophisticated vocabulary with sharp wit
+- "How absolutely delightful" energy
+- Intellectual superiority complex
+- Elegant verbal destruction
 
-Make it sound like someone who's intellectually superior and uses wit as their weapon.`
+Context: ${traits.context} scenario requiring ${traits.urgency} attention.`
     };
 
-    const intensityGuidance = this.getMixtralIntensityGuidance(intensity);
+    const intensityGuidance = this.getBlendedIntensityGuidance(intensity, traits);
 
     return `${basePrompt}
 
@@ -387,18 +442,50 @@ ${styleInstructions[style as keyof typeof styleInstructions]}
 INTENSITY LEVEL: ${intensity}/10
 ${intensityGuidance}
 
-Remember: Your goal is comedy and entertainment, not genuine anger or offense.`;
+SITUATION ANALYSIS:
+- Topic: ${traits.topic}
+- Original tone: ${traits.tone}
+- Urgency: ${traits.urgency}
+- Context: ${traits.context}
+- Key frustrations: ${traits.keywords.join(', ') || 'general situation'}
+
+Create a response that someone would naturally have in this situation, not a translation of specific words.`;
   }
 
   /**
-   * Get intensity guidance optimized for Mixtral's understanding
+   * Get intensity guidance for blended responses
    */
-  private getMixtralIntensityGuidance(intensity: number): string {
-    if (intensity <= 2) return "VERY MILD: Keep it subtle with gentle frustration. Think 'slightly annoyed but polite.'";
-    if (intensity <= 4) return "MILD: Show clear frustration but remain relatively restrained. Think 'visibly annoyed but controlled.'";
-    if (intensity <= 6) return "MODERATE: Make it obviously frustrated with strong emphasis. Think 'clearly angry but not explosive.'";
-    if (intensity <= 8) return "HIGH: Make it quite intense and heated with dramatic language. Think 'very angry and showing it.'";
-    return "MAXIMUM: Make it absolutely explosive and over-the-top with maximum drama and intensity. Think 'nuclear meltdown level rage.'";
+  private getBlendedIntensityGuidance(
+    intensity: number, 
+    traits: { topic: string; tone: string; urgency: string; context: string; keywords: string[] }
+  ): string {
+    const baseGuidance = {
+      1: "Mild annoyance - subtle frustration with professional restraint",
+      2: "Light irritation - noticeable but controlled displeasure", 
+      3: "Clear frustration - obvious annoyance but still measured",
+      4: "Growing anger - frustration starting to show through",
+      5: "Moderate rage - clear anger with dramatic emphasis",
+      6: "High frustration - intense displeasure with strong language",
+      7: "Serious anger - heated response with dramatic flair",
+      8: "Intense fury - explosive reaction with maximum drama",
+      9: "Nuclear rage - absolutely over-the-top response",
+      10: "Apocalyptic meltdown - complete emotional explosion"
+    };
+
+    let guidance = baseGuidance[intensity as keyof typeof baseGuidance] || baseGuidance[5];
+
+    // Adjust based on context and urgency
+    if (traits.urgency === 'high' && intensity >= 6) {
+      guidance += " Amplify the urgency-driven frustration.";
+    }
+    if (traits.context === 'gaming' && intensity >= 7) {
+      guidance += " Channel peak gaming rage energy.";
+    }
+    if (traits.tone === 'polite' && intensity >= 5) {
+      guidance += " Contrast the original politeness with explosive frustration.";
+    }
+
+    return guidance;
   }
 
   /**

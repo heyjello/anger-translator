@@ -14,15 +14,15 @@ export interface TranslationResponse {
 const STYLE_PROMPTS = {
   corporate: {
     name: "Corporate Meltdown",
-    prompt: "Transform this polite message into a passive-aggressive corporate email response. Use professional language but with barely contained frustration. Include phrases like 'As per my previous email', 'Please advise', 'Moving forward', and corporate buzzwords. Make it sound like someone who's had enough but still needs to maintain professionalism."
+    prompt: "Create a passive-aggressive corporate response that captures workplace frustration. Use professional language but with barely contained rage. Include phrases like 'As per my previous email', 'Please advise', 'Moving forward', and corporate buzzwords. Make it sound like someone who's had enough but still needs to maintain professionalism."
   },
   gamer: {
     name: "Epic Gamer Rage",
-    prompt: "Transform this polite message into an over-the-top gamer rage response. Use gaming terminology, internet slang, and ALL CAPS for emphasis. Include words like 'BRUH', 'NOOB', 'GET REKT', 'ARE YOU KIDDING ME', and other gaming expressions. Make it sound like someone who just lost an important match."
+    prompt: "Create an over-the-top gamer rage response that captures gaming frustration. Use gaming terminology, internet slang, and ALL CAPS for emphasis. Include words like 'BRUH', 'NOOB', 'GET REKT', 'ARE YOU KIDDING ME', and other gaming expressions. Make it sound like someone who just lost an important match."
   },
   sarcastic: {
     name: "Sarcastic Roast",
-    prompt: "Transform this polite message into a witty, sarcastic response dripping with irony. Use sophisticated vocabulary mixed with cutting sarcasm. Include phrases that sound complimentary but are actually insulting. Make it sound like someone who's intellectually superior and isn't afraid to show it."
+    prompt: "Create a witty, sarcastic response dripping with irony that captures intellectual frustration. Use sophisticated vocabulary mixed with cutting sarcasm. Include phrases that sound complimentary but are actually insulting. Make it sound like someone who's intellectually superior and isn't afraid to show it."
   }
 };
 
@@ -34,31 +34,69 @@ const getIntensityModifier = (intensity: number): string => {
   return "Make it absolutely explosive and over-the-top with maximum intensity.";
 };
 
-// Mock translation for development (replace with real API)
+// Enhanced mock translation with input blending
 const mockTranslate = async (request: TranslationRequest): Promise<TranslationResponse> => {
   // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1200));
   
   const { text, style, intensity } = request;
+  
+  // Analyze input for context and traits
+  const analyzeInput = (text: string) => {
+    const lowerText = text.toLowerCase();
+    
+    // Detect topic/context
+    let context = 'general situation';
+    if (lowerText.includes('meeting')) context = 'meeting coordination';
+    if (lowerText.includes('document') || lowerText.includes('report')) context = 'document management';
+    if (lowerText.includes('help') || lowerText.includes('assist')) context = 'assistance request';
+    if (lowerText.includes('review') || lowerText.includes('check')) context = 'review process';
+    if (lowerText.includes('fix') || lowerText.includes('problem')) context = 'problem resolution';
+    if (lowerText.includes('email') || lowerText.includes('message')) context = 'communication';
+    
+    // Detect urgency
+    let urgency = 'normal';
+    if (lowerText.includes('urgent') || lowerText.includes('asap') || lowerText.includes('immediately')) urgency = 'urgent';
+    if (lowerText.includes('when you can') || lowerText.includes('no rush')) urgency = 'relaxed';
+    
+    return { context, urgency };
+  };
+  
+  const { context, urgency } = analyzeInput(text);
   const exclamationMarks = '!'.repeat(Math.max(1, Math.floor(intensity / 2)));
   
   let translatedText = '';
   
   switch (style) {
     case 'corporate':
-      translatedText = `AS PER MY PREVIOUS EMAIL... ${text.toUpperCase()}${exclamationMarks} I SHOULDN'T HAVE TO EXPLAIN THIS AGAIN BUT HERE WE ARE${exclamationMarks} PLEASE ADVISE HOW WE CAN MOVE FORWARD WITH SOME ACTUAL COMPETENCE${exclamationMarks} Looking forward to your prompt response.`;
+      const corporateResponses = [
+        `AS PER MY PREVIOUS EMAIL regarding ${context}${exclamationMarks} I SHOULDN'T HAVE TO EXPLAIN THIS AGAIN but here we are dealing with ${urgency} requests${exclamationMarks} PLEASE ADVISE how we can move forward with some actual competence${exclamationMarks} Looking forward to your prompt response.`,
+        `Per our discussion about ${context}, I find myself once again having to clarify what should be obvious${exclamationMarks} Moving forward, perhaps we could implement some basic communication protocols${exclamationMarks} I trust this clarifies the situation${exclamationMarks}`,
+        `I'm reaching out AGAIN about this ${context} matter${exclamationMarks} As previously discussed, this ${urgency} situation requires immediate attention${exclamationMarks} Please advise on next steps so we can actually make progress${exclamationMarks}`
+      ];
+      translatedText = corporateResponses[Math.floor(Math.random() * corporateResponses.length)];
       break;
       
     case 'gamer':
-      translatedText = `BRUH${exclamationMarks} ${text.toUpperCase()}${exclamationMarks} ARE YOU KIDDING ME RIGHT NOW${exclamationMarks} THIS IS ABSOLUTELY UNREAL${exclamationMarks} GET REKT AND LEARN TO PLAY${exclamationMarks} NOOB${exclamationMarks}`;
+      const gamerResponses = [
+        `BRUH${exclamationMarks} This ${context} situation is absolutely UNREAL${exclamationMarks} ARE YOU KIDDING ME with this ${urgency} nonsense${exclamationMarks} GET REKT and learn how to handle basic tasks${exclamationMarks} NOOB MOVE${exclamationMarks}`,
+        `ARE YOU SERIOUS RIGHT NOW${exclamationMarks} This ${context} thing is driving me INSANE${exclamationMarks} BRUH, how is this ${urgency} situation even happening${exclamationMarks} GET YOUR GAME TOGETHER${exclamationMarks}`,
+        `WHAT THE ACTUAL HECK${exclamationMarks} This ${context} mess is beyond frustrating${exclamationMarks} BRUH, I can't even deal with this ${urgency} chaos${exclamationMarks} TIME TO STEP UP YOUR GAME${exclamationMarks}`
+      ];
+      translatedText = gamerResponses[Math.floor(Math.random() * gamerResponses.length)];
       break;
       
     case 'sarcastic':
-      translatedText = `Oh WOW, "${text}" - how absolutely RIVETING${exclamationMarks} I'm just THRILLED to deal with this masterpiece of communication${exclamationMarks} Truly, your eloquence knows no bounds${exclamationMarks} What a delightful way to spend my time.`;
+      const sarcasticResponses = [
+        `Oh WOW, another ${context} situation${exclamationMarks} How absolutely RIVETING${exclamationMarks} I'm just THRILLED to deal with this ${urgency} masterpiece of communication${exclamationMarks} Truly, the efficiency here knows no bounds${exclamationMarks}`,
+        `How absolutely DELIGHTFUL${exclamationMarks} Another ${context} scenario that's clearly been handled with such remarkable competence${exclamationMarks} I'm just OVERJOYED by this ${urgency} display of organizational skills${exclamationMarks}`,
+        `Oh, MAGNIFICENT${exclamationMarks} This ${context} situation is exactly what I hoped to encounter today${exclamationMarks} Such a ${urgency} and well-thought-out approach${exclamationMarks} What a delightful way to spend my time${exclamationMarks}`
+      ];
+      translatedText = sarcasticResponses[Math.floor(Math.random() * sarcasticResponses.length)];
       break;
       
     default:
-      translatedText = text;
+      translatedText = `This ${context} situation is quite frustrating${exclamationMarks}`;
   }
   
   return {
@@ -74,21 +112,22 @@ const openAITranslate = async (request: TranslationRequest): Promise<Translation
     const styleConfig = STYLE_PROMPTS[style];
     const intensityModifier = getIntensityModifier(intensity);
     
-    const systemPrompt = `You are an expert at transforming polite messages into comedic rage responses. Your job is to take polite, professional text and convert it into humorous angry responses while maintaining the core message.
+    const systemPrompt = `You are an expert at creating comedic rage responses that capture the essence of frustration without directly quoting input text. Your job is to analyze the situation and create authentic angry responses.
 
 Style: ${styleConfig.name}
 Instructions: ${styleConfig.prompt}
 Intensity Level: ${intensity}/10 - ${intensityModifier}
 
 Rules:
-1. Keep the core message intact but transform the tone completely
-2. Make it funny and over-the-top, not genuinely offensive
-3. Use appropriate language for the chosen style
-4. Match the intensity level requested
-5. Keep it under 300 words
-6. Make it entertaining and comedic, not actually mean-spirited`;
+1. NEVER repeat or quote the original text
+2. Analyze the context and create a natural rage response
+3. Make it funny and over-the-top, not genuinely offensive
+4. Use appropriate language for the chosen style
+5. Match the intensity level requested
+6. Keep it under 300 words
+7. Make it entertaining and comedic, not actually mean-spirited`;
 
-    const userPrompt = `Transform this polite message: "${text}"`;
+    const userPrompt = `Analyze this situation and create a ${style} rage response: "${text}"`;
 
     // This would be the actual OpenAI API call
     // const response = await fetch('https://api.openai.com/v1/chat/completions', {

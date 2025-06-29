@@ -53,8 +53,8 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     }
   },
   karen: {
-    voice_id: "EXAVITQu4vr4xnSDxMaL", // Bella
-    name: "Bella",
+    voice_id: "opAH2ij5oCyMnsDUGrpR", // Custom Karen voice
+    name: "Karen",
     description: "Entitled suburban mom voice for Karen rants",
     voice_settings: {
       stability: 0.6,
@@ -257,7 +257,8 @@ export const ALL_VOICE_IDS = {
   rachel: "21m00Tcm4TlvDq8ikWAM",
   clyde: "2EiwWnXFnvU5JabPnv8n",
   bella: "EXAVITQu4vr4xnSDxMaL",
-  dorothy: "ThT5KcBeYPX3keUQqHPh"
+  dorothy: "ThT5KcBeYPX3keUQqHPh",
+  karen: "opAH2ij5oCyMnsDUGrpR"
 } as const;
 
 // Voice characteristics for UI display
@@ -291,5 +292,11 @@ export const VOICE_CHARACTERISTICS = {
     accent: 'British',
     age: 'Middle-aged',
     tone: 'Elegant, Refined'
+  },
+  [ALL_VOICE_IDS.karen]: {
+    gender: 'Female',
+    accent: 'American',
+    age: 'Middle-aged',
+    tone: 'Entitled, Demanding'
   }
 } as const;

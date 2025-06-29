@@ -55,6 +55,14 @@ const STYLE_OPTIONS: StyleOption[] = [
     description: 'Suburban entitlement',
     color: 'pink',
     glowColor: 'rgba(236, 72, 153, 0.3)'
+  },
+  {
+    id: 'scottish-dad',
+    name: 'Scottish Dad',
+    emoji: '🏴󠁧󠁢󠁳󠁣󠁴󠁿',
+    description: 'Glaswegian chaos',
+    color: 'orange',
+    glowColor: 'rgba(251, 146, 60, 0.3)'
   }
 ];
 
@@ -70,7 +78,7 @@ export const StyleSelector: React.FC<StyleSelectorProps> = ({
         Choose your rage style:
       </label>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
         {STYLE_OPTIONS.map((option) => (
           <button 
             key={option.id}

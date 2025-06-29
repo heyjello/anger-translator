@@ -1,13 +1,13 @@
 /**
  * OutputSection Component
  * 
- * Displays the translated text with action buttons for copy, clear, share, and TTS.
- * Handles loading states and provides visual feedback for user actions.
+ * Updated to include bleep testing functionality for debugging.
  */
 
 import React from 'react';
 import { Copy, Check, Share2 } from 'lucide-react';
 import { TTSButton } from '../ui/TTSButton';
+import { BleepTestButton } from '../ui/BleepTestButton';
 
 interface OutputSectionProps {
   outputText: string;
@@ -31,16 +31,23 @@ export const OutputSection: React.FC<OutputSectionProps> = ({
   translationStyle = 'default',
   rageLevel = 5
 }) => {
+  const hasBleeps = outputText.includes('**');
+
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between mb-4">
         <label className="block text-xl font-bold text-gray-100 flex items-center gap-2">
           <span className="text-2xl">💥</span>
           Your translated rage:
+          {hasBleeps && (
+            <span className="text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded border border-red-500/30">
+              Contains Bleeps
+            </span>
+          )}
         </label>
         {outputText && (
           <div className="flex items-center gap-2">
-            {/* Text-to-Speech Button */}
+            {/* Text-to-Speech Button with Bleep Support */}
             <TTSButton
               text={outputText}
               style={translationStyle}
@@ -99,6 +106,21 @@ export const OutputSection: React.FC<OutputSectionProps> = ({
             <div className="text-gray-100 font-bold text-lg leading-relaxed">
               {outputText}
             </div>
+            
+            {/* Bleep Testing Section (only show if there are bleeps) */}
+            {hasBleeps && (
+              <div className="mt-4 pt-4 border-t border-gray-600/30">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-gray-400">
+                    🔊 Bleep Testing:
+                  </span>
+                  <BleepTestButton 
+                    translatedText={outputText}
+                    className="flex-shrink-0"
+                  />
+                </div>
+              </div>
+            )}
           </div>
         ) : (
           <div className="text-gray-500 italic text-lg flex items-center justify-center h-28">

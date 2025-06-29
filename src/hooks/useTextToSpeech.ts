@@ -46,8 +46,9 @@ export const useTextToSpeech = (): UseTextToSpeechResult => {
       }
 
       console.log('🎤 Generating speech for:', text.substring(0, 50) + '...');
+      console.log(`🎭 Style: ${style}, Rage Level: ${rageLevel}`);
       
-      // Generate speech
+      // Generate speech with style and intensity
       const audioUrl = await elevenLabsService.generateSpeech(text, style, rageLevel);
       
       // Create and play audio

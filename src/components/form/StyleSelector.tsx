@@ -13,8 +13,8 @@ interface StyleOption {
   name: string;
   emoji: string;
   description: string;
-  gradient: string;
-  selectedGradient: string;
+  color: string;
+  glowColor: string;
 }
 
 interface StyleSelectorProps {
@@ -29,24 +29,24 @@ const STYLE_OPTIONS: StyleOption[] = [
     name: 'Corporate Meltdown',
     emoji: '💼',
     description: 'Professional fury',
-    gradient: 'from-blue-600 to-blue-700',
-    selectedGradient: 'from-blue-600 to-blue-700'
+    color: 'blue',
+    glowColor: 'rgba(59, 130, 246, 0.3)'
   },
   {
     id: 'gamer',
     name: 'Epic Gamer Rage',
     emoji: '🎮',
     description: 'CAPS LOCK FURY',
-    gradient: 'from-green-600 to-green-700',
-    selectedGradient: 'from-green-600 to-green-700'
+    color: 'green',
+    glowColor: 'rgba(34, 197, 94, 0.3)'
   },
   {
     id: 'sarcastic',
     name: 'Sarcastic Roast',
     emoji: '😏',
     description: 'Witty destruction',
-    gradient: 'from-purple-600 to-purple-700',
-    selectedGradient: 'from-purple-600 to-purple-700'
+    color: 'purple',
+    glowColor: 'rgba(147, 51, 234, 0.3)'
   }
 ];
 
@@ -57,7 +57,7 @@ export const StyleSelector: React.FC<StyleSelectorProps> = ({
 }) => {
   return (
     <div className="mb-8">
-      <label className="block text-xl font-bold text-gray-800 mb-4 flex items-center gap-2">
+      <label className="block text-xl font-bold text-gray-100 mb-4 flex items-center gap-2">
         <span className="text-2xl">🎭</span>
         Choose your rage style:
       </label>
@@ -68,21 +68,36 @@ export const StyleSelector: React.FC<StyleSelectorProps> = ({
             key={option.id}
             onClick={() => onStyleSelect(option.id)}
             disabled={isLoading}
-            className={`group relative py-6 px-6 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 hover:shadow-xl ${
+            className={`group relative py-6 px-6 rounded-xl font-bold text-lg transition-all duration-300 transform hover:scale-105 ${
               selectedStyle === option.id 
-                ? `bg-gradient-to-r ${option.selectedGradient} text-white shadow-lg ring-4 ring-${option.id === 'corporate' ? 'blue' : option.id === 'gamer' ? 'green' : 'purple'}-300/50` 
-                : 'bg-gradient-to-r from-gray-600 to-gray-700 text-white hover:from-gray-500 hover:to-gray-600 shadow-md'
+                ? `cyber-button selected text-${option.color}-400 border-${option.color}-500/80` 
+                : 'cyber-button text-gray-300 hover:text-gray-100'
             } ${isLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+            style={{
+              boxShadow: selectedStyle === option.id 
+                ? `0 0 30px ${option.glowColor}, inset 0 0 20px ${option.glowColor}` 
+                : undefined
+            }}
             aria-pressed={selectedStyle === option.id}
             aria-label={`Select ${option.name} style`}
           >
             <div className="flex flex-col items-center gap-2">
-              <span className="text-3xl" role="img" aria-label={option.name}>
+              <span className="text-3xl filter drop-shadow-lg" role="img" aria-label={option.name}>
                 {option.emoji}
               </span>
-              <span>{option.name}</span>
+              <span className={selectedStyle === option.id ? `neon-${option.color}` : ''}>{option.name}</span>
               <span className="text-sm opacity-80 font-normal">{option.description}</span>
             </div>
+            
+            {/* Glow effect overlay */}
+            {selectedStyle === option.id && (
+              <div 
+                className="absolute inset-0 rounded-xl opacity-20 animate-pulse"
+                style={{
+                  background: `linear-gradient(45deg, ${option.glowColor}, transparent)`
+                }}
+              />
+            )}
           </button>
         ))}
       </div>

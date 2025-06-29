@@ -40,14 +40,14 @@ export const InputSection: React.FC<InputSectionProps> = ({
 
   const getCharacterCountColor = () => {
     const percentage = (value.length / maxChars) * 100;
-    if (percentage >= 90) return 'text-red-500 font-bold';
-    if (percentage >= 75) return 'text-orange-500 font-semibold';
+    if (percentage >= 90) return 'text-red-400 font-bold neon-red';
+    if (percentage >= 75) return 'text-orange-400 font-semibold';
     return 'text-gray-400';
   };
 
   return (
     <div className="mb-8">
-      <label className="block text-xl font-bold text-gray-800 mb-3 flex items-center gap-2">
+      <label className="block text-xl font-bold text-gray-100 mb-3 flex items-center gap-2">
         <span className="text-2xl">💬</span>
         Enter your polite message:
       </label>
@@ -56,10 +56,10 @@ export const InputSection: React.FC<InputSectionProps> = ({
         <textarea
           value={value}
           onChange={handleInputChange}
-          className={`w-full h-36 p-6 border-2 rounded-xl resize-none focus:ring-4 transition-all duration-300 text-lg placeholder-gray-400 shadow-inner bg-gradient-to-br from-gray-50 to-white ${
+          className={`w-full h-36 p-6 border-2 rounded-xl resize-none focus:ring-4 transition-all duration-300 text-lg placeholder-gray-500 bg-[#0a0f1b] text-gray-100 ${
             error 
-              ? 'border-red-300 focus:border-red-500 focus:ring-red-500/30' 
-              : 'border-gray-200 focus:border-blue-500 focus:ring-blue-500/30'
+              ? 'border-red-500/50 focus:border-red-500 focus:ring-red-500/30 focus:shadow-[0_0_20px_rgba(239,68,68,0.3)]' 
+              : 'border-[#1e293b] focus:border-blue-500 focus:ring-blue-500/30 focus:shadow-[0_0_20px_rgba(59,130,246,0.3)]'
           }`}
           placeholder={placeholder}
           disabled={isLoading}
@@ -72,7 +72,7 @@ export const InputSection: React.FC<InputSectionProps> = ({
       
       {/* Error Message */}
       {error && (
-        <div id="input-error" className="mt-3 flex items-center gap-2 text-red-600 bg-red-50 border border-red-200 rounded-lg p-3 animate-slide-in">
+        <div id="input-error" className="mt-3 flex items-center gap-2 text-red-400 bg-red-500/10 border border-red-500/30 rounded-lg p-3 animate-slide-in">
           <AlertCircle size={18} />
           <span className="font-medium">{error}</span>
         </div>

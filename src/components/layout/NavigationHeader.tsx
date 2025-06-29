@@ -25,19 +25,19 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
 }) => {
   return (
     <header className="text-center mb-8 animate-fade-in">
-      <h1 className="text-5xl md:text-7xl font-black text-white drop-shadow-2xl mb-4 bg-gradient-to-r from-yellow-400 via-red-500 to-pink-500 bg-clip-text text-transparent">
+      <h1 className="text-5xl md:text-7xl font-black text-white drop-shadow-2xl mb-4 animate-neon-glow">
         Anger Translator 🔥
       </h1>
-      <p className="text-xl md:text-2xl text-white/90 font-medium drop-shadow-lg">
+      <p className="text-xl md:text-2xl text-gray-300 font-medium drop-shadow-lg">
         Turn your polite words into comedic rage
       </p>
       
       <div className="mt-4 flex justify-center">
-        <div className="bg-white/20 backdrop-blur-sm rounded-full px-6 py-2 border border-white/30">
-          <span className="text-white/80 text-sm font-medium flex items-center gap-2">
-            <Zap size={16} className="text-yellow-300" />
+        <div className="glass rounded-full px-6 py-2 border border-[#1e293b]/50 animate-cyber-pulse">
+          <span className="text-gray-300 text-sm font-medium flex items-center gap-2">
+            <Zap size={16} className="text-blue-400 animate-pulse" />
             Powered by AI Magic
-            <Zap size={16} className="text-yellow-300" />
+            <Zap size={16} className="text-blue-400 animate-pulse" />
           </span>
         </div>
       </div>
@@ -48,8 +48,8 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
           onClick={onToggleHistory}
           className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-300 ${
             showHistory 
-              ? 'bg-white text-purple-600 shadow-lg' 
-              : 'bg-white/20 text-white hover:bg-white/30'
+              ? 'bg-blue-500/20 text-blue-400 border border-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.3)]' 
+              : 'glass text-gray-300 hover:text-blue-400 hover:border-blue-500/30'
           }`}
           aria-pressed={showHistory}
           aria-label={`${showHistory ? 'Hide' : 'Show'} translation history`}
@@ -61,8 +61,8 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
           onClick={onToggleStats}
           className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-300 ${
             showStats 
-              ? 'bg-white text-purple-600 shadow-lg' 
-              : 'bg-white/20 text-white hover:bg-white/30'
+              ? 'bg-purple-500/20 text-purple-400 border border-purple-500/50 shadow-[0_0_20px_rgba(147,51,234,0.3)]' 
+              : 'glass text-gray-300 hover:text-purple-400 hover:border-purple-500/30'
           }`}
           aria-pressed={showStats}
           aria-label={`${showStats ? 'Hide' : 'Show'} statistics`}

@@ -28,7 +28,7 @@ export const OutputSection: React.FC<OutputSectionProps> = ({
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between mb-4">
-        <label className="block text-xl font-bold text-gray-800 flex items-center gap-2">
+        <label className="block text-xl font-bold text-gray-100 flex items-center gap-2">
           <span className="text-2xl">💥</span>
           Your translated rage:
         </label>
@@ -36,7 +36,7 @@ export const OutputSection: React.FC<OutputSectionProps> = ({
           <div className="flex items-center gap-2">
             <button
               onClick={onShare}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-blue-600 hover:text-blue-800 hover:bg-blue-100 transition-all duration-300"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 transition-all duration-300 border border-transparent hover:border-blue-500/30"
               aria-label="Share translation"
             >
               <Share2 size={16} />
@@ -44,17 +44,17 @@ export const OutputSection: React.FC<OutputSectionProps> = ({
             </button>
             <button
               onClick={onClear}
-              className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-all duration-300"
+              className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-gray-400 hover:text-gray-300 hover:bg-gray-500/10 transition-all duration-300 border border-transparent hover:border-gray-500/30"
               aria-label="Clear output"
             >
               Clear
             </button>
             <button
               onClick={onCopy}
-              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105 border-2 ${
                 isCopied
-                  ? 'bg-green-100 text-green-700 border-2 border-green-300'
-                  : 'bg-blue-100 text-blue-700 border-2 border-blue-300 hover:bg-blue-200 hover:border-blue-400'
+                  ? 'bg-green-500/20 text-green-400 border-green-500/50 shadow-[0_0_20px_rgba(34,197,94,0.3)]'
+                  : 'bg-blue-500/20 text-blue-400 border-blue-500/50 hover:bg-blue-500/30 hover:border-blue-500/70 hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]'
               }`}
               aria-label={isCopied ? 'Copied!' : 'Copy to clipboard'}
             >
@@ -76,12 +76,12 @@ export const OutputSection: React.FC<OutputSectionProps> = ({
       
       <div className={`w-full min-h-40 p-6 rounded-xl border-2 transition-all duration-500 ${
         outputText 
-          ? 'bg-gradient-to-br from-red-50 to-orange-50 border-red-200 shadow-lg' 
-          : 'bg-gradient-to-br from-gray-50 to-gray-100 border-gray-200 shadow-inner'
+          ? 'bg-gradient-to-br from-red-500/10 to-orange-500/10 border-red-500/30 shadow-[0_0_30px_rgba(239,68,68,0.15)]' 
+          : 'bg-[#0a0f1b]/50 border-[#1e293b] shadow-inner'
       }`}>
         {outputText ? (
           <div className="animate-slide-in">
-            <div className="text-gray-800 font-bold text-lg leading-relaxed">
+            <div className="text-gray-100 font-bold text-lg leading-relaxed">
               {outputText}
             </div>
           </div>
@@ -89,7 +89,7 @@ export const OutputSection: React.FC<OutputSectionProps> = ({
           <div className="text-gray-500 italic text-lg flex items-center justify-center h-28">
             {isLoading ? (
               <span className="flex items-center gap-3">
-                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-gray-500"></div>
+                <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-blue-400"></div>
                 Translating your rage...
               </span>
             ) : (

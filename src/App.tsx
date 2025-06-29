@@ -205,7 +205,7 @@ function App() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-br from-blue-500 via-purple-600 to-red-500 relative overflow-hidden">
+    <div className="w-full min-h-screen bg-gradient-to-br from-[#0f1724] via-[#0a0f1b] to-[#030712] animate-gradient-shift relative overflow-hidden">
       {/* Animated background elements */}
       <BackgroundAnimation />
 
@@ -259,7 +259,7 @@ function App() {
         )}
 
         {/* Main Content */}
-        <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl border border-white/20 p-6 md:p-8 max-w-7xl mx-auto">
+        <div className="cyber-card rounded-2xl shadow-cyber p-6 md:p-8 max-w-7xl mx-auto hover:shadow-[0_0_50px_rgba(59,130,246,0.15)]">
           
           {/* Rate Limit Warning */}
           {isRateLimited && (

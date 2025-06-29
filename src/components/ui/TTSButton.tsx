@@ -1,8 +1,8 @@
 /**
- * TTSButton Component
+ * Text-to-Speech Button Component
  * 
- * Text-to-Speech button that integrates with ElevenLabs service.
- * Provides audio playback of translated text with style-specific voices.
+ * Provides audio playback functionality for translated text using ElevenLabs.
+ * Integrates with the translation style and rage level for appropriate voice synthesis.
  */
 
 import React from 'react';
@@ -10,7 +10,7 @@ import { Volume2, VolumeX, Loader2 } from 'lucide-react';
 import { useTextToSpeech } from '../../hooks/useTextToSpeech';
 import { cn } from '../../lib/utils';
 
-interface TTSButtonProps {
+export interface TTSButtonProps {
   text: string;
   style?: string;
   rageLevel?: number;
@@ -31,10 +31,15 @@ export const TTSButton: React.FC<TTSButtonProps> = ({
 }) => {
   const { speak, isLoading, isPlaying, error, isAvailable, stop, clearError } = useTextToSpeech();
 
+  // Don't render if TTS is not available
+  if (!isAvailable) {
+    return null;
+  }
+
   const handleClick = async () => {
     if (isPlaying) {
       stop();
-    } else {
+    } else if (text.trim()) {
       clearError();
       await speak(text, style, rageLevel);
     }
@@ -42,74 +47,73 @@ export const TTSButton: React.FC<TTSButtonProps> = ({
 
   const getSizeClasses = () => {
     switch (size) {
-      case 'sm': return 'p-1.5';
-      case 'lg': return 'p-3';
-      default: return 'p-2';
+      case 'sm':
+        return 'p-1.5 text-sm';
+      case 'lg':
+        return 'p-3 text-lg';
+      default:
+        return 'p-2 text-base';
     }
   };
 
   const getVariantClasses = () => {
     switch (variant) {
       case 'outline':
-        return 'border border-gray-500/50 hover:border-blue-500/50 bg-transparent hover:bg-blue-500/10';
+        return 'border border-gray-500/30 hover:border-blue-500/50 bg-transparent hover:bg-blue-500/10';
       case 'ghost':
-        return 'hover:bg-gray-500/10';
+        return 'bg-transparent hover:bg-blue-500/10';
       default:
         return 'bg-blue-500/20 hover:bg-blue-500/30 border border-blue-500/30 hover:border-blue-500/50';
     }
   };
 
-  const getIconSize = () => {
-    switch (size) {
-      case 'sm': return 14;
-      case 'lg': return 20;
-      default: return 16;
+  const buttonClasses = cn(
+    'flex items-center gap-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105',
+    'text-blue-400 hover:text-blue-300',
+    'hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]',
+    'disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none',
+    getSizeClasses(),
+    getVariantClasses(),
+    className
+  );
+
+  const getIcon = () => {
+    if (isLoading) {
+      return <Loader2 size={16} className="animate-spin" />;
     }
+    if (isPlaying) {
+      return <VolumeX size={16} />;
+    }
+    return <Volume2 size={16} />;
   };
 
-  // Don't render if TTS is not available
-  if (!isAvailable) {
-    return null;
-  }
+  const getButtonText = () => {
+    if (isLoading) return 'Generating...';
+    if (isPlaying) return 'Stop';
+    return 'Listen';
+  };
 
   return (
-    <div className="relative">
+    <div className="flex flex-col gap-1">
       <button
         onClick={handleClick}
         disabled={disabled || isLoading || !text.trim()}
-        className={cn(
-          'flex items-center gap-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105',
-          getSizeClasses(),
-          getVariantClasses(),
-          isPlaying ? 'text-green-400 shadow-[0_0_20px_rgba(34,197,94,0.3)]' : 'text-blue-400',
-          (disabled || isLoading || !text.trim()) && 'opacity-50 cursor-not-allowed',
-          className
-        )}
-        aria-label={isPlaying ? 'Stop speech' : 'Play speech'}
-        title={isPlaying ? 'Stop speech' : `Listen to translation (${style} voice)`}
+        className={buttonClasses}
+        aria-label={isPlaying ? 'Stop audio' : 'Play audio'}
+        title={`Listen to translation with ${style} voice at rage level ${rageLevel}`}
       >
-        {isLoading ? (
-          <Loader2 size={getIconSize()} className="animate-spin" />
-        ) : isPlaying ? (
-          <VolumeX size={getIconSize()} />
-        ) : (
-          <Volume2 size={getIconSize()} />
-        )}
-        
-        {size !== 'sm' && (
-          <span className="text-sm">
-            {isLoading ? 'Generating...' : isPlaying ? 'Stop' : 'Listen'}
-          </span>
-        )}
+        {getIcon()}
+        <span>{getButtonText()}</span>
       </button>
-
-      {/* Error tooltip */}
+      
+      {/* Error Display */}
       {error && (
-        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-red-500/90 text-white text-xs rounded-lg whitespace-nowrap z-50">
+        <div className="text-xs text-red-400 bg-red-500/10 border border-red-500/30 rounded px-2 py-1 animate-slide-in">
           {error}
-          <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-red-500/90"></div>
         </div>
       )}
     </div>
   );
 };
+
+export default TTSButton;

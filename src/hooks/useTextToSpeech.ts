@@ -24,7 +24,7 @@ export const useTextToSpeech = (): UseTextToSpeechResult => {
   const [error, setError] = useState<string | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
-  const speak = useCallback(async (text: string, style: string = 'default', rageLevel: number = 5) => {
+  const speak = useCallback(async (text: string, style: string = 'corporate', rageLevel: number = 5) => {
     if (!elevenLabsService.isConfigured()) {
       setError('Text-to-speech not configured. Please set up ElevenLabs API key.');
       return;

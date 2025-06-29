@@ -68,6 +68,13 @@ export class ElevenLabsService {
   }
 
   /**
+   * Alternative method name for backward compatibility
+   */
+  isReady(): boolean {
+    return this.isConfigured();
+  }
+
+  /**
    * Get current configuration status
    */
   getStatus(): { configured: boolean; hasApiKey: boolean } {

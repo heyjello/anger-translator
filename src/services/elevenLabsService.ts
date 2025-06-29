@@ -117,7 +117,7 @@ export class ElevenLabsService {
     const response = await fetch(`${this.config.baseUrl}/text-to-speech/${request.voice_id}`, {
       method: 'POST',
       headers: {
-        'Accept': 'audio/mpeg',
+        'Accept': 'audio/mp3',
         'Content-Type': 'application/json',
         'xi-api-key': this.config.apiKey
       },
@@ -178,7 +178,7 @@ export class ElevenLabsService {
       {
         method: 'POST',
         headers: {
-          'Accept': 'audio/mpeg',
+          'Accept': 'audio/mp3',
           'Content-Type': 'application/json',
           'xi-api-key': this.config.apiKey
         },
@@ -272,7 +272,7 @@ export class ElevenLabsService {
       const audioBuffer = await this.makeRequest(request);
       
       // Convert to blob URL
-      const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
+      const audioBlob = new Blob([audioBuffer], { type: 'audio/mp3' });
       const audioUrl = URL.createObjectURL(audioBlob);
       
       // Cache the result

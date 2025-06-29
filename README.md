@@ -1,6 +1,6 @@
 # Anger Translator 🔥
 
-A modern React-based web application that transforms polite messages into comedic rage responses using AI-powered translation. Features multiple rage styles, real-time AI integration via OpenRouter, and a comprehensive user experience.
+A modern React-based web application that transforms polite messages into comedic rage responses using AI-powered translation. Features multiple rage styles, real-time AI integration via OpenRouter, text-to-speech with ElevenLabs, and a comprehensive user experience.
 
 ## 🚀 Features
 
@@ -13,6 +13,12 @@ A modern React-based web application that transforms polite messages into comedi
   - 🎮 **Epic Gamer Rage**: Over-the-top gaming terminology with CAPS LOCK
   - 😏 **Sarcastic Roast**: Witty, intellectually superior responses
 - **Dynamic Intensity Control**: 10-level rage slider with visual feedback
+
+### Text-to-Speech Integration
+- **ElevenLabs TTS**: High-quality voice synthesis for translated text
+- **Style-Matched Voices**: Different voices for each rage style
+- **Rage-Adjusted Settings**: Voice parameters adjust based on intensity level
+- **Smart Text Processing**: Optimized for dramatic speech delivery
 
 ### AI Integration
 - **OpenRouter Service**: Access to multiple AI models through unified API
@@ -27,6 +33,7 @@ A modern React-based web application that transforms polite messages into comedi
 - **Translation History**: Session-based storage with copy, share, and reuse
 - **Usage Statistics**: Analytics dashboard showing patterns and preferences
 - **Responsive Design**: Mobile-first approach with cross-device compatibility
+- **Dark Cyberpunk Theme**: Modern developer tool aesthetic
 
 ## 🛠️ Technology Stack
 
@@ -34,6 +41,7 @@ A modern React-based web application that transforms polite messages into comedi
 - **Styling**: Tailwind CSS with custom animations
 - **UI Components**: Shadcn/ui library
 - **AI Service**: OpenRouter API integration (optimized for Mixtral)
+- **Text-to-Speech**: ElevenLabs API integration
 - **Build Tool**: Vite
 - **Icons**: Lucide React
 
@@ -43,6 +51,7 @@ A modern React-based web application that transforms polite messages into comedi
 - Node.js 18+ 
 - npm or yarn
 - OpenRouter API key (optional, for AI features)
+- ElevenLabs API key (optional, for text-to-speech)
 
 ### Installation
 
@@ -57,16 +66,27 @@ A modern React-based web application that transforms polite messages into comedi
    npm install
    ```
 
-3. **Start development server**
+3. **Configure environment variables**
+   ```bash
+   # Copy the example file
+   cp .env.example .env
+   
+   # Edit .env with your API keys
+   VITE_OPENROUTER_API_KEY=your_openrouter_key_here
+   VITE_ELEVENLABS_API_KEY=your_elevenlabs_key_here
+   ```
+
+4. **Start development server**
    ```bash
    npm run dev
    ```
 
-4. **Open in browser**
+5. **Open in browser**
    Navigate to `http://localhost:5173`
 
-### AI Configuration (Recommended for Mixtral)
+### API Configuration
 
+#### OpenRouter (AI Translation)
 1. **Get OpenRouter API Key**
    - Visit [OpenRouter.ai](https://openrouter.ai)
    - Sign up and get your API key
@@ -78,15 +98,15 @@ A modern React-based web application that transforms polite messages into comedi
    - Select "Mixtral 8x7B Instruct" (recommended and pre-optimized)
    - Test the connection
 
-3. **Environment Variables** (Production)
-   ```bash
-   # Copy the example file
-   cp .env.example .env
-   
-   # Edit .env with your settings
-   VITE_OPENROUTER_API_KEY=your_api_key_here
-   VITE_OPENROUTER_MODEL=mistralai/mixtral-8x7b-instruct
-   ```
+#### ElevenLabs (Text-to-Speech)
+1. **Get ElevenLabs API Key**
+   - Visit [ElevenLabs.io](https://elevenlabs.io/)
+   - Sign up and get your API key
+   - Keys are found in your profile settings
+
+2. **Configure in Environment**
+   - Add `VITE_ELEVENLABS_API_KEY=your_key_here` to `.env`
+   - The app will automatically detect and enable TTS features
 
 ## 🎯 Usage
 
@@ -95,7 +115,13 @@ A modern React-based web application that transforms polite messages into comedi
 2. Choose a rage style (Corporate, Gamer, or Sarcastic)
 3. Adjust the rage level (1-10)
 4. Click "TRANSLATE MY RAGE"
-5. Copy, share, or reuse your translation
+5. Copy, share, listen to, or reuse your translation
+
+### Text-to-Speech Features
+- **Listen Button**: Click the speaker icon to hear your translation
+- **Style-Matched Voices**: Each rage style uses an appropriate voice
+- **Intensity Adjustment**: Higher rage levels affect speech delivery
+- **Smart Processing**: Text is optimized for dramatic speech synthesis
 
 ### AI Features
 - **AI Toggle**: Switch between AI and mock translation
@@ -120,17 +146,18 @@ A modern React-based web application that transforms polite messages into comedi
 | GPT-4o | Most capable | $0.005 | ⚡ | |
 | Llama 3.1 8B | Free open-source | Free | ⚡⚡ | ⭐ |
 
-### Mixtral-8x7b-instruct Optimization
+### Voice Configurations
 
-This app is specifically optimized for Mixtral with:
-- **Enhanced Prompts**: Instruction-following prompts tailored for Mixtral
-- **Optimal Parameters**: Temperature, top_p, and token limits tuned for best results
-- **Creative Focus**: Leverages Mixtral's strengths in creative and humorous text generation
-- **Intensity Scaling**: Sophisticated intensity guidance that Mixtral understands well
+| Style | Voice | Description | Characteristics |
+|-------|-------|-------------|----------------|
+| Corporate | Bella | Professional female | Stable, clear, authoritative |
+| Gamer | Adam | Energetic male | Dynamic, expressive, intense |
+| Sarcastic | Dorothy | Sophisticated female | Refined, witty, controlled |
 
 ### Rate Limiting
 - **Mock Service**: 10 requests per minute
 - **AI Service**: Based on OpenRouter limits
+- **TTS Service**: Based on ElevenLabs limits
 - **Automatic Cooldown**: Visual feedback during rate limits
 
 ## 📁 Project Structure
@@ -141,11 +168,14 @@ src/
 │   ├── form/           # Form-related components
 │   ├── display/        # Display components
 │   ├── layout/         # Layout components
-│   └── ui/             # Base UI components
+│   └── ui/             # Base UI components (including TTSButton)
 ├── hooks/              # Custom React hooks
+│   ├── useEnhancedTranslation.ts  # AI translation hook
+│   └── useTextToSpeech.ts         # TTS functionality hook
 ├── services/           # API and external services
 │   ├── translationService.ts      # Mock translation
-│   ├── openRouterService.ts       # OpenRouter AI integration (Mixtral optimized)
+│   ├── openRouterService.ts       # OpenRouter AI integration
+│   ├── elevenLabsService.ts       # ElevenLabs TTS integration
 │   └── enhancedTranslationService.ts # Combined service
 ├── types/              # TypeScript definitions
 └── App.tsx            # Main application
@@ -158,11 +188,17 @@ src/
 2. Add style configuration in translation services
 3. Update `StyleSelector` component
 4. Add style-specific prompts for AI
+5. Configure voice in `elevenLabsService.ts`
 
 ### Custom AI Models
 1. Add model to `AVAILABLE_MODELS` in `openRouterService.ts`
 2. Update model selection UI
 3. Configure model-specific parameters
+
+### Custom Voices
+1. Add voice configuration to `VOICE_CONFIGS` in `elevenLabsService.ts`
+2. Update voice selection logic
+3. Test voice settings for different rage levels
 
 ## 🔒 Security & Privacy
 
@@ -170,12 +206,14 @@ src/
 - **Data Privacy**: No translation data stored on external servers
 - **Rate Limiting**: Built-in protection against abuse
 - **Input Sanitization**: Validation and sanitization of user inputs
+- **Audio Cleanup**: Automatic cleanup of generated audio files
 
 ## 📊 Performance
 
 - **Bundle Size**: ~450KB (gzipped: ~120KB)
 - **First Contentful Paint**: ~1.2s
 - **AI Response Time**: 1-3 seconds (varies by model)
+- **TTS Generation**: 2-5 seconds (varies by text length)
 - **Mock Response Time**: 0.8-2s (simulated)
 - **Mixtral Performance**: Optimized for fast, high-quality responses
 
@@ -193,6 +231,7 @@ src/
 - Add proper error handling
 - Include comprehensive documentation
 - Test with both AI and mock services
+- Test TTS functionality with different voices
 
 ## 📝 License
 
@@ -202,6 +241,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **OpenRouter**: For providing unified AI model access
 - **Mixtral**: For excellent instruction-following capabilities
+- **ElevenLabs**: For high-quality text-to-speech synthesis
 - **Shadcn/ui**: For beautiful, accessible UI components
 - **Tailwind CSS**: For utility-first styling
 - **Lucide React**: For consistent iconography
@@ -217,6 +257,7 @@ For issues, feature requests, or questions:
 
 ### v1.1.0 (Next Release)
 - [ ] Enhanced Mixtral prompt optimization
+- [ ] Voice customization options
 - [ ] Usage analytics and cost tracking
 - [ ] Improved error handling
 - [ ] Performance optimizations
@@ -225,17 +266,19 @@ For issues, feature requests, or questions:
 - [ ] User authentication
 - [ ] Cloud storage for history
 - [ ] Custom rage style creation
-- [ ] Voice input/output
+- [ ] Voice cloning integration
+- [ ] Multi-language TTS support
 
 ### v2.0.0 (Long-term)
 - [ ] Mobile app companion
 - [ ] Real-time collaboration
 - [ ] Multi-language support
 - [ ] Enterprise features
+- [ ] Advanced voice effects
 
 ---
 
 **Built with ❤️ and a lot of rage** 🔥  
-**Powered by Mixtral-8x7b-instruct** 🤖
+**Powered by Mixtral-8x7b-instruct & ElevenLabs** 🤖🎤
 
-*Transform your politeness into comedic fury!*
+*Transform your politeness into comedic fury and hear it come to life!*

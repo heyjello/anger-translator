@@ -316,7 +316,7 @@ function App() {
             validationMessage={getValidationMessage()}
           />
 
-          {/* Output Area */}
+          {/* Output Area with TTS */}
           <OutputSection
             outputText={outputText}
             onCopy={() => handleCopyToClipboard()}
@@ -324,6 +324,8 @@ function App() {
             onShare={handleShare}
             isCopied={isCopied}
             isLoading={isLoading}
+            translationStyle={selectedStyle}
+            rageLevel={rageLevel}
           />
 
         </div>

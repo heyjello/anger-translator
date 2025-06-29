@@ -1,12 +1,13 @@
 /**
  * OutputSection Component
  * 
- * Displays the translated text with action buttons for copy, clear, and share.
+ * Displays the translated text with action buttons for copy, clear, share, and TTS.
  * Handles loading states and provides visual feedback for user actions.
  */
 
 import React from 'react';
 import { Copy, Check, Share2 } from 'lucide-react';
+import { TTSButton } from '../ui/TTSButton';
 
 interface OutputSectionProps {
   outputText: string;
@@ -15,6 +16,9 @@ interface OutputSectionProps {
   onShare: () => void;
   isCopied: boolean;
   isLoading: boolean;
+  // TTS props
+  translationStyle?: string;
+  rageLevel?: number;
 }
 
 export const OutputSection: React.FC<OutputSectionProps> = ({
@@ -23,7 +27,9 @@ export const OutputSection: React.FC<OutputSectionProps> = ({
   onClear,
   onShare,
   isCopied,
-  isLoading
+  isLoading,
+  translationStyle = 'default',
+  rageLevel = 5
 }) => {
   return (
     <div className="mb-6">
@@ -34,6 +40,15 @@ export const OutputSection: React.FC<OutputSectionProps> = ({
         </label>
         {outputText && (
           <div className="flex items-center gap-2">
+            {/* Text-to-Speech Button */}
+            <TTSButton
+              text={outputText}
+              style={translationStyle}
+              rageLevel={rageLevel}
+              size="md"
+              variant="default"
+            />
+            
             <button
               onClick={onShare}
               className="flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-blue-400 hover:text-blue-300 hover:bg-blue-500/10 transition-all duration-300 border border-transparent hover:border-blue-500/30"

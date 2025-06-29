@@ -2,80 +2,37 @@
  * ElevenLabs Text-to-Speech Service
  * 
  * Provides high-quality voice synthesis for translated text using ElevenLabs API.
- * Supports multiple voices and voice settings for different rage styles.
+ * Now uses the centralized voice configuration system.
  */
+
+import { 
+  VOICE_CONFIGS, 
+  getVoiceForStyle, 
+  adjustVoiceForIntensity,
+  getAdvancedVoiceConfig,
+  preprocessTextForStyle,
+  VOICE_MODELS,
+  type VoiceConfig
+} from '../config/elevenLabsVoices';
 
 export interface ElevenLabsConfig {
   apiKey: string;
   baseUrl: string;
-  defaultVoiceId: string;
-}
-
-export interface VoiceSettings {
-  stability: number;
-  similarity_boost: number;
-  style?: number;
-  use_speaker_boost?: boolean;
+  defaultModel: string;
 }
 
 export interface TTSRequest {
   text: string;
   voice_id: string;
-  voice_settings: VoiceSettings;
+  voice_settings: VoiceConfig['voice_settings'];
   model_id?: string;
 }
-
-// Voice configurations for different rage styles
-export const VOICE_CONFIGS = {
-  corporate: {
-    voiceId: 'EXAVITQu4vr4xnSDxMaL', // Bella - Professional female voice
-    name: 'Bella (Professional)',
-    settings: {
-      stability: 0.75,
-      similarity_boost: 0.8,
-      style: 0.2,
-      use_speaker_boost: true
-    }
-  },
-  gamer: {
-    voiceId: 'pNInz6obpgDQGcFmaJgB', // Adam - Energetic male voice
-    name: 'Adam (Energetic)',
-    settings: {
-      stability: 0.5,
-      similarity_boost: 0.9,
-      style: 0.8,
-      use_speaker_boost: true
-    }
-  },
-  sarcastic: {
-    voiceId: 'ThT5KcBeYPX3keUQqHPh', // Dorothy - Sophisticated female voice
-    name: 'Dorothy (Sophisticated)',
-    settings: {
-      stability: 0.8,
-      similarity_boost: 0.7,
-      style: 0.6,
-      use_speaker_boost: true
-    }
-  },
-  default: {
-    voiceId: 'pNInz6obpgDQGcFmaJgB', // Adam as default
-    name: 'Adam (Default)',
-    settings: {
-      stability: 0.7,
-      similarity_boost: 0.8,
-      style: 0.5,
-      use_speaker_boost: true
-    }
-  }
-} as const;
-
-export type VoiceStyle = keyof typeof VOICE_CONFIGS;
 
 // Default configuration
 const DEFAULT_CONFIG: ElevenLabsConfig = {
   apiKey: '',
   baseUrl: 'https://api.elevenlabs.io/v1',
-  defaultVoiceId: VOICE_CONFIGS.default.voiceId
+  defaultModel: VOICE_MODELS.standard.model_id
 };
 
 class ElevenLabsService {
@@ -135,17 +92,17 @@ class ElevenLabsService {
   }
 
   /**
-   * Get voice configuration for a specific style
+   * Get voice configuration for a specific style using the new config system
    */
-  getVoiceConfig(style: string): typeof VOICE_CONFIGS[VoiceStyle] {
-    const voiceStyle = style as VoiceStyle;
-    return VOICE_CONFIGS[voiceStyle] || VOICE_CONFIGS.default;
+  getVoiceConfig(style: string): VoiceConfig {
+    const validStyle = style as 'corporate' | 'gamer' | 'sarcastic';
+    return getVoiceForStyle(validStyle);
   }
 
   /**
    * Generate cache key for audio
    */
-  private getCacheKey(text: string, voiceId: string, settings: VoiceSettings): string {
+  private getCacheKey(text: string, voiceId: string, settings: VoiceConfig['voice_settings']): string {
     return `${voiceId}-${JSON.stringify(settings)}-${text.substring(0, 50)}`;
   }
 
@@ -168,7 +125,7 @@ class ElevenLabsService {
       },
       body: JSON.stringify({
         text: request.text,
-        model_id: request.model_id || 'eleven_monolingual_v1',
+        model_id: request.model_id || this.config.defaultModel,
         voice_settings: request.voice_settings
       })
     });
@@ -195,36 +152,43 @@ class ElevenLabsService {
   }
 
   /**
-   * Convert text to speech with style-appropriate voice
+   * Convert text to speech with advanced voice configuration
    */
   async textToSpeech(
     text: string, 
-    style: string = 'default',
+    style: string = 'corporate',
     rageLevel: number = 5
   ): Promise<string> {
     if (!this.isReady()) {
       throw new Error('ElevenLabs API key not configured. Please set up your API key from https://elevenlabs.io/');
     }
 
-    // Get voice configuration for the style
-    const voiceConfig = this.getVoiceConfig(style);
-    
-    // Adjust voice settings based on rage level
-    const adjustedSettings = this.adjustSettingsForRage(voiceConfig.settings, rageLevel);
+    // Get advanced voice configuration
+    const voiceConfig = getAdvancedVoiceConfig(
+      style as 'corporate' | 'gamer' | 'sarcastic', 
+      rageLevel
+    );
     
     // Check cache first
-    const cacheKey = this.getCacheKey(text, voiceConfig.voiceId, adjustedSettings);
+    const cacheKey = this.getCacheKey(text, voiceConfig.voice_id, voiceConfig.voice_settings);
     if (this.audioCache.has(cacheKey)) {
       console.log('🎵 Using cached audio');
       return this.audioCache.get(cacheKey)!;
     }
 
+    // Preprocess text for better speech synthesis
+    const processedText = preprocessTextForStyle(
+      text, 
+      style as 'corporate' | 'gamer' | 'sarcastic', 
+      rageLevel
+    );
+
     // Prepare request
     const request: TTSRequest = {
-      text: this.preprocessText(text, style, rageLevel),
-      voice_id: voiceConfig.voiceId,
-      voice_settings: adjustedSettings,
-      model_id: 'eleven_monolingual_v1'
+      text: processedText,
+      voice_id: voiceConfig.voice_id,
+      voice_settings: voiceConfig.voice_settings,
+      model_id: this.config.defaultModel
     };
 
     try {
@@ -238,6 +202,9 @@ class ElevenLabsService {
       this.audioCache.set(cacheKey, audioUrl);
       
       console.log('✅ Speech generated successfully');
+      console.log(`🎭 Voice: ${voiceConfig.name} (${voiceConfig.description})`);
+      console.log(`🎚️ Settings: Stability ${voiceConfig.voice_settings.stability}, Style ${voiceConfig.voice_settings.style}`);
+      
       return audioUrl;
     } catch (error) {
       console.error('❌ Speech generation failed:', error);
@@ -246,80 +213,17 @@ class ElevenLabsService {
   }
 
   /**
-   * Adjust voice settings based on rage level
+   * Test the API connection with a style-specific test phrase
    */
-  private adjustSettingsForRage(baseSettings: VoiceSettings, rageLevel: number): VoiceSettings {
-    // Higher rage = less stability, more style
-    const rageMultiplier = rageLevel / 10;
-    
-    return {
-      ...baseSettings,
-      stability: Math.max(0.1, baseSettings.stability - (rageMultiplier * 0.3)),
-      style: Math.min(1.0, (baseSettings.style || 0.5) + (rageMultiplier * 0.4)),
-      use_speaker_boost: true
-    };
-  }
-
-  /**
-   * Preprocess text for better speech synthesis
-   */
-  private preprocessText(text: string, style: string, rageLevel: number): string {
-    let processedText = text;
-
-    // Add pauses for emphasis
-    processedText = processedText.replace(/\.\.\./g, '... <break time="0.5s"/>');
-    processedText = processedText.replace(/!!!/g, '!!! <break time="0.3s"/>');
-    
-    // Add emphasis for caps
-    processedText = processedText.replace(/([A-Z]{3,})/g, '<emphasis level="strong">$1</emphasis>');
-    
-    // Style-specific adjustments
-    switch (style) {
-      case 'corporate':
-        // Add professional pauses
-        processedText = processedText.replace(/,/g, ', <break time="0.2s"/>');
-        break;
-      case 'gamer':
-        // Emphasize gaming terms
-        processedText = processedText.replace(/(BRUH|NOOB|GET REKT)/g, '<emphasis level="strong">$1</emphasis>');
-        break;
-      case 'sarcastic':
-        // Add sarcastic tone with slower pace
-        processedText = `<prosody rate="0.9">${processedText}</prosody>`;
-        break;
-    }
-
-    // Rage level adjustments
-    if (rageLevel >= 8) {
-      processedText = `<prosody rate="1.1" pitch="+10%">${processedText}</prosody>`;
-    } else if (rageLevel >= 6) {
-      processedText = `<prosody rate="1.05" pitch="+5%">${processedText}</prosody>`;
-    }
-
-    return processedText;
-  }
-
-  /**
-   * Play audio from URL
-   */
-  async playAudio(audioUrl: string): Promise<void> {
-    return new Promise((resolve, reject) => {
-      const audio = new Audio(audioUrl);
-      
-      audio.onended = () => resolve();
-      audio.onerror = () => reject(new Error('Failed to play audio'));
-      
-      audio.play().catch(reject);
-    });
-  }
-
-  /**
-   * Test the API connection
-   */
-  async testConnection(): Promise<{ success: boolean; error?: string }> {
+  async testConnection(style: 'corporate' | 'gamer' | 'sarcastic' = 'corporate'): Promise<{ success: boolean; error?: string }> {
     try {
       console.log('🧪 Testing ElevenLabs connection...');
-      const audioUrl = await this.textToSpeech('Hello, this is a test.', 'default', 3);
+      
+      // Import test phrase function
+      const { createTestPhrase } = await import('../config/elevenLabsVoices');
+      const testText = createTestPhrase(style);
+      
+      const audioUrl = await this.textToSpeech(testText, style, 3);
       
       // Clean up test audio
       URL.revokeObjectURL(audioUrl);
@@ -336,6 +240,33 @@ class ElevenLabsService {
   }
 
   /**
+   * Get available voice configurations
+   */
+  getAvailableVoices(): Array<{ id: string; name: string; style: string; description: string }> {
+    return Object.entries(VOICE_CONFIGS).map(([style, config]) => ({
+      id: config.voice_id,
+      name: config.name,
+      style,
+      description: config.description
+    }));
+  }
+
+  /**
+   * Get available voice models
+   */
+  getAvailableModels(): typeof VOICE_MODELS {
+    return VOICE_MODELS;
+  }
+
+  /**
+   * Set voice model quality
+   */
+  setVoiceModel(modelKey: keyof typeof VOICE_MODELS): void {
+    this.config.defaultModel = VOICE_MODELS[modelKey].model_id;
+    console.log(`🎚️ Voice model set to: ${VOICE_MODELS[modelKey].name}`);
+  }
+
+  /**
    * Clear audio cache
    */
   clearCache(): void {
@@ -346,14 +277,13 @@ class ElevenLabsService {
   }
 
   /**
-   * Get available voices for the current style
+   * Get cache statistics
    */
-  getAvailableVoices(): Array<{ id: string; name: string; style: string }> {
-    return Object.entries(VOICE_CONFIGS).map(([style, config]) => ({
-      id: config.voiceId,
-      name: config.name,
-      style
-    }));
+  getCacheStats(): { size: number; keys: string[] } {
+    return {
+      size: this.audioCache.size,
+      keys: Array.from(this.audioCache.keys())
+    };
   }
 }
 
@@ -361,4 +291,4 @@ class ElevenLabsService {
 export const elevenLabsService = new ElevenLabsService();
 
 // Export types
-export type { VoiceSettings, TTSRequest };
+export type { TTSRequest, VoiceConfig };

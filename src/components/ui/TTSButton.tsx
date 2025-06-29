@@ -1,12 +1,12 @@
 /**
- * Text-to-Speech Button Component
+ * TTSButton Component
  * 
- * Interactive button for triggering text-to-speech with visual feedback
- * and loading states. Integrates with ElevenLabs service.
+ * Interactive text-to-speech button with loading states, error handling,
+ * and visual feedback. Uses the enhanced voice configuration system.
  */
 
-import React from 'react';
-import { Volume2, VolumeX, Loader2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Volume2, VolumeX, Loader2, AlertCircle } from 'lucide-react';
 import { useTextToSpeech } from '../../hooks/useTextToSpeech';
 
 interface TTSButtonProps {
@@ -15,6 +15,7 @@ interface TTSButtonProps {
   rageLevel?: number;
   size?: 'sm' | 'md' | 'lg';
   variant?: 'default' | 'outline' | 'ghost';
+  disabled?: boolean;
   className?: string;
 }
 
@@ -24,16 +25,33 @@ export const TTSButton: React.FC<TTSButtonProps> = ({
   rageLevel = 5,
   size = 'md',
   variant = 'default',
+  disabled = false,
   className = ''
 }) => {
   const { speak, isLoading, isPlaying, error, isAvailable, stop, clearError } = useTextToSpeech();
+  const [showError, setShowError] = useState(false);
+
+  // Don't render if TTS is not available
+  if (!isAvailable) {
+    return null;
+  }
 
   const handleClick = async () => {
     if (isPlaying) {
       stop();
-    } else {
+      return;
+    }
+
+    if (error) {
       clearError();
+      setShowError(false);
+    }
+
+    try {
       await speak(text, style, rageLevel);
+    } catch (err) {
+      setShowError(true);
+      setTimeout(() => setShowError(false), 3000);
     }
   };
 
@@ -51,66 +69,82 @@ export const TTSButton: React.FC<TTSButtonProps> = ({
   const getVariantClasses = () => {
     switch (variant) {
       case 'outline':
-        return 'border-2 border-blue-500/50 text-blue-400 hover:bg-blue-500/10 hover:border-blue-500/70';
+        return 'bg-transparent border-2 border-purple-500/50 text-purple-400 hover:bg-purple-500/10 hover:border-purple-500/70';
       case 'ghost':
-        return 'text-gray-400 hover:text-blue-400 hover:bg-blue-500/10';
+        return 'bg-transparent text-purple-400 hover:bg-purple-500/10';
       default:
-        return 'bg-blue-500/20 text-blue-400 border border-blue-500/50 hover:bg-blue-500/30 hover:border-blue-500/70';
+        return 'bg-purple-500/20 text-purple-400 border border-purple-500/30 hover:bg-purple-500/30 hover:border-purple-500/50';
     }
   };
 
   const getIcon = () => {
     if (isLoading) {
-      return <Loader2 size={size === 'sm' ? 16 : size === 'lg' ? 24 : 20} className="animate-spin" />;
+      return <Loader2 size={size === 'sm' ? 14 : size === 'lg' ? 20 : 16} className="animate-spin" />;
     }
+    
+    if (error && showError) {
+      return <AlertCircle size={size === 'sm' ? 14 : size === 'lg' ? 20 : 16} className="text-red-400" />;
+    }
+    
     if (isPlaying) {
-      return <VolumeX size={size === 'sm' ? 16 : size === 'lg' ? 24 : 20} />;
+      return <VolumeX size={size === 'sm' ? 14 : size === 'lg' ? 20 : 16} />;
     }
-    return <Volume2 size={size === 'sm' ? 16 : size === 'lg' ? 24 : 20} />;
+    
+    return <Volume2 size={size === 'sm' ? 14 : size === 'lg' ? 20 : 16} />;
   };
 
-  const getTooltip = () => {
-    if (!isAvailable) return 'Text-to-speech not configured';
+  const getTooltipText = () => {
     if (isLoading) return 'Generating speech...';
+    if (error && showError) return `Error: ${error}`;
     if (isPlaying) return 'Stop playback';
-    if (error) return `Error: ${error}`;
     return 'Listen to translation';
   };
 
-  if (!isAvailable) {
-    return null; // Hide button if TTS is not available
-  }
+  const getGlowEffect = () => {
+    if (isPlaying) return 'shadow-[0_0_20px_rgba(147,51,234,0.5)]';
+    if (error && showError) return 'shadow-[0_0_20px_rgba(239,68,68,0.5)]';
+    return 'hover:shadow-[0_0_20px_rgba(147,51,234,0.3)]';
+  };
 
   return (
-    <div className="relative">
+    <div className="relative group">
       <button
         onClick={handleClick}
-        disabled={isLoading || !text.trim()}
+        disabled={disabled || isLoading}
         className={`
           ${getSizeClasses()}
           ${getVariantClasses()}
+          ${getGlowEffect()}
           rounded-lg font-medium transition-all duration-300 transform hover:scale-105
           disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
           flex items-center gap-2
-          ${isPlaying ? 'animate-pulse shadow-[0_0_20px_rgba(59,130,246,0.4)]' : ''}
           ${className}
         `}
-        title={getTooltip()}
-        aria-label={getTooltip()}
+        title={getTooltipText()}
+        aria-label={getTooltipText()}
       >
         {getIcon()}
-        {size !== 'sm' && (
-          <span>
+        {size === 'lg' && (
+          <span className="hidden sm:inline">
             {isLoading ? 'Generating...' : isPlaying ? 'Stop' : 'Listen'}
           </span>
         )}
       </button>
 
-      {/* Error display */}
-      {error && (
-        <div className="absolute top-full left-0 mt-2 p-2 bg-red-500/20 border border-red-500/50 rounded text-red-400 text-xs whitespace-nowrap z-10">
-          {error}
-        </div>
+      {/* Tooltip */}
+      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-50">
+        {getTooltipText()}
+        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
+      </div>
+
+      {/* Error indicator */}
+      {error && showError && (
+        <div className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+      )}
+
+      {/* Playing indicator */}
+      {isPlaying && (
+        <div className="absolute top-0 right-0 w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
       )}
     </div>
   );

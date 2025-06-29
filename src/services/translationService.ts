@@ -56,7 +56,7 @@ const mockTranslate = async (request: TranslationRequest): Promise<TranslationRe
   };
 };
 
-// Corporate rage responses by intensity level
+// Corporate rage responses by intensity level with REAL profanity at high levels
 const getCorporateRage = (context: string, intensity: number): string => {
   const responses = {
     1: [
@@ -88,16 +88,16 @@ const getCorporateRage = (context: string, intensity: number): string => {
       `This ${context} situation is ABSOLUTELY RIDICULOUS! I've had ENOUGH.`
     ],
     8: [
-      `I HAVE HAD ENOUGH of this ${context} disaster! This is COMPLETELY unacceptable.`,
-      `THIS ENDS NOW! This ${context} situation is beyond RIDICULOUS.`
+      `I HAVE HAD ENOUGH of this ${context} disaster! This is damn UNACCEPTABLE.`,
+      `THIS ENDS NOW! This ${context} situation is beyond hell RIDICULOUS.`
     ],
     9: [
-      `I AM ABSOLUTELY LIVID about this ${context}! This is BEYOND unacceptable.`,
-      `THIS IS COMPLETELY INSANE! This ${context} situation is driving me CRAZY.`
+      `I AM ABSOLUTELY LIVID about this ${context}! This is beyond damn acceptable.`,
+      `THIS IS COMPLETE SHIT! This ${context} situation is driving me CRAZY.`
     ],
     10: [
-      `I AM DONE WITH THIS ABSOLUTE NONSENSE! This ${context} is a COMPLETE disaster!`,
-      `WHAT THE HELL IS GOING ON with this ${context}?! This is ABSOLUTELY INSANE!`
+      `I AM DONE WITH THIS FUCKING ${context} BULLSHIT! This is COMPLETE goddamn NONSENSE!`,
+      `WHAT THE FUCK IS GOING ON with this ${context}?! This is ABSOLUTELY fucking INSANE!`
     ]
   };
   
@@ -105,7 +105,7 @@ const getCorporateRage = (context: string, intensity: number): string => {
   return levelResponses[Math.floor(Math.random() * levelResponses.length)];
 };
 
-// Gamer rage responses by intensity level
+// Gamer rage responses by intensity level with REAL profanity at high levels
 const getGamerRage = (context: string, intensity: number): string => {
   const responses = {
     1: [
@@ -137,16 +137,16 @@ const getGamerRage = (context: string, intensity: number): string => {
       `ARE YOU FREAKING SERIOUS?! This ${context} is completely RIDICULOUS!`
     ],
     8: [
-      `WHAT IS WRONG with this ${context}?! This is ABSOLUTELY INSANE!`,
-      `I'M LOSING MY MIND over this ${context}! This is COMPLETELY nuts!`
+      `WHAT THE HELL is wrong with this ${context}?! This is damn INSANE!`,
+      `I'M LOSING MY MIND over this ${context}! This is complete CRAP!`
     ],
     9: [
-      `WHAT THE ACTUAL HELL?! This ${context} is driving me ABSOLUTELY INSANE!`,
-      `ARE YOU OUT OF YOUR MIND?! This ${context} is COMPLETELY RIDICULOUS!`
+      `WHAT THE ACTUAL HELL?! This ${context} is driving me ABSOLUTELY shit INSANE!`,
+      `ARE YOU OUT OF YOUR DAMN MIND?! This ${context} is COMPLETELY fucked!`
     ],
     10: [
-      `WHAT THE F*** IS THIS ${context} BULLSH*T?! I'M LOSING MY GODDAMN MIND!`,
-      `ARE YOU F***ING KIDDING ME?! This ${context} is ABSOLUTELY F***ING INSANE!`
+      `WHAT THE FUCK IS THIS ${context} BULLSHIT?! I'M LOSING MY GODDAMN MIND!`,
+      `ARE YOU FUCKING KIDDING ME?! This ${context} is ABSOLUTELY FUCKING INSANE!`
     ]
   };
   
@@ -154,7 +154,7 @@ const getGamerRage = (context: string, intensity: number): string => {
   return levelResponses[Math.floor(Math.random() * levelResponses.length)];
 };
 
-// Sarcastic rage responses by intensity level
+// Sarcastic rage responses by intensity level with REAL profanity at high levels
 const getSarcasticRage = (context: string, intensity: number): string => {
   const responses = {
     1: [
@@ -186,16 +186,16 @@ const getSarcasticRage = (context: string, intensity: number): string => {
       `How absolutely STUNNING, this ${context} is a true MASTERPIECE of incompetence!`
     ],
     8: [
-      `OH how absolutely DIVINE! This ${context} is just PHENOMENAL! What a STUNNING example.`,
-      `How absolutely EXQUISITE, this ${context} is truly a MAGNIFICENT disaster!`
+      `OH how absolutely DIVINE! This ${context} is just damn PHENOMENAL! What a STUNNING example.`,
+      `How absolutely EXQUISITE, this ${context} is truly a hell of a MAGNIFICENT disaster!`
     ],
     9: [
-      `OH how absolutely EXQUISITE! This ${context} is just PHENOMENAL! What a DIVINE disaster.`,
-      `How absolutely SPECTACULAR, this ${context} is truly a GODDAMN masterpiece!`
+      `OH how absolutely EXQUISITE! This ${context} is just shit PHENOMENAL! What a DIVINE disaster.`,
+      `How absolutely SPECTACULAR, this ${context} is truly a damn MASTERPIECE of bullshit!`
     ],
     10: [
-      `OH how absolutely F***ING PERFECT! This ${context} is just GODDAMN SPECTACULAR!`,
-      `How absolutely F***ING DIVINE! This ${context} is a true MASTERPIECE of bullsh*t!`
+      `OH how absolutely FUCKING PERFECT! This ${context} is just GODDAMN SPECTACULAR bullshit!`,
+      `How absolutely FUCKING DIVINE! This ${context} is a true MASTERPIECE of complete shit!`
     ]
   };
   

@@ -365,11 +365,12 @@ Rules:
 - NEVER quote or repeat the original text
 - Maximum 2 sentences, under 50 words
 - Make it funny, not offensive
-- Sound like authentic human anger at level ${intensity}/10`;
+- Sound like authentic human anger at level ${intensity}/10
+- Use profanity appropriately for high intensity levels (8-10)`;
   }
 
   /**
-   * Get authentic rage level descriptions
+   * Get authentic rage level descriptions with REAL profanity for high levels
    */
   private getAuthenticRageLevel(intensity: number): {
     corporate: string;
@@ -428,23 +429,23 @@ Rules:
       
       case 8:
         return {
-          corporate: "Furious but professional. Use 'I HAVE HAD ENOUGH' or 'THIS ENDS NOW' with caps and urgency.",
-          gamer: "Really mad. Use 'WHAT IS WRONG WITH YOU' or 'THIS IS ABSOLUTELY INSANE' with heavy caps.",
-          sarcastic: "Brutal sarcasm. Use 'OH how absolutely DIVINE' or 'what a STUNNING example' with pure venom."
+          corporate: "Furious but professional. Use 'I HAVE HAD ENOUGH' or 'THIS ENDS NOW' with caps and urgency. Light profanity acceptable: 'damn', 'hell'.",
+          gamer: "Really mad. Use 'WHAT IS WRONG WITH YOU' or 'THIS IS ABSOLUTELY INSANE' with heavy caps. Use 'damn', 'hell', 'crap'.",
+          sarcastic: "Brutal sarcasm. Use 'OH how absolutely DIVINE' or 'what a STUNNING example' with pure venom. Light profanity for emphasis."
         };
       
       case 9:
         return {
-          corporate: "Barely contained rage. Use 'I AM ABSOLUTELY LIVID' or 'THIS IS BEYOND UNACCEPTABLE' with full caps.",
-          gamer: "Extremely pissed. Use 'WHAT THE ACTUAL HELL' or 'ARE YOU OUT OF YOUR MIND' with maximum caps.",
-          sarcastic: "Devastating wit. Use 'OH how absolutely EXQUISITE' or 'what a PHENOMENAL disaster' with pure hatred."
+          corporate: "Barely contained professional rage. Use 'I AM ABSOLUTELY LIVID' or 'THIS IS BEYOND UNACCEPTABLE' with full caps. Moderate profanity: 'damn', 'hell', 'shit'.",
+          gamer: "Extremely pissed. Use 'WHAT THE ACTUAL HELL' or 'ARE YOU OUT OF YOUR MIND' with maximum caps. Strong profanity: 'shit', 'damn', 'hell'.",
+          sarcastic: "Devastating wit. Use 'OH how absolutely EXQUISITE' or 'what a PHENOMENAL disaster' with pure hatred. Moderate profanity for impact."
         };
       
       case 10:
         return {
-          corporate: "Nuclear meltdown. Use 'I AM DONE WITH THIS NONSENSE' or 'THIS IS COMPLETELY UNACCEPTABLE' with full rage.",
-          gamer: "Absolute fury. Use 'WHAT THE F*** IS THIS' or 'I AM LOSING MY MIND' with maximum intensity.",
-          sarcastic: "Pure destruction. Use 'OH how absolutely F***ING PERFECT' or 'what a GODDAMN MASTERPIECE' with nuclear sarcasm."
+          corporate: "Nuclear professional meltdown. Use 'I AM DONE WITH THIS BULLSHIT' or 'THIS IS COMPLETE FUCKING NONSENSE' with full rage. Strong profanity acceptable: 'fucking', 'bullshit', 'goddamn'.",
+          gamer: "Absolute nuclear fury. Use 'WHAT THE FUCK IS THIS SHIT' or 'I'M LOSING MY FUCKING MIND' with maximum intensity. Full profanity: 'fuck', 'shit', 'goddamn'.",
+          sarcastic: "Pure nuclear destruction. Use 'OH how absolutely FUCKING PERFECT' or 'what a GODDAMN MASTERPIECE' with nuclear sarcasm. Strong profanity for maximum impact."
         };
       
       default:

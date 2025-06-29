@@ -61,9 +61,9 @@ export const RageSlider: React.FC<RageSliderProps> = ({
       5: '"I NEED this NOW!" / "WHAT is going on?!" / "OH how WONDERFUL"',
       6: '"THIS IS UNACCEPTABLE!" / "BRUH! This is INSANE!" / "OH MAGNIFICENT!"',
       7: '"I AM DONE!" / "WHAT THE HELL?!" / "absolutely SPECTACULAR!"',
-      8: '"I\'VE HAD ENOUGH!" / "WHAT IS WRONG?!" / "absolutely DIVINE!"',
-      9: '"ABSOLUTELY LIVID!" / "OUT OF YOUR MIND?!" / "absolutely EXQUISITE!"',
-      10: '"COMPLETE NONSENSE!" / "LOSING MY MIND!" / "F***ING PERFECT!"'
+      8: '"I\'VE HAD ENOUGH!" / "This is damn INSANE!" / "absolutely DIVINE!"',
+      9: '"ABSOLUTELY LIVID!" / "This is complete SHIT!" / "absolutely EXQUISITE!"',
+      10: '"FUCKING BULLSHIT!" / "LOSING MY GODDAMN MIND!" / "FUCKING PERFECT!"'
     };
     return examples[level as keyof typeof examples] || examples[5];
   };
@@ -123,9 +123,14 @@ export const RageSlider: React.FC<RageSliderProps> = ({
           <span className="neon-red font-bold">NUCLEAR RAGE</span>
         </div>
 
-        {/* Authentic Examples */}
+        {/* Authentic Examples with Profanity Warning */}
         <div className="mt-4 p-3 bg-[#0a0f1b]/50 rounded-lg border border-[#1e293b]">
-          <p className="text-xs text-gray-500 mb-1">Level {value} Examples:</p>
+          <div className="flex items-center justify-between mb-1">
+            <p className="text-xs text-gray-500">Level {value} Examples:</p>
+            {value >= 8 && (
+              <span className="text-xs text-red-400 font-medium">⚠️ Strong Language</span>
+            )}
+          </div>
           <p className="text-sm text-gray-300 italic">
             {getIntensityExamples(value)}
           </p>

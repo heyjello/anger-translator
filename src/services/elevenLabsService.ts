@@ -2,11 +2,10 @@
  * ElevenLabs Text-to-Speech Service
  * 
  * Provides high-quality voice synthesis for translated text using ElevenLabs API.
- * Now uses the centralized voice configuration system.
+ * Now uses the centralized voice configuration system with enhanced features.
  */
 
 import { 
-  VOICE_CONFIGS, 
   getVoiceForStyle, 
   adjustVoiceForIntensity,
   getAdvancedVoiceConfig,
@@ -35,7 +34,7 @@ const DEFAULT_CONFIG: ElevenLabsConfig = {
   defaultModel: VOICE_MODELS.standard.model_id
 };
 
-class ElevenLabsService {
+export class ElevenLabsService {
   private config: ElevenLabsConfig;
   private isConfigured: boolean = false;
   private audioCache: Map<string, string> = new Map();
@@ -64,7 +63,7 @@ class ElevenLabsService {
   /**
    * Check if the service is properly configured
    */
-  isReady(): boolean {
+  isConfigured(): boolean {
     return this.isConfigured && !!this.config.apiKey && this.config.apiKey !== 'your_api_key_here';
   }
 
@@ -92,14 +91,6 @@ class ElevenLabsService {
   }
 
   /**
-   * Get voice configuration for a specific style using the new config system
-   */
-  getVoiceConfig(style: string): VoiceConfig {
-    const validStyle = style as 'corporate' | 'gamer' | 'sarcastic';
-    return getVoiceForStyle(validStyle);
-  }
-
-  /**
    * Generate cache key for audio
    */
   private getCacheKey(text: string, voiceId: string, settings: VoiceConfig['voice_settings']): string {
@@ -110,7 +101,7 @@ class ElevenLabsService {
    * Make a request to ElevenLabs API
    */
   private async makeRequest(request: TTSRequest): Promise<ArrayBuffer> {
-    if (!this.isReady()) {
+    if (!this.isConfigured()) {
       throw new Error('ElevenLabs service not configured. Please provide a valid API key from https://elevenlabs.io/');
     }
 
@@ -152,14 +143,93 @@ class ElevenLabsService {
   }
 
   /**
-   * Convert text to speech with advanced voice configuration
+   * Enhanced text-to-speech method using voice configuration system
    */
   async textToSpeech(
+    text: string, 
+    style: 'corporate' | 'gamer' | 'sarcastic',
+    intensity: number
+  ): Promise<ArrayBuffer> {
+    if (!this.isConfigured()) {
+      throw new Error('ElevenLabs service not configured');
+    }
+
+    // Get voice configuration for the style
+    const voiceConfig = getVoiceForStyle(style);
+    
+    // Adjust settings based on intensity
+    const adjustedSettings = adjustVoiceForIntensity(
+      voiceConfig.voice_settings,
+      intensity
+    );
+
+    // Preprocess text for better speech delivery
+    const processedText = this.preprocessText(text, intensity);
+
+    const response = await fetch(
+      `https://api.elevenlabs.io/v1/text-to-speech/${voiceConfig.voice_id}`,
+      {
+        method: 'POST',
+        headers: {
+          'Accept': 'audio/mpeg',
+          'Content-Type': 'application/json',
+          'xi-api-key': this.config.apiKey
+        },
+        body: JSON.stringify({
+          text: processedText,
+          model_id: 'eleven_monolingual_v1',
+          voice_settings: adjustedSettings
+        })
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`ElevenLabs API error: ${response.statusText}`);
+    }
+
+    return await response.arrayBuffer();
+  }
+
+  /**
+   * Enhanced text preprocessing for better speech
+   */
+  private preprocessText(text: string, intensity: number): string {
+    // Add pauses after punctuation for dramatic effect
+    let processed = text
+      .replace(/!/g, '! ... ')
+      .replace(/\?/g, '? ... ')
+      .replace(/\.\.\./g, ' ... ... ');
+
+    // For high intensity, add more dramatic pauses
+    if (intensity >= 7) {
+      processed = processed.replace(/,/g, ', ... ');
+    }
+
+    // Add emphasis for all caps words
+    if (intensity >= 8) {
+      processed = processed.replace(/([A-Z]{3,})/g, '<emphasis level="strong">$1</emphasis>');
+    }
+
+    return processed;
+  }
+
+  /**
+   * Get current voice info for a style
+   */
+  getCurrentVoiceInfo(style: 'corporate' | 'gamer' | 'sarcastic'): string {
+    const voice = getVoiceForStyle(style);
+    return `${voice.name} - ${voice.description}`;
+  }
+
+  /**
+   * Convert text to speech with advanced voice configuration (enhanced version)
+   */
+  async generateSpeech(
     text: string, 
     style: string = 'corporate',
     rageLevel: number = 5
   ): Promise<string> {
-    if (!this.isReady()) {
+    if (!this.isConfigured()) {
       throw new Error('ElevenLabs API key not configured. Please set up your API key from https://elevenlabs.io/');
     }
 
@@ -223,7 +293,7 @@ class ElevenLabsService {
       const { createTestPhrase } = await import('../config/elevenLabsVoices');
       const testText = createTestPhrase(style);
       
-      const audioUrl = await this.textToSpeech(testText, style, 3);
+      const audioUrl = await this.generateSpeech(testText, style, 3);
       
       // Clean up test audio
       URL.revokeObjectURL(audioUrl);
@@ -243,7 +313,8 @@ class ElevenLabsService {
    * Get available voice configurations
    */
   getAvailableVoices(): Array<{ id: string; name: string; style: string; description: string }> {
-    return Object.entries(VOICE_CONFIGS).map(([style, config]) => ({
+    const { VOICE_CONFIGS } = require('../config/elevenLabsVoices');
+    return Object.entries(VOICE_CONFIGS).map(([style, config]: [string, any]) => ({
       id: config.voice_id,
       name: config.name,
       style,
@@ -284,6 +355,14 @@ class ElevenLabsService {
       size: this.audioCache.size,
       keys: Array.from(this.audioCache.keys())
     };
+  }
+
+  /**
+   * Get voice configuration for a specific style
+   */
+  getVoiceConfig(style: string): VoiceConfig {
+    const validStyle = style as 'corporate' | 'gamer' | 'sarcastic';
+    return getVoiceForStyle(validStyle);
   }
 }
 

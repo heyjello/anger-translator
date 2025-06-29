@@ -65,7 +65,7 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     }
   },
   'scottish-dad': {
-    voice_id: "VR6AewLTigWG4xSOukaG", // Arnold (Scottish-sounding voice)
+    voice_id: "QweS0d0FetCxpq95g9bA", // Arnold (Scottish-sounding voice)
     name: "Arnold",
     description: "Gruff Scottish dad voice for parental disappointment",
     voice_settings: {

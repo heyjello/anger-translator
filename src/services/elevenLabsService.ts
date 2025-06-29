@@ -154,7 +154,7 @@ export class ElevenLabsService {
    */
   async textToSpeech(
     text: string, 
-    style: 'corporate' | 'gamer' | 'sarcastic',
+    style: 'corporate' | 'gamer' | 'sarcastic' | 'scottish-dad',
     intensity: number
   ): Promise<ArrayBuffer> {
     if (!this.isConfigured()) {
@@ -223,7 +223,7 @@ export class ElevenLabsService {
   /**
    * Get current voice info for a style
    */
-  getCurrentVoiceInfo(style: 'corporate' | 'gamer' | 'sarcastic'): string {
+  getCurrentVoiceInfo(style: 'corporate' | 'gamer' | 'sarcastic' | 'scottish-dad'): string {
     const voice = getVoiceForStyle(style);
     return `${voice.name} - ${voice.description}`;
   }
@@ -242,7 +242,7 @@ export class ElevenLabsService {
 
     // Get advanced voice configuration
     const voiceConfig = getAdvancedVoiceConfig(
-      style as 'corporate' | 'gamer' | 'sarcastic', 
+      style as 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad', 
       rageLevel
     );
     
@@ -256,7 +256,7 @@ export class ElevenLabsService {
     // Preprocess text for better speech synthesis
     const processedText = preprocessTextForStyle(
       text, 
-      style as 'corporate' | 'gamer' | 'sarcastic', 
+      style as 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad', 
       rageLevel
     );
 
@@ -292,7 +292,7 @@ export class ElevenLabsService {
   /**
    * Test the API connection with a style-specific test phrase
    */
-  async testConnection(style: 'corporate' | 'gamer' | 'sarcastic' = 'corporate'): Promise<{ success: boolean; error?: string }> {
+  async testConnection(style: 'corporate' | 'gamer' | 'sarcastic' | 'scottish-dad' = 'corporate'): Promise<{ success: boolean; error?: string }> {
     try {
       console.log('🧪 Testing ElevenLabs connection...');
       
@@ -368,7 +368,7 @@ export class ElevenLabsService {
    * Get voice configuration for a specific style
    */
   getVoiceConfig(style: string): VoiceConfig {
-    const validStyle = style as 'corporate' | 'gamer' | 'sarcastic';
+    const validStyle = style as 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad';
     return getVoiceForStyle(validStyle);
   }
 }

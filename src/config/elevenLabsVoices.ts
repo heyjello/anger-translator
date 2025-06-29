@@ -15,6 +15,7 @@ export interface VoiceStyleMap {
   gamer: VoiceConfig;
   sarcastic: VoiceConfig;
   karen: VoiceConfig;
+  'scottish-dad': VoiceConfig;
 }
 
 // Pre-made ElevenLabs voices optimized for each style
@@ -62,6 +63,17 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
       style: 0.7,
       use_speaker_boost: true
     }
+  },
+  'scottish-dad': {
+    voice_id: "VR6AewLTigWG4xSOukaG", // Arnold (Scottish-sounding voice)
+    name: "Arnold",
+    description: "Gruff Scottish dad voice for parental disappointment",
+    voice_settings: {
+      stability: 0.7,
+      similarity_boost: 0.8,
+      style: 0.6,
+      use_speaker_boost: true
+    }
   }
 };
 
@@ -70,11 +82,12 @@ export const ALTERNATIVE_VOICES = {
   corporate: ["VR6AewLTigWG4xSOukaG"], // Arnold
   gamer: ["21m00Tcm4TlvDq8ikWAM"], // Rachel
   sarcastic: ["2EiwWnXFnvU5JabPnv8n"], // Clyde
-  karen: ["ThT5KcBeYPX3keUQqHPh"] // Dorothy
+  karen: ["ThT5KcBeYPX3keUQqHPh"], // Dorothy
+  'scottish-dad': ["2EiwWnXFnvU5JabPnv8n"] // Clyde
 };
 
 // Get voice configuration based on style
-export const getVoiceForStyle = (style: 'corporate' | 'gamer' | 'sarcastic' | 'karen'): VoiceConfig => {
+export const getVoiceForStyle = (style: 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad'): VoiceConfig => {
   return VOICE_CONFIGS[style];
 };
 
@@ -138,7 +151,7 @@ export const getEmotionalPreset = (rageLevel: number): keyof typeof EMOTIONAL_PR
 
 // Advanced voice configuration with style-specific adjustments
 export const getAdvancedVoiceConfig = (
-  style: 'corporate' | 'gamer' | 'sarcastic' | 'karen',
+  style: 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad',
   intensity: number
 ): VoiceConfig => {
   const baseConfig = getVoiceForStyle(style);
@@ -183,7 +196,7 @@ export const VOICE_MODELS = {
 // Text preprocessing for better speech synthesis
 export const preprocessTextForStyle = (
   text: string, 
-  style: 'corporate' | 'gamer' | 'sarcastic' | 'karen',
+  style: 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad',
   intensity: number
 ): string => {
   let processedText = text;
@@ -226,6 +239,16 @@ export const preprocessTextForStyle = (
         processedText = `<prosody rate="1.1" pitch="+10%">${processedText}</prosody>`;
       }
       break;
+
+    case 'scottish-dad':
+      // Add Scottish dad-specific emphasis and disappointed pauses
+      processedText = processedText.replace(/(LADDIE|LASSIE|BLOODY HELL|FOR CRYING OUT LOUD)/g, '<emphasis level="strong">$1</emphasis>');
+      processedText = processedText.replace(/\*sighs heavily\*/g, '<break time="0.5s"/>');
+      processedText = processedText.replace(/\*shakes head\*/g, '<break time="0.3s"/>');
+      if (intensity >= 6) {
+        processedText = `<prosody rate="0.95" pitch="-5%">${processedText}</prosody>`;
+      }
+      break;
   }
 
   // Intensity-based adjustments
@@ -237,12 +260,13 @@ export const preprocessTextForStyle = (
 };
 
 // Voice testing utilities
-export const createTestPhrase = (style: 'corporate' | 'gamer' | 'sarcastic' | 'karen'): string => {
+export const createTestPhrase = (style: 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad'): string => {
   const testPhrases = {
     corporate: "As per my previous email, I need you to review this document immediately. Please advise how we can move forward with some actual competence!",
     gamer: "BRUH! Are you kidding me right now?! This is absolutely unreal! Get rekt and learn to play, noob!",
     sarcastic: "Oh, how absolutely riveting! I'm just thrilled to deal with this masterpiece of communication. Truly, your eloquence knows no bounds!",
-    karen: "Excuse me, I want to speak to your manager RIGHT NOW! This is completely unacceptable and I'm calling corporate!"
+    karen: "Excuse me, I want to speak to your manager RIGHT NOW! This is completely unacceptable and I'm calling corporate!",
+    'scottish-dad': "Och, for crying out loud! What in the bloody hell were ye thinking, laddie? I'm not angry, just... deeply disappointed in ye!"
   };
   
   return testPhrases[style];
@@ -298,5 +322,11 @@ export const VOICE_CHARACTERISTICS = {
     accent: 'American',
     age: 'Middle-aged',
     tone: 'Entitled, Demanding'
+  },
+  [ALL_VOICE_IDS.arnold]: {
+    gender: 'Male',
+    accent: 'Scottish',
+    age: 'Middle-aged',
+    tone: 'Gruff, Disappointed'
   }
 } as const;

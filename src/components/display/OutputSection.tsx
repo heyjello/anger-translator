@@ -31,19 +31,12 @@ export const OutputSection: React.FC<OutputSectionProps> = ({
   translationStyle = 'default',
   rageLevel = 5
 }) => {
-  const hasBleeps = outputText.includes('**');
-
   return (
     <div className="mb-6">
       <div className="flex items-center justify-between mb-4">
         <label className="block text-xl font-bold text-gray-100 flex items-center gap-2">
           <span className="text-2xl">💥</span>
           Your translated rage:
-          {hasBleeps && (
-            <span className="text-xs bg-red-500/20 text-red-400 px-2 py-1 rounded border border-red-500/30">
-              Contains Bleeps
-            </span>
-          )}
         </label>
         {outputText && (
           <div className="flex items-center gap-2">

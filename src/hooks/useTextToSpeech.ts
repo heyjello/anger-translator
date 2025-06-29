@@ -48,7 +48,7 @@ export const useTextToSpeech = (): UseTextToSpeechResult => {
       console.log('🎤 Generating speech for:', text.substring(0, 50) + '...');
       
       // Generate speech
-      const audioUrl = await elevenLabsService.textToSpeech(text, style, rageLevel);
+      const audioUrl = await elevenLabsService.generateSpeech(text, style, rageLevel);
       
       // Create and play audio
       const audio = new Audio(audioUrl);

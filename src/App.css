@@ -1,3 +1,48 @@
+/* Modern slider styling for circular rage meter */
+.slider-modern::-webkit-slider-thumb {
+  appearance: none;
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #ffffff, #f1f5f9);
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease-in-out;
+  border: 2px solid #ffffff;
+  position: relative;
+}
+
+.slider-modern::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4), 0 0 30px rgba(255, 255, 255, 0.4);
+}
+
+.slider-modern::-moz-range-thumb {
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  background: linear-gradient(45deg, #ffffff, #f1f5f9);
+  cursor: pointer;
+  border: 2px solid #ffffff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3), 0 0 20px rgba(255, 255, 255, 0.2);
+  transition: all 0.2s ease-in-out;
+}
+
+.slider-modern::-moz-range-thumb:hover {
+  transform: scale(1.2);
+}
+
+.slider-modern::-moz-range-track {
+  height: 8px;
+  border-radius: 4px;
+  border: none;
+}
+
+.slider-modern::-webkit-slider-track {
+  height: 8px;
+  border-radius: 4px;
+}
+
 /* Custom slider styling with number inside thumb */
 .slider::-webkit-slider-thumb {
   appearance: none;
@@ -526,4 +571,20 @@
     0 0 5px #22c55e,
     0 0 10px #22c55e,
     0 0 20px #22c55e;
+}
+
+.neon-yellow {
+  color: #eab308;
+  text-shadow: 
+    0 0 5px #eab308,
+    0 0 10px #eab308,
+    0 0 20px #eab308;
+}
+
+.neon-orange {
+  color: #f97316;
+  text-shadow: 
+    0 0 5px #f97316,
+    0 0 10px #f97316,
+    0 0 20px #f97316;
 }

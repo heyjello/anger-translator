@@ -6,7 +6,6 @@ import {
   InputSection,
   NavigationHeader,
   OutputSection,
-  RageSlider,
   StyleSelector,
   TranslateButton,
   ShareModal,
@@ -15,6 +14,7 @@ import {
   type TranslationHistory
 } from './components';
 import { ParticleEffect, EnhancedFooter, AIStatusIndicator, VoiceIndicator } from './components/ui';
+import { CircularRageMeter } from './components/ui/CircularRageMeter';
 import { RageStyle } from './types/translation';
 import './App.css';
 
@@ -205,7 +205,7 @@ function App() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-br from-[#0f1724] via-[#0a0f1b] to-[#030712] animate-gradient-shift relative overflow-hidden">
+    <div className="w-full min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
       {/* Animated background elements */}
       <BackgroundAnimation />
 
@@ -258,8 +258,8 @@ function App() {
           </div>
         )}
 
-        {/* Main Content */}
-        <div className="cyber-card rounded-2xl shadow-cyber p-6 md:p-8 max-w-7xl mx-auto hover:shadow-[0_0_50px_rgba(59,130,246,0.15)]">
+        {/* Main Content - Voice Editor Layout */}
+        <div className="max-w-6xl mx-auto">
           
           {/* Rate Limit Warning */}
           {isRateLimited && (
@@ -281,59 +281,78 @@ function App() {
               />
             </div>
           )}
-          
-          {/* Input Section */}
-          <InputSection
-            value={inputText}
-            onChange={handleInputChange}
-            error={inputError}
-            maxChars={MAX_CHARACTERS}
-            minChars={MIN_CHARACTERS}
-            isLoading={isLoading}
-          />
 
-          {/* Style Selector */}
-          <StyleSelector
-            selectedStyle={selectedStyle}
-            onStyleSelect={setSelectedStyle}
-            isLoading={isLoading}
-          />
+          {/* Voice Editor Interface */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            {/* Left Panel - Input & Controls */}
+            <div className="lg:col-span-1 space-y-6">
+              
+              {/* Input Section */}
+              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6">
+                <InputSection
+                  value={inputText}
+                  onChange={handleInputChange}
+                  error={inputError}
+                  maxChars={MAX_CHARACTERS}
+                  minChars={MIN_CHARACTERS}
+                  isLoading={isLoading}
+                />
+              </div>
 
-          {/* Rage Slider */}
-          <RageSlider
-            value={rageLevel}
-            onChange={setRageLevel}
-            isLoading={isLoading}
-          />
+              {/* Style Selector */}
+              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6">
+                <StyleSelector
+                  selectedStyle={selectedStyle}
+                  onStyleSelect={setSelectedStyle}
+                  isLoading={isLoading}
+                />
+              </div>
 
-          {/* Voice Indicator */}
-          <VoiceIndicator 
-            style={selectedStyle} 
-            intensity={rageLevel}
-            className="mb-4 justify-center flex"
-          />
+              {/* Voice Indicator */}
+              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6">
+                <VoiceIndicator 
+                  style={selectedStyle} 
+                  intensity={rageLevel}
+                  className="justify-center flex"
+                />
+              </div>
 
-          {/* Translate Button */}
-          <TranslateButton
-            onTranslate={handleTranslate}
-            isValid={isFormValid()}
-            isLoading={isLoading}
-            isRateLimited={isRateLimited}
-            timeUntilNext={timeUntilNextRequest}
-            validationMessage={getValidationMessage()}
-          />
+            </div>
 
-          {/* Output Area with TTS */}
-          <OutputSection
-            outputText={outputText}
-            onCopy={() => handleCopyToClipboard()}
-            onClear={handleClearOutput}
-            onShare={handleShare}
-            isCopied={isCopied}
-            isLoading={isLoading}
-            translationStyle={selectedStyle}
-            rageLevel={rageLevel}
-          />
+            {/* Center Panel - Circular Rage Meter */}
+            <div className="lg:col-span-1 flex items-center justify-center">
+              <div className="bg-slate-800/50 backdrop-blur-xl rounded-3xl border border-slate-700/50 p-8 w-full max-w-md">
+                <CircularRageMeter
+                  value={rageLevel}
+                  onChange={setRageLevel}
+                  isLoading={isLoading}
+                  onTranslate={handleTranslate}
+                  isValid={isFormValid()}
+                  isRateLimited={isRateLimited}
+                  timeUntilNext={timeUntilNextRequest}
+                  validationMessage={getValidationMessage()}
+                />
+              </div>
+            </div>
+
+            {/* Right Panel - Output */}
+            <div className="lg:col-span-1">
+              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6 h-full">
+                <OutputSection
+                  outputText={outputText}
+                  onCopy={() => handleCopyToClipboard()}
+                  onClear={handleClearOutput}
+                  onShare={handleShare}
+                  isCopied={isCopied}
+                  isLoading={isLoading}
+                  translationStyle={selectedStyle}
+                  rageLevel={rageLevel}
+                />
+              </div>
+            </div>
+
+          </div>
 
         </div>
 

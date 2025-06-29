@@ -1,12 +1,11 @@
 /**
  * NavigationHeader Component
  * 
- * Header with navigation buttons for history and stats panels.
- * Provides clear visual feedback for active states and counts.
+ * Updated header for voice editor theme with sleek design.
  */
 
 import React from 'react';
-import { History, BarChart3, Zap } from 'lucide-react';
+import { History, BarChart3, Mic } from 'lucide-react';
 
 interface NavigationHeaderProps {
   historyCount: number;
@@ -25,19 +24,24 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
 }) => {
   return (
     <header className="text-center mb-8 animate-fade-in">
-      <h1 className="text-5xl md:text-7xl font-black text-white drop-shadow-2xl mb-4 animate-neon-glow">
-        Anger Translator 🔥
-      </h1>
-      <p className="text-xl md:text-2xl text-gray-300 font-medium drop-shadow-lg">
-        Turn your polite words into comedic rage
+      <div className="flex items-center justify-center gap-3 mb-4">
+        <Mic size={40} className="text-blue-400 animate-pulse" />
+        <h1 className="text-4xl md:text-6xl font-black text-white drop-shadow-2xl">
+          Anger Translator
+        </h1>
+        <span className="text-3xl animate-bounce">🔥</span>
+      </div>
+      
+      <p className="text-lg md:text-xl text-slate-300 font-medium mb-6">
+        Professional voice editor for your rage
       </p>
       
-      <div className="mt-4 flex justify-center">
-        <div className="glass rounded-full px-6 py-2 border border-[#1e293b]/50 animate-cyber-pulse">
-          <span className="text-gray-300 text-sm font-medium flex items-center gap-2">
-            <Zap size={16} className="text-blue-400 animate-pulse" />
-            Powered by AI Magic
-            <Zap size={16} className="text-blue-400 animate-pulse" />
+      <div className="flex justify-center">
+        <div className="bg-slate-800/50 backdrop-blur-xl rounded-full px-6 py-2 border border-slate-700/50">
+          <span className="text-slate-300 text-sm font-medium flex items-center gap-2">
+            <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
+            AI-Powered Translation Engine
+            <div className="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
           </span>
         </div>
       </div>
@@ -46,10 +50,10 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
       <div className="mt-6 flex justify-center gap-4">
         <button
           onClick={onToggleHistory}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-300 ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-300 backdrop-blur-xl ${
             showHistory 
               ? 'bg-blue-500/20 text-blue-400 border border-blue-500/50 shadow-[0_0_20px_rgba(59,130,246,0.3)]' 
-              : 'glass text-gray-300 hover:text-blue-400 hover:border-blue-500/30'
+              : 'bg-slate-800/50 text-slate-300 hover:text-blue-400 hover:border-blue-500/30 border border-slate-700/50'
           }`}
           aria-pressed={showHistory}
           aria-label={`${showHistory ? 'Hide' : 'Show'} translation history`}
@@ -59,10 +63,10 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
         </button>
         <button
           onClick={onToggleStats}
-          className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-300 ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-full font-medium transition-all duration-300 backdrop-blur-xl ${
             showStats 
               ? 'bg-purple-500/20 text-purple-400 border border-purple-500/50 shadow-[0_0_20px_rgba(147,51,234,0.3)]' 
-              : 'glass text-gray-300 hover:text-purple-400 hover:border-purple-500/30'
+              : 'bg-slate-800/50 text-slate-300 hover:text-purple-400 hover:border-purple-500/30 border border-slate-700/50'
           }`}
           aria-pressed={showStats}
           aria-label={`${showStats ? 'Hide' : 'Show'} statistics`}

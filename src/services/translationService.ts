@@ -1,6 +1,6 @@
 export interface TranslationRequest {
   text: string;
-  style: 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad';
+  style: 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad' | 'ny-italian';
   intensity: number;
 }
 
@@ -69,6 +69,124 @@ const SCOTTISH_DAD_PATTERNS = {
   ]
 };
 
+// NY Italian translation patterns
+const NY_ITALIAN_PATTERNS = {
+  // Classic NY Italian expressions
+  expressions: [
+    "Ay, what's ya problem here?",
+    "You gotta be kiddin' me!",
+    "Fuggedaboutit!",
+    "What am I, chopped liver?",
+    "You think I was born yesterday?",
+    "Get outta here with that!",
+    "Are you outta ya mind?",
+    "What's the matter with you?",
+    "You're breakin' my balls here!",
+    "Madonna mia!"
+  ],
+  
+  // Insults and put-downs
+  insults: [
+    "ya mook",
+    "ya jamook",
+    "ya gavone",
+    "ya stunad",
+    "ya cafone",
+    "ya jagoff",
+    "ya mezza-morto",
+    "ya stunod",
+    "ya mamaluke",
+    "ya schifoso"
+  ],
+  
+  // Tone cues
+  toneCues: [
+    "[yelling]",
+    "[mocking]",
+    "[threatening calm]",
+    "[offended]",
+    "[gesticulating wildly]",
+    "[throwing hands up]",
+    "[leaning in menacingly]",
+    "[voice rising]",
+    "[incredulous]",
+    "[disgusted]"
+  ],
+  
+  // NY Italian slang and phrases
+  slang: [
+    "capisce?",
+    "bada-bing bada-boom",
+    "what's ya story?",
+    "you're killin' me here",
+    "I'm walkin' here!",
+    "get the hell outta here",
+    "you're bustin' my chops",
+    "what's with the attitude?",
+    "don't give me that",
+    "I ain't playin' around"
+  ]
+};
+
+// Generate NY Italian translation
+const generateNYItalianRant = (text: string, intensity: number): string => {
+  const aggression = Math.floor(intensity * 0.5);
+  const sarcasm = Math.floor(intensity * 0.4);
+  const mockery = Math.floor(intensity * 0.4);
+  
+  let response = "";
+  
+  // Opening based on intensity
+  if (intensity <= 20) {
+    response += "[mildly annoyed] Ay, listen here - ";
+  } else if (intensity <= 40) {
+    response += "[getting heated] What's ya problem? ";
+  } else if (intensity <= 60) {
+    response += "[yelling] **AY, WHAT THE HELL** ";
+  } else if (intensity <= 80) {
+    response += "[gesticulating wildly] **MADONNA MIA!** What's the matter with you? ";
+  } else {
+    response += "[absolutely losing it] **FUGGEDABOUTIT!** You gotta be **OUTTA YA MIND** ";
+  }
+  
+  // Context-aware rant based on input
+  const lowerText = text.toLowerCase();
+  
+  if (lowerText.includes('computer') || lowerText.includes('tech') || lowerText.includes('software')) {
+    response += `this **PIECE OF JUNK** computer is drivin' me up the wall! [throwing hands up] I'm tryna ${text.toLowerCase()} and it's like talkin' to a brick wall! `;
+    if (intensity > 50) {
+      response += "[mocking] Oh, what am I, some kinda **COMPUTER GENIUS** now? [offended] This thing's got less brains than my cousin Vinny, and that's sayin' somethin'!";
+    }
+  } else if (lowerText.includes('work') || lowerText.includes('job') || lowerText.includes('boss')) {
+    response += `work's got me ready to **LOSE MY MIND**! [voice rising] ${text} - and they wonder why I'm ready to walk outta here! `;
+    if (intensity > 60) {
+      response += "[incredulous] What am I, a **MIRACLE WORKER**? [yelling] These people got some nerve, I tell ya! Capisce?";
+    }
+  } else if (lowerText.includes('traffic') || lowerText.includes('driving') || lowerText.includes('car')) {
+    response += `the traffic today is **ABSOLUTELY INSANE**! [leaning in menacingly] ${text} - and every **MOOK** in the city decided to take their car out! `;
+    if (intensity > 70) {
+      response += "[threatening calm] Hey, genius! **LEARN TO DRIVE!** What'd you get ya license, from a Cracker Jack box?";
+    }
+  } else {
+    // Generic rant
+    response += `${text} - and I'm supposed to just sit here and take it like some kinda **STUNAD**? [disgusted] **NO WAY!** `;
+    if (intensity > 40) {
+      response += `[mocking] Oh, that makes **PERFECT SENSE**, right? [offended] What am I, chopped liver here? ${NY_ITALIAN_PATTERNS.insults[Math.floor(Math.random() * NY_ITALIAN_PATTERNS.insults.length)]}!`;
+    }
+  }
+  
+  // Intensity-based escalation
+  if (intensity > 80) {
+    response += ` [absolutely losing it] **I'VE HAD IT UP TO HERE** with this **BULL****! You're breakin' my balls here! Fuggedaboutit!`;
+  } else if (intensity > 60) {
+    response += ` [gesticulating wildly] This is **RIDICULOUS**, ya hear me? **RIDICULOUS!**`;
+  } else if (intensity > 40) {
+    response += ` [shaking head] Unbelievable... just **UNBELIEVABLE**.`;
+  }
+  
+  return response;
+};
+
 // Generate Scottish Dad translation
 const generateScottishDadRant = (text: string, intensity: number): string => {
   const disbelief = Math.floor(intensity * 0.5);
@@ -135,6 +253,15 @@ const mockTranslate = async (request: TranslationRequest): Promise<TranslationRe
   await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1200));
   
   const { text, style, intensity } = request;
+  
+  // Handle NY Italian style
+  if (style === 'ny-italian') {
+    const translation = generateNYItalianRant(text, intensity);
+    return {
+      translatedText: translation,
+      success: true
+    };
+  }
   
   // Handle Scottish Dad style
   if (style === 'scottish-dad') {

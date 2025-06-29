@@ -3,7 +3,7 @@
  * 
  * Provides real AI translation capabilities using OpenRouter's unified API.
  * Optimized for Mixtral-8x7b-instruct and other high-quality models.
- * Now includes Scottish Dad translator with authentic Glaswegian fury.
+ * Now includes NY Italian translator with authentic New York fury.
  */
 
 export interface OpenRouterConfig {
@@ -262,7 +262,7 @@ class OpenRouterService {
       throw new Error('OpenRouter service not configured. Please provide a valid API key from https://openrouter.ai/keys');
     }
 
-    const appName = import.meta.env.VITE_OPENROUTER_APP_NAME || 'Scottish Dad Translator';
+    const appName = import.meta.env.VITE_OPENROUTER_APP_NAME || 'NY Italian Translator';
 
     console.log(`🚀 Making request to OpenRouter with ${this.config.model}`);
 
@@ -306,7 +306,7 @@ class OpenRouterService {
    */
   async translateText(
     text: string, 
-    style: 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad', 
+    style: 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad' | 'ny-italian', 
     intensity: number
   ): Promise<string> {
     if (!this.isReady()) {
@@ -362,7 +362,8 @@ class OpenRouterService {
       gamer: `Create a short gamer rage response. ${rageLevel.gamer}`,
       sarcastic: `Create a concise sarcastic response. ${rageLevel.sarcastic}`,
       karen: `Create a brief Karen-style suburban entitlement rant. ${rageLevel.karen}`,
-      'scottish-dad': `Create a brief Scottish Dad Glaswegian rant. ${rageLevel.scottishDad}`
+      'scottish-dad': `Create a brief Scottish Dad Glaswegian rant. ${rageLevel.scottishDad}`,
+      'ny-italian': `Create a brief NY Italian-American roast rant. ${rageLevel.nyItalian}`
     };
 
     const baseRules = `You create ultra-brief rage responses that sound like real angry people. MAXIMUM 2 sentences. NO repetition of input text.
@@ -374,6 +375,17 @@ Rules:
 - Maximum 2 sentences, under 50 words
 - Make it funny, not offensive
 - Sound like authentic human anger at level ${intensity}/10`;
+
+    // Add NY Italian specific rules
+    if (style === 'ny-italian') {
+      return baseRules + `
+- Use authentic NY Italian-American dialect and expressions
+- Include tone cues: [yelling], [mocking], [threatening calm], [offended], [gesticulating wildly]
+- Use NY Italian slang: "ay", "fuggedaboutit", "capisce", "mook", "gavone", "stunad"
+- For rage levels 8-10, use censored profanity: **BLEEP**, **DAMN**, **HELL**
+- Sound like a furious fast-talking New Yorker in his 40s (think Joe Pesci meets code review)
+- Include expressions like "What's ya problem?", "You gotta be kiddin' me!", "Get outta here!"`;
+    }
 
     // Add Scottish Dad specific rules
     if (style === 'scottish-dad') {
@@ -414,6 +426,7 @@ Rules:
     sarcastic: string;
     karen: string;
     scottishDad: string;
+    nyItalian: string;
   } {
     switch (intensity) {
       case 1:
@@ -422,7 +435,8 @@ Rules:
           gamer: "Mildly frustrated. Use 'ugh' or 'seriously?' with minimal caps.",
           sarcastic: "Gentle irony. Use 'how lovely' or 'that's great' with subtle sarcasm.",
           karen: "Polite but entitled. Use '[fake-nice]' tone with 'Excuse me, but...' and mention being a valued customer.",
-          scottishDad: "Mildly annoyed Scottish dad. Use 'Och' or 'Right then' with gentle Glaswegian accent."
+          scottishDad: "Mildly annoyed Scottish dad. Use 'Och' or 'Right then' with gentle Glaswegian accent.",
+          nyItalian: "Mildly annoyed NY Italian. Use '[mildly annoyed]' tone with 'Ay, listen here' and gentle Brooklyn accent."
         };
       
       case 2:
@@ -431,7 +445,8 @@ Rules:
           gamer: "Getting annoyed. Use 'come on' or 'really?' with some emphasis.",
           sarcastic: "Light mockery. Use 'wonderful' or 'fantastic' with obvious sarcasm.",
           karen: "Slightly condescending. Use '[passive-aggressive]' tone and mention 'standards' or 'back in my day'.",
-          scottishDad: "Getting irritated. Use 'Aye, right' or 'What's all this then?' with mild Scottish frustration."
+          scottishDad: "Getting irritated. Use 'Aye, right' or 'What's all this then?' with mild Scottish frustration.",
+          nyItalian: "Getting irritated. Use '[getting heated]' tone with 'What's ya problem?' and slight NY attitude."
         };
       
       case 3:
@@ -440,7 +455,8 @@ Rules:
           gamer: "Visibly annoyed. Use 'dude' or 'what the heck' with moderate caps.",
           sarcastic: "Clear disdain. Use 'how delightful' or 'absolutely brilliant' with bite.",
           karen: "Getting snippy. Use '[condescending]' tone, mention knowing the owner, and demand the manager.",
-          scottishDad: "Clearly annoyed. Use '[sighing heavily]' and 'For crying out loud' with Scottish exasperation."
+          scottishDad: "Clearly annoyed. Use '[sighing heavily]' and 'For crying out loud' with Scottish exasperation.",
+          nyItalian: "Clearly annoyed. Use '[voice rising]' and 'You gotta be kiddin' me!' with NY frustration."
         };
       
       case 4:
@@ -449,7 +465,8 @@ Rules:
           gamer: "Getting heated. Use 'are you serious' or 'this is ridiculous' with some CAPS.",
           sarcastic: "Sharp wit. Use 'how absolutely precious' or 'what a masterpiece' with cutting tone.",
           karen: "Demanding mode. Use '[entitled]' tone, mention being a taxpayer/mother, and threaten to call corporate.",
-          scottishDad: "Getting heated. Use '[muttering]' and 'What in the name of...' with growing Scottish anger."
+          scottishDad: "Getting heated. Use '[muttering]' and 'What in the name of...' with growing Scottish anger.",
+          nyItalian: "Getting heated. Use '[incredulous]' and 'Are you outta ya mind?' with growing NY anger."
         };
       
       case 5:
@@ -458,7 +475,8 @@ Rules:
           gamer: "Properly mad. Use 'WHAT' or 'ARE YOU KIDDING ME' with caps and emphasis.",
           sarcastic: "Biting sarcasm. Use 'OH how WONDERFUL' or 'absolutely RIVETING' with caps for emphasis.",
           karen: "Full Karen mode. Use '[screeching]' tone, threaten Facebook posts, and demand immediate action.",
-          scottishDad: "Properly angry. Use '[shouting]' and 'WHAT THE HELL' with authentic Scottish fury and mild profanity."
+          scottishDad: "Properly angry. Use '[shouting]' and 'WHAT THE HELL' with authentic Scottish fury and mild profanity.",
+          nyItalian: "Properly angry. Use '[yelling]' and 'WHAT THE HELL' with authentic NY fury and mild profanity."
         };
       
       case 6:
@@ -467,7 +485,8 @@ Rules:
           gamer: "Really angry. Use 'BRUH' or 'THIS IS INSANE' with multiple caps words.",
           sarcastic: "Scathing mockery. Use 'OH MAGNIFICENT' or 'how absolutely THRILLING' with heavy sarcasm.",
           karen: "Nuclear Karen. Use '[threatening]' tone, mention husband's importance, and threaten lawyers.",
-          scottishDad: "Really angry. Use '[pacing around]' and 'BLOODY HELL' with escalating Scottish rage and stronger language."
+          scottishDad: "Really angry. Use '[pacing around]' and 'BLOODY HELL' with escalating Scottish rage and stronger language.",
+          nyItalian: "Really angry. Use '[gesticulating wildly]' and 'MADONNA MIA!' with escalating NY rage and stronger language."
         };
       
       case 7:
@@ -476,7 +495,8 @@ Rules:
           gamer: "Seriously pissed. Use 'WHAT THE HELL' or 'ARE YOU FREAKING SERIOUS' with lots of caps.",
           sarcastic: "Savage wit. Use 'OH how absolutely SPECTACULAR' or 'what a BRILLIANT display' with venom.",
           karen: "Completely unhinged. Use '[nuclear Karen]' tone, threaten police/news, and claim discrimination.",
-          scottishDad: "Seriously pissed. Use '[voice cracking with fury]' and 'JESUS WEPT' with intense Scottish profanity and insults like 'ya numpty'."
+          scottishDad: "Seriously pissed. Use '[voice cracking with fury]' and 'JESUS WEPT' with intense Scottish profanity and insults like 'ya numpty'.",
+          nyItalian: "Seriously pissed. Use '[leaning in menacingly]' and 'YOU'RE BREAKIN' MY BALLS' with intense NY profanity and insults like 'ya mook'."
         };
       
       case 8:
@@ -485,7 +505,8 @@ Rules:
           gamer: "Really mad. Use 'WHAT IS WRONG WITH YOU' or 'THIS IS ABSOLUTELY INSANE' with heavy caps. Use 'damn', 'hell', 'crap'.",
           sarcastic: "Brutal sarcasm. Use 'OH how absolutely DIVINE' or 'what a STUNNING example' with pure venom. Light profanity for emphasis.",
           karen: "Hysterical meltdown. Use '[screaming]' tone, threaten BBB/lawyers, use **DAMN** and **HELL** for profanity, demand names and badge numbers.",
-          scottishDad: "Furious Scottish dad. Use '[sputtering with rage]' and '**BLOODY CHRIST**' with heavy Scottish profanity, insults like 'ya absolute weapon', and authentic Glaswegian fury."
+          scottishDad: "Furious Scottish dad. Use '[sputtering with rage]' and '**BLOODY CHRIST**' with heavy Scottish profanity, insults like 'ya absolute weapon', and authentic Glaswegian fury.",
+          nyItalian: "Furious NY Italian. Use '[threatening calm]' and '**FUGGEDABOUTIT**' with heavy NY profanity, insults like 'ya gavone', and authentic Brooklyn fury."
         };
       
       case 9:
@@ -494,7 +515,8 @@ Rules:
           gamer: "Extremely pissed. Use 'WHAT THE ACTUAL HELL' or 'ARE YOU OUT OF YOUR MIND' with maximum caps. Strong profanity: 'shit', 'damn', 'hell'.",
           sarcastic: "Devastating wit. Use 'OH how absolutely EXQUISITE' or 'what a PHENOMENAL disaster' with pure hatred. Moderate profanity for impact.",
           karen: "Complete psychotic break. Use '[completely losing it]' tone, threaten health department/police, use **SHIT** and **DAMN** for strong profanity.",
-          scottishDad: "Absolutely livid. Use '[absolutely losing it]' and '**WHAT IN THE NAME OF THE WEE MAN**' with maximum Scottish profanity, calling people 'pure mental' and 'absolute bampots'."
+          scottishDad: "Absolutely livid. Use '[absolutely losing it]' and '**WHAT IN THE NAME OF THE WEE MAN**' with maximum Scottish profanity, calling people 'pure mental' and 'absolute bampots'.",
+          nyItalian: "Absolutely livid. Use '[absolutely losing it]' and '**WHAT'S THE MATTER WITH YOU**' with maximum NY profanity, calling people 'stunad' and 'mamaluke'."
         };
       
       case 10:
@@ -503,7 +525,8 @@ Rules:
           gamer: "Absolute nuclear fury. Use 'WHAT THE FUCK IS THIS SHIT' or 'I'M LOSING MY FUCKING MIND' with maximum intensity. Full profanity: 'fuck', 'shit', 'goddamn'.",
           sarcastic: "Pure nuclear destruction. Use 'OH how absolutely FUCKING PERFECT' or 'what a GODDAMN MASTERPIECE' with nuclear sarcasm. Strong profanity for maximum impact.",
           karen: "Absolute insanity. Use '[complete psychotic break]' tone, threaten to burn place down, call FBI, use **FUCKING**, **GODDAMN**, **SHIT** for maximum censored profanity.",
-          scottishDad: "Nuclear Scottish meltdown. Use '[absolutely mental]' and '**HOLY SHITE, WHAT THE BLOODY HELL**' with maximum Glaswegian profanity, calling everyone 'pure dead brilliant muppets' and threatening to 'chuck it all in'."
+          scottishDad: "Nuclear Scottish meltdown. Use '[absolutely mental]' and '**HOLY SHITE, WHAT THE BLOODY HELL**' with maximum Glaswegian profanity, calling everyone 'pure dead brilliant muppets' and threatening to 'chuck it all in'.",
+          nyItalian: "Nuclear NY Italian meltdown. Use '[absolutely losing it]' and '**FUGGEDABOUTIT! YOU'RE OUTTA YA MIND**' with maximum Brooklyn profanity, calling everyone 'cafone' and 'schifoso' and threatening to 'lose it completely'."
         };
       
       default:
@@ -519,7 +542,7 @@ Rules:
       console.log('🧪 Testing OpenRouter connection...');
       const response = await this.translateText(
         "Hello, this is a test message.",
-        "scottish-dad",
+        "ny-italian",
         3
       );
       

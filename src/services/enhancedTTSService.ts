@@ -2,7 +2,7 @@
  * Enhanced TTS Service
  * 
  * Combines ElevenLabs TTS with bleep sound effects for censored content.
- * Fixed to properly handle async audio playback and error handling.
+ * Optimized for natural conversational flow with minimal pauses.
  */
 
 import { elevenLabsService } from './elevenLabsService';
@@ -65,14 +65,25 @@ export class EnhancedTTSService {
           );
           await this.playAudio(audioUrl);
         } else if (segment.type === 'bleep') {
-          // Play bleep sound
+          // Play bleep sound with minimal delay for natural flow
           console.log('🔊 Playing bleep for:', segment.content);
           await bleepSoundService.bleepForText(segment.content);
         }
         
-        // Small pause between segments for natural flow
+        // Minimal pause between segments for natural conversational flow
+        // Only add pause between text segments, not before/after bleeps
         if (i < segments.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 150));
+          const nextSegment = segments[i + 1];
+          const currentIsText = segment.type === 'text';
+          const nextIsText = nextSegment.type === 'text';
+          
+          // Only pause between text segments, not around bleeps
+          if (currentIsText && nextIsText) {
+            await new Promise(resolve => setTimeout(resolve, 50)); // Very short pause between text segments
+          } else {
+            // No pause when transitioning to/from bleeps for natural flow
+            await new Promise(resolve => setTimeout(resolve, 10)); // Minimal processing delay
+          }
         }
       } catch (error) {
         console.error(`❌ Failed to process segment ${i + 1}:`, error);
@@ -91,7 +102,7 @@ export class EnhancedTTSService {
   }
 
   /**
-   * Parse text into speech and bleep segments
+   * Parse text into speech and bleep segments with smart text handling
    */
   private parseTextWithBleeps(text: string): Array<{ type: 'text' | 'bleep'; content: string }> {
     const segments: Array<{ type: 'text' | 'bleep'; content: string }> = [];
@@ -109,8 +120,16 @@ export class EnhancedTTSService {
           segments.push({ type: 'bleep', content: bleepContent });
         }
       } else if (part.trim()) {
-        // This is regular text
-        segments.push({ type: 'text', content: part });
+        // This is regular text - clean up spacing around bleeps
+        let cleanText = part;
+        
+        // Remove extra spaces that might cause awkward pauses
+        cleanText = cleanText.replace(/\s+/g, ' ').trim();
+        
+        // If this text segment starts or ends with punctuation, preserve natural flow
+        if (cleanText) {
+          segments.push({ type: 'text', content: cleanText });
+        }
       }
     }
     

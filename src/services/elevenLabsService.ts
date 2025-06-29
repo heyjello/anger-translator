@@ -36,7 +36,7 @@ const DEFAULT_CONFIG: ElevenLabsConfig = {
 
 export class ElevenLabsService {
   private config: ElevenLabsConfig;
-  private isConfigured: boolean = false;
+  private _isConfigured: boolean = false;
   private audioCache: Map<string, string> = new Map();
 
   constructor() {
@@ -52,7 +52,7 @@ export class ElevenLabsService {
     
     if (envApiKey && envApiKey !== 'your_api_key_here') {
       this.config.apiKey = envApiKey;
-      this.isConfigured = true;
+      this._isConfigured = true;
       console.log('🎤 ElevenLabs TTS configured from environment variables');
     } else {
       console.log('⚠️ ElevenLabs not configured. Please set VITE_ELEVENLABS_API_KEY in .env');
@@ -64,7 +64,7 @@ export class ElevenLabsService {
    * Check if the service is properly configured
    */
   isConfigured(): boolean {
-    return this.isConfigured && !!this.config.apiKey && this.config.apiKey !== 'your_api_key_here';
+    return this._isConfigured && !!this.config.apiKey && this.config.apiKey !== 'your_api_key_here';
   }
 
   /**
@@ -79,7 +79,7 @@ export class ElevenLabsService {
    */
   getStatus(): { configured: boolean; hasApiKey: boolean } {
     return {
-      configured: this.isConfigured,
+      configured: this._isConfigured,
       hasApiKey: !!this.config.apiKey && this.config.apiKey !== 'your_api_key_here'
     };
   }
@@ -93,7 +93,7 @@ export class ElevenLabsService {
     }
     
     this.config.apiKey = apiKey;
-    this.isConfigured = true;
+    this._isConfigured = true;
     console.log('✅ ElevenLabs TTS service configured successfully');
   }
 

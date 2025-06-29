@@ -14,7 +14,7 @@ import {
   StatsPanel,
   type TranslationHistory
 } from './components';
-import { ParticleEffect, EnhancedFooter, AIStatusIndicator } from './components/ui';
+import { ParticleEffect, EnhancedFooter, AIStatusIndicator, VoiceIndicator } from './components/ui';
 import { RageStyle } from './types/translation';
 import './App.css';
 
@@ -304,6 +304,13 @@ function App() {
             value={rageLevel}
             onChange={setRageLevel}
             isLoading={isLoading}
+          />
+
+          {/* Voice Indicator */}
+          <VoiceIndicator 
+            style={selectedStyle} 
+            intensity={rageLevel}
+            className="mb-4 justify-center flex"
           />
 
           {/* Translate Button */}

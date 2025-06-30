@@ -54,9 +54,9 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   karen: {
-    voice_id: "ThT5KcBeYPX3keUQqHPh", // Dorothy
-    name: "Dorothy",
-    description: "Female British voice",
+    voice_id: "opAH2ij5oCyMnsDUGrpR", // YOUR CUSTOM Karen voice
+    name: "Karen",
+    description: "Custom Karen voice",
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   'scottish-dad': {
@@ -66,15 +66,15 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   'ny-italian': {
-    voice_id: "2EiwWnXFnvU5JabPnv8n", // Clyde
-    name: "Clyde",
-    description: "Mature male voice",
+    voice_id: "CaYmcrR5WjNfLsVo7ReL", // YOUR CUSTOM NY Italian voice
+    name: "NY Italian",
+    description: "Custom NY Italian voice",
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   enforcer: {
-    voice_id: "pNInz6obpgDQGcFmaJgB", // Adam
-    name: "Adam",
-    description: "Deep, authoritative voice",
+    voice_id: "ujTRvH905hCgW1uUwWye", // YOUR CUSTOM Enforcer voice
+    name: "Enforcer",
+    description: "Custom Enforcer voice",
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   'highland-howler': {
@@ -84,15 +84,15 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   don: {
-    voice_id: "2EiwWnXFnvU5JabPnv8n", // Clyde
-    name: "Clyde",
-    description: "Sophisticated male voice",
+    voice_id: "CaYmcrR5WjNfLsVo7ReL", // YOUR CUSTOM NY Italian voice (reused for Don)
+    name: "Don",
+    description: "Custom NY Italian voice for Don persona",
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   'cracked-controller': {
-    voice_id: "ErXwobaYiN019PkySvjV", // Antoni
+    voice_id: "ErXwobaYiN019PkySvjV", // Antoni (good for energetic gamer)
     name: "Antoni",
-    description: "High energy male voice",
+    description: "High energy male voice for cracked gamer",
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   }
 };
@@ -193,5 +193,9 @@ export const ALL_VOICE_IDS = {
   clyde: "2EiwWnXFnvU5JabPnv8n",
   bella: "EXAVITQu4vr4xnSDxMaL",
   dorothy: "ThT5KcBeYPX3keUQqHPh",
-  highlandHowler: "cTMt3eRoD8RF6F0MIt0q" // YOUR CUSTOM VOICE
+  // YOUR CUSTOM VOICES
+  highlandHowler: "cTMt3eRoD8RF6F0MIt0q",
+  karen: "opAH2ij5oCyMnsDUGrpR",
+  nyItalian: "CaYmcrR5WjNfLsVo7ReL",
+  enforcer: "ujTRvH905hCgW1uUwWye"
 } as const;

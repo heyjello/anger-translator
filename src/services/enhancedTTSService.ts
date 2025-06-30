@@ -98,20 +98,30 @@ export class EnhancedTTSService {
   }
 
   /**
-   * Clean text for speech by removing tone cues but preserving ElevenLabs v3 audio tags
+   * Clean text for speech - FIXED to properly handle stage directions
+   * ✅ KEEP: Tone cues [angry], [shouting] for ElevenLabs emotion
+   * ✅ KEEP: Audio tags <emphasis>, <break> for ElevenLabs processing  
+   * ✅ KEEP: Profanity markers **damn** for bleeping system
+   * ❌ REMOVE: Parenthetical stage directions (leaning in...)
+   * ❌ REMOVE: Notes (Note: ...)
    */
   private cleanTextForSpeech(text: string): string {
     let cleanedText = text;
     
-    // Remove tone cues like [explosive energy], [screaming], etc.
-    cleanedText = cleanedText.replace(/\[([^\]]+)\]/g, '');
+    // Remove parenthetical stage directions like (leaning in with narrowed eyes, pointing aggressively)
+    cleanedText = cleanedText.replace(/\([^)]*\)/g, '');
     
-    // Keep ElevenLabs v3 audio tags for proper speech synthesis
-    // <emphasis>, <break>, <prosody> tags should be preserved
+    // Remove notes like (Note: Perfectly balanced at anger level 5/100...)
+    cleanedText = cleanedText.replace(/\(Note:[^)]*\)/gi, '');
     
-    // Remove multiple spaces and clean up
+    // KEEP tone cues like [angry], [shouting] - ElevenLabs v3 understands these!
+    // KEEP audio tags like <emphasis>, <break>, <prosody> - ElevenLabs v3 processes these
+    // KEEP profanity markers **word** - needed for bleeping system
+    
+    // Clean up multiple spaces and trim
     cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
     
+    console.log('🧹 Text cleaned for TTS:', cleanedText);
     return cleanedText;
   }
 

@@ -84,7 +84,7 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     }
   },
   'ny-italian': {
-    voice_id: "2EiwWnXFnvU5JabPnv8n", // Clyde - Mature male voice
+    voice_id: "CaYmcrR5WjNfLsVo7ReL", // Clyde - Mature male voice
     name: "Clyde",
     description: "Fast-talking NY Italian-American voice for Brooklyn fury",
     voice_settings: {

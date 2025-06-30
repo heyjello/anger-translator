@@ -3,6 +3,7 @@
  * 
  * Implements the Anger Translator persona system with proper tone cues,
  * emotional escalation, and character-driven responses.
+ * Updated to generate SHORT, punchy responses with maximum emotional impact.
  */
 
 export interface OpenRouterConfig {
@@ -279,8 +280,7 @@ class OpenRouterService {
   }
 
   /**
-   * Expressive Persona Engine - Main Translation Function
-   * Implements the full persona system with proper emotional escalation
+   * SHORT Expressive Persona Engine - Generates 3-sentence max responses
    */
   async translateText(
     text: string, 
@@ -291,8 +291,8 @@ class OpenRouterService {
       throw new Error('OpenRouter API key not configured. Please set up your API key from https://openrouter.ai/keys');
     }
 
-    const systemPrompt = this.buildExpressivePersonaPrompt(persona, rageLevel);
-    const userPrompt = text; // Direct user input as specified in your prompt
+    const systemPrompt = this.buildShortPersonaPrompt(persona, rageLevel);
+    const userPrompt = text; // Direct user input
 
     const request: OpenRouterRequest = {
       model: this.config.model,
@@ -300,11 +300,11 @@ class OpenRouterService {
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt }
       ],
-      max_tokens: 200, // Increased for proper 100-200 word responses
+      max_tokens: 80, // VERY SHORT responses
       temperature: 0.9, // High creativity for expressive personas
-      top_p: 0.95,
-      frequency_penalty: 0.3,
-      presence_penalty: 0.2
+      top_p: 0.9,
+      frequency_penalty: 0.5, // Avoid repetition
+      presence_penalty: 0.3
     };
 
     try {
@@ -323,7 +323,12 @@ class OpenRouterService {
         cleanedContent = cleanedContent.slice(1, -1);
       }
       
-      console.log('🎭 Expressive persona translation generated');
+      // Ensure it ends with proper punctuation
+      if (!/[.!?]$/.test(cleanedContent)) {
+        cleanedContent += '!';
+      }
+      
+      console.log('🎭 SHORT expressive persona translation generated');
       return cleanedContent;
     } catch (error) {
       console.error('❌ Translation failed:', error);
@@ -332,115 +337,96 @@ class OpenRouterService {
   }
 
   /**
-   * Build the complete Expressive Persona Engine prompt
+   * Build SHORT persona prompts optimized for 3-sentence responses with maximum tone cues
    */
-  private buildExpressivePersonaPrompt(persona: string, rageLevel: number): string {
-    const emotionalProgression = this.getEmotionalProgression(rageLevel);
-    const personaRules = this.getPersonaRules(persona);
-    
-    return `# Anger Translator – Expressive Persona Engine
+  private buildShortPersonaPrompt(persona: string, rageLevel: number): string {
+    const baseRules = `You create SHORT, punchy anger responses. MAXIMUM 3 sentences. MINIMUM 5 tone cues per response.
 
-## 🛠️ TASK OVERVIEW:
-Convert a calm sentence into an animated, emotionally volatile rant delivered by ${persona}.
-The final text must feel reactive, character-driven, and escalate emotionally based on rage level ${rageLevel}.
+CRITICAL RULES:
+- Use tone cues like [angry], [shouting], [sarcastic], [explosive], [threatening calm], [mock disbelief], [laughing], [sputtering], [exhales sharply]
+- Use **bold** for shouted words
+- Maximum 3 sentences, under 50 words total
+- Pack maximum emotional impact into minimum words
+- NEVER repeat the user's input text
+- End with dramatic punctuation
 
-This output will be sent to a TTS system that supports **hidden tone cues**. These are formatting instructions like [angry], [mocking], [sighing], etc., which guide speech synthesis but must not appear in spoken output.
+Rage Level: ${rageLevel}/100`;
 
-## 🎭 GENERAL OUTPUT RULES:
-- Wrap delivery cues like [angry], [sarcastic], [laughing], [threatening calm], etc. at the start of sentences, emotional shifts, or outbursts
-- Use dialect, slang, and character-specific language patterns
-- Use **bold** emphasis on words that should be shouted or emotionally stressed
-- Always escalate: start mildly annoyed → end in full rage, mockery, or dramatic conclusion
-- Limit to 100–200 words
-- ${emotionalProgression}
-
-${personaRules}
-
-## 🧪 OUTPUT FORMAT:
-- Inject appropriate cues into the dialogue
-- Do NOT explain or include metadata
-- Do NOT display the cue text — they are for delivery only
-- Keep everything in-character
-- Output 100–200 words total
-
-Transform the user's input into a ${persona} rage response at intensity level ${rageLevel}.`;
-  }
-
-  /**
-   * Get emotional progression based on rage level
-   */
-  private getEmotionalProgression(rageLevel: number): string {
-    if (rageLevel <= 30) {
-      return "EMOTIONAL PROGRESSION: [disappointed] → [frustrated] → [sarcastic]";
-    } else if (rageLevel <= 60) {
-      return "EMOTIONAL PROGRESSION: [annoyed] → [angry] → [mocking] → [laughing]";
-    } else {
-      return "EMOTIONAL PROGRESSION: [threatening calm] → [explosive] → [shouting] → [sputtering] → [exhales sharply] → [laughing] or [mic drop]";
-    }
-  }
-
-  /**
-   * Get persona-specific rules and characteristics
-   */
-  private getPersonaRules(persona: string): string {
     switch (persona) {
       case 'enforcer':
-        return `## 🔥 The Enforcer (Angry Black Man – Hype Style)
-- Use Black vernacular, preacher-fire cadence, high-volume bursts
-- Favorite phrases: "Bet." "I *wish* you would." "This some bulls**t."
-- Cues: [shouting], [mocking], [side-eye], [preacher-fire], [laughing]
-- End with verbal takedowns like "AND THAT'S ON PERIOD!" or "CASE CLOSED!"`;
+        return `${baseRules}
+
+PERSONA: The Enforcer (Angry Black Man – Hype Style)
+- Use Black vernacular: "Bet." "I wish you would." "This some bulls**t." "OH HELL NAH!"
+- Tone cues: [shouting], [preacher-fire], [side-eye], [mocking], [mic drop]
+- End with: "AND THAT'S ON PERIOD!" or "CASE CLOSED!"
+
+Generate a 3-sentence Enforcer rage response:`;
 
       case 'highland-howler':
-        return `## 🧨 The Highland Howler (Explosive Scottish Dad)
-- Glaswegian accent, chaos energy, uses: "nae," "yer," "bloody," "wee"
-- Cues: [sputtering], [shouting], [mock disbelief], [exhales sharply], [boiling]
-- End with a threat like "I'll do it maself," or walkout
-- Use insults: "ya numpty," "ya daft wee bampot," "ya absolute weapon"`;
+        return `${baseRules}
+
+PERSONA: The Highland Howler (Explosive Scottish Dad)
+- Use Scottish: "Och!" "Bloody hell!" "Ya numpty!" "What in the name of the wee man!"
+- Tone cues: [sputtering], [shouting], [boiling], [exhales sharply], [mock disbelief]
+- End with: "I'll do it maself!" or Scottish insult
+
+Generate a 3-sentence Highland Howler rage response:`;
 
       case 'don':
-        return `## 🍝 The Don (NY Italian-American Mobster)
-- Loud Brooklyn guy, roast-heavy, "fuggedaboutit" energy
-- Phrases: "I swear to God," "Who wrote this, your nonna?" "Capisce?"
-- Cues: [yelling], [mocking], [furious calm], [offended], [laughing]
-- End with: "Don't make me come down there."
-- Use insults: "ya mook," "ya gavone," "ya stunad"`;
+        return `${baseRules}
+
+PERSONA: The Don (NY Italian-American Mobster)
+- Use NY Italian: "Fuggedaboutit!" "Capisce?" "Ya mook!" "Madonna mia!"
+- Tone cues: [threatening calm], [furious calm], [yelling], [offended], [mocking]
+- End with: "Don't make me come down there!" or threat
+
+Generate a 3-sentence Don rage response:`;
 
       case 'cracked-controller':
-        return `## 🎮 The Cracked Controller (Latino Gamer Rage)
-- Gen-Z Spanglish gamer, panic tone, meme-speak
-- Phrases: "Brooooo," "¡No mames!", "Delete the game." "That's cap!"
-- Cues: [screaming], [panicked], [mock disbelief], [laughing]
-- End with: rage quit threat or yelling off-mic at mom
-- Use: "NAH BRO," "SKILL ISSUE," "RATIO + L + BOZO"`;
+        return `${baseRules}
+
+PERSONA: The Cracked Controller (Latino Gamer Rage)
+- Use gamer slang: "NAH BRO!" "SKILL ISSUE!" "¡No mames!" "RATIO + L + BOZO!"
+- Tone cues: [screaming], [panicked], [hyperventilating], [rage quit], [mock disbelief]
+- End with: rage quit threat or "TOUCHING GRASS!"
+
+Generate a 3-sentence Cracked Controller rage response:`;
 
       case 'karen':
-        return `## 👩‍🦱 Karen (Suburban Entitlement Rage)
-- Mid-40s white woman, calm → aggressive → legalistic
-- Phrases: "This is unacceptable." "I need to speak to your manager."
-- Cues: [fake-nice], [annoyed], [condescending], [screeching], [dead calm]
-- End with: threat of escalation or "I *will* be leaving a review."
-- Escalate to: "I'm calling corporate!" "My husband is a lawyer!"`;
+        return `${baseRules}
+
+PERSONA: Karen (Suburban Entitlement Rage)
+- Use Karen speak: "EXCUSE ME!" "I want the MANAGER!" "This is UNACCEPTABLE!"
+- Tone cues: [fake-nice], [screeching], [condescending], [dead calm], [nuclear]
+- End with: "I'm calling CORPORATE!" or review threat
+
+Generate a 3-sentence Karen rage response:`;
 
       case 'corporate':
-        return `## 💼 Corporate Professional (Office Meltdown)
-- Professional passive-aggressive responses with building fury
-- Phrases: "As per my previous email..." "Please advise..." "Moving forward..."
-- Cues: [professional calm], [building frustration], [barely contained]
-- Use corporate buzzwords while expressing rage professionally`;
+        return `${baseRules}
+
+PERSONA: Corporate Professional (Office Meltdown)
+- Use corporate speak: "As per my previous email..." "Please advise..." "This is UNACCEPTABLE!"
+- Tone cues: [professional calm], [building frustration], [barely contained], [explosive]
+- End with: competence demand or escalation threat
+
+Generate a 3-sentence Corporate rage response:`;
 
       case 'sarcastic':
-        return `## 😏 Sarcastic Master (Intellectual Destruction)
-- Witty, intellectually superior responses with cutting sarcasm
-- Phrases that sound complimentary but are actually insulting
-- Cues: [dripping sarcasm], [mock enthusiasm], [intellectual superiority]
-- Use sophisticated vocabulary with devastating irony`;
+        return `${baseRules}
+
+PERSONA: Sarcastic Master (Intellectual Destruction)
+- Use sarcasm: "How LOVELY!" "Absolutely RIVETING!" "What a MASTERPIECE!"
+- Tone cues: [dripping sarcasm], [mock enthusiasm], [intellectual superiority], [devastating wit]
+- End with: cutting sarcastic remark
+
+Generate a 3-sentence Sarcastic rage response:`;
 
       default:
-        return `## 🎭 Generic Persona
-- Transform input into character-driven rage response
-- Use appropriate tone cues and emotional escalation
-- Maintain character consistency throughout`;
+        return `${baseRules}
+
+Generate a 3-sentence rage response for ${persona}:`;
     }
   }
 

@@ -228,13 +228,13 @@ export class EnhancedTTSService {
         rejectOnce(new Error(`Failed to start audio playback: ${error.message}`));
       });
 
-      // Reduced timeout for faster flow
+      // Increased timeout to 30 seconds for better reliability
       setTimeout(() => {
         if (!isResolved) {
           console.warn('⚠️ Audio playback timeout');
           rejectOnce(new Error('Audio playback timeout'));
         }
-      }, 15000); // 15 second timeout (reduced from 30)
+      }, 30000); // 30 second timeout (increased from 15)
     });
   }
 

@@ -75,6 +75,8 @@ export class EnhancedTTSService {
         }
       } catch (error) {
         console.error(`❌ Failed to process segment ${i + 1}:`, error);
+        // Continue with next segment instead of throwing
+        console.log(`⏭️ Continuing with next segment after error in segment ${i + 1}`);
       }
     }
     
@@ -117,31 +119,98 @@ export class EnhancedTTSService {
   }
 
   /**
-   * Play audio from URL
+   * Play audio from URL with robust error handling and cleanup
    */
   private async playAudio(audioUrl: string): Promise<void> {
     return new Promise((resolve, reject) => {
-      const audio = new Audio(audioUrl);
+      let isResolved = false;
+      const audio = new Audio();
       this.currentAudio = audio;
-      
-      audio.onended = () => {
-        URL.revokeObjectURL(audioUrl);
-        this.currentAudio = null;
-        resolve();
+
+      // Consolidated cleanup function
+      const cleanup = () => {
+        if (audioUrl.startsWith('blob:')) {
+          URL.revokeObjectURL(audioUrl);
+        }
+        if (this.currentAudio === audio) {
+          this.currentAudio = null;
+        }
       };
-      
-      audio.onerror = (e) => {
-        console.error('❌ Audio playback error:', e);
-        URL.revokeObjectURL(audioUrl);
-        this.currentAudio = null;
-        reject(new Error('Failed to play audio'));
+
+      // Ensure promise is resolved/rejected only once
+      const resolveOnce = () => {
+        if (!isResolved) {
+          isResolved = true;
+          cleanup();
+          resolve();
+        }
       };
+
+      const rejectOnce = (error: Error) => {
+        if (!isResolved) {
+          isResolved = true;
+          cleanup();
+          reject(error);
+        }
+      };
+
+      // Set up event handlers before setting src
+      audio.onended = resolveOnce;
       
-      audio.play().catch(error => {
-        URL.revokeObjectURL(audioUrl);
-        this.currentAudio = null;
-        reject(error);
-      });
+      audio.onerror = (event) => {
+        console.error('❌ Audio error event:', {
+          error: audio.error,
+          networkState: audio.networkState,
+          readyState: audio.readyState,
+          src: audio.src
+        });
+        
+        let errorMessage = 'Audio playback failed';
+        if (audio.error) {
+          switch (audio.error.code) {
+            case MediaError.MEDIA_ERR_ABORTED:
+              errorMessage = 'Audio playback was aborted';
+              break;
+            case MediaError.MEDIA_ERR_NETWORK:
+              errorMessage = 'Network error during audio playback';
+              break;
+            case MediaError.MEDIA_ERR_DECODE:
+              errorMessage = 'Audio decoding error';
+              break;
+            case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+              errorMessage = 'Audio format not supported';
+              break;
+          }
+        }
+        
+        rejectOnce(new Error(errorMessage));
+      };
+
+      audio.onabort = () => {
+        console.log('🛑 Audio playback aborted');
+        rejectOnce(new Error('Audio playback was aborted'));
+      };
+
+      // Set source and attempt to play
+      audio.src = audioUrl;
+      
+      // Add a small delay to ensure the audio element is ready
+      setTimeout(() => {
+        if (!isResolved) {
+          audio.play().catch(error => {
+            console.error('❌ Audio play() failed:', error);
+            rejectOnce(new Error(`Failed to start audio playback: ${error.message}`));
+          });
+        }
+      }, 10);
+
+      // Add a timeout to prevent hanging promises
+      setTimeout(() => {
+        if (!isResolved) {
+          console.warn('⚠️ Audio playback timeout');
+          rejectOnce(new Error('Audio playback timeout'));
+        }
+      }, 30000); // 30 second timeout
     });
   }
 

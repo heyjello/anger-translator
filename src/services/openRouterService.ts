@@ -3,6 +3,7 @@
  * 
  * Uses DeepSeek v3 for dynamic, varied responses that transform user input
  * while maintaining the original message's meaning and context.
+ * Updated to prevent stage directions and parenthetical content.
  */
 
 export interface OpenRouterConfig {
@@ -318,6 +319,40 @@ class OpenRouterService {
   }
 
   /**
+   * Clean output text to remove stage directions and unwanted content
+   */
+  private cleanOutput(text: string): string {
+    let cleaned = text.trim();
+    
+    // Remove stage directions in parentheses
+    cleaned = cleaned.replace(/\([^)]*\)/g, '');
+    
+    // Remove any quotes that wrap the entire response
+    if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
+      cleaned = cleaned.slice(1, -1);
+    }
+    
+    // Remove any quotes that wrap the entire response with single quotes
+    if (cleaned.startsWith("'") && cleaned.endsWith("'")) {
+      cleaned = cleaned.slice(1, -1);
+    }
+    
+    // Remove any stage direction patterns that might slip through
+    cleaned = cleaned.replace(/\[([^\]]*)\]/g, ''); // Remove [stage directions]
+    cleaned = cleaned.replace(/\*([^*]*)\*/g, '$1'); // Remove *emphasis* but keep content
+    
+    // Clean up multiple spaces
+    cleaned = cleaned.replace(/\s+/g, ' ').trim();
+    
+    // Ensure it ends with proper punctuation for anger
+    if (!/[.!?]$/.test(cleaned)) {
+      cleaned += '!';
+    }
+    
+    return cleaned;
+  }
+
+  /**
    * Dynamic Translation Engine - Transforms user input while preserving meaning
    */
   async translateText(
@@ -352,20 +387,12 @@ class OpenRouterService {
         throw new Error('No content received from AI model');
       }
 
-      // Clean up the response but preserve natural speech patterns
-      let cleanedContent = content.trim();
-      
-      // Remove any quotes that might wrap the entire response
-      if (cleanedContent.startsWith('"') && cleanedContent.endsWith('"')) {
-        cleanedContent = cleanedContent.slice(1, -1);
-      }
-      
-      // Ensure it ends with proper punctuation for anger
-      if (!/[.!?]$/.test(cleanedContent)) {
-        cleanedContent += '!';
-      }
+      // Clean the output to remove stage directions and unwanted content
+      const cleanedContent = this.cleanOutput(content);
       
       console.log('🎭 Dynamic translation generated with DeepSeek v3');
+      console.log('🧹 Stage directions and parenthetical content removed');
+      
       return cleanedContent;
     } catch (error) {
       console.error('❌ Translation failed:', error);
@@ -381,7 +408,7 @@ class OpenRouterService {
 
 Original message: "${text}"
 
-Rules:
+CRITICAL RULES:
 1. Keep the core message/topic identical - just change the delivery to angry
 2. Match the ${persona} style exactly
 3. Anger level: ${rageLevel}/100 (scale intensity accordingly)
@@ -389,7 +416,9 @@ Rules:
 5. Include profanity as f*ck, sh*t, d*mn, etc. (with asterisks for bleeping)
 6. Make it feel like a real person losing their composure
 7. NEVER repeat the original text - transform it completely
-8. Maximum 3 sentences, punchy and impactful`;
+8. Maximum 3 sentences, punchy and impactful
+9. ONLY output the angry dialogue - NO stage directions, NO parentheses, NO descriptions
+10. NO (pacing), NO (tone), NO (body language) - JUST the angry words`;
 
     // Add persona-specific instructions
     switch (persona) {
@@ -402,7 +431,7 @@ ENFORCER STYLE (Angry Black Man - Righteous Fury):
 - Call out disrespect and demand better
 - End with authority: "CASE CLOSED!" or "AND THAT'S FINAL!"
 
-Transform the message now:`;
+Transform the message now - DIALOGUE ONLY:`;
 
       case 'highland-howler':
         return `${basePrompt}
@@ -413,7 +442,7 @@ HIGHLAND HOWLER STYLE (Explosive Scottish Dad):
 - Threaten to "do it maself" 
 - Use Scottish insults: "bampot", "weapon", "daft"
 
-Transform the message now:`;
+Transform the message now - DIALOGUE ONLY:`;
 
       case 'don':
         return `${basePrompt}
@@ -424,7 +453,7 @@ THE DON STYLE (NY Italian-American Mobster):
 - Reference respect and family honor
 - End with veiled threats or "Don't make me come down there!"
 
-Transform the message now:`;
+Transform the message now - DIALOGUE ONLY:`;
 
       case 'cracked-controller':
         return `${basePrompt}
@@ -435,7 +464,7 @@ CRACKED CONTROLLER STYLE (Gen-Z Latino Gamer):
 - Reference gaming: "uninstall", "rage quit", "touching grass"
 - Mix English and Spanish expressions
 
-Transform the message now:`;
+Transform the message now - DIALOGUE ONLY:`;
 
       case 'karen':
         return `${basePrompt}
@@ -446,7 +475,7 @@ KAREN STYLE (Suburban Entitlement Rage):
 - Use entitled language: "I'm a paying customer!", "This is unacceptable!"
 - Reference husband's job, social media threats
 
-Transform the message now:`;
+Transform the message now - DIALOGUE ONLY:`;
 
       case 'corporate':
         return `${basePrompt}
@@ -457,7 +486,7 @@ CORPORATE STYLE (Professional Office Meltdown):
 - Reference competence, escalation, and proper procedures
 - Maintain professional tone while expressing rage
 
-Transform the message now:`;
+Transform the message now - DIALOGUE ONLY:`;
 
       case 'sarcastic':
         return `${basePrompt}
@@ -468,12 +497,12 @@ SARCASTIC STYLE (Intellectual Destruction):
 - Use sophisticated vocabulary to deliver devastating insults
 - Mock with fake enthusiasm and backhanded compliments
 
-Transform the message now:`;
+Transform the message now - DIALOGUE ONLY:`;
 
       default:
         return `${basePrompt}
 
-Transform the message now:`;
+Transform the message now - DIALOGUE ONLY:`;
     }
   }
 

@@ -47,9 +47,10 @@ export function addAudioTags(text: string, angerLevel: number, style: RageStyle)
 }
 
 export function cleanTextForDisplay(text: string): string {
-  // Remove all audio tags for user display
+  // Remove all audio tags and parenthetical stage directions for user display
   return text
     .replace(/\[[^\]]+\]/g, '') // Remove [audio tags]
+    .replace(/\([^)]*\)/g, '') // Remove (stage directions)
     .replace(/\s+/g, ' ')
     .trim();
 }

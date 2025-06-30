@@ -55,11 +55,26 @@ export function addAudioTags(text: string, angerLevel: number, style: RageStyle)
 }
 
 export function cleanTextForDisplay(text: string): string {
-  // Remove ALL formatting: parentheses, brackets, and markdown for clean display
-  let cleaned = text
-    .replace(/\*\*/g, '') // Remove markdown bold
-    .replace(/\[[^\]]+\]/g, '') // Remove [audio tags]
-    .replace(/\([^)]*\)/g, ''); // Remove (stage directions)
+  // Remove ALL audio formatting tags for clean user display
+  let cleaned = text;
+  
+  // Remove ElevenLabs emphasis tags like <emphasis level="strong">text</emphasis>
+  cleaned = cleaned.replace(/<emphasis[^>]*>(.*?)<\/emphasis>/gi, '$1');
+  
+  // Remove ElevenLabs prosody tags like <prosody rate="1.3" pitch="+15%">text</prosody>
+  cleaned = cleaned.replace(/<prosody[^>]*>(.*?)<\/prosody>/gi, '$1');
+  
+  // Remove any other XML-style tags
+  cleaned = cleaned.replace(/<[^>]+>/g, '');
+  
+  // Remove square bracket audio tags like [angry], [shouting], etc.
+  cleaned = cleaned.replace(/\[[^\]]+\]/g, '');
+  
+  // Remove parenthetical stage directions
+  cleaned = cleaned.replace(/\([^)]*\)/g, '');
+  
+  // Remove markdown bold markers
+  cleaned = cleaned.replace(/\*\*/g, '');
   
   // Keep removing nested parentheses until they're all gone
   while (cleaned.includes('(') && cleaned.includes(')')) {

@@ -259,8 +259,8 @@ function App() {
           </div>
         )}
 
-        {/* Main Content - Improved Responsive Layout */}
-        <div className="max-w-7xl mx-auto">
+        {/* Main Content - Stacked Layout for All Screen Sizes */}
+        <div className="max-w-4xl mx-auto">
           
           {/* Rate Limit Warning */}
           {isRateLimited && (
@@ -283,82 +283,59 @@ function App() {
             </div>
           )}
 
-          {/* Voice Editor Interface - Improved Responsive Grid */}
-          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
+          {/* Stacked Interface - All Cards Vertically Aligned */}
+          <div className="space-y-6">
             
-            {/* Left Panel - Input & Controls */}
-            <div className="xl:col-span-1 space-y-6">
-              
-              {/* Input Section */}
-              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 lg:p-6">
-                <InputSection
-                  value={inputText}
-                  onChange={handleInputChange}
-                  error={inputError}
-                  maxChars={MAX_CHARACTERS}
-                  minChars={MIN_CHARACTERS}
-                  isLoading={isLoading}
-                />
-              </div>
-
-              {/* Style Selector */}
-              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 lg:p-6">
-                <StyleSelector
-                  selectedStyle={selectedStyle}
-                  onStyleSelect={setSelectedStyle}
-                  isLoading={isLoading}
-                />
-              </div>
-
+            {/* Input Section */}
+            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 lg:p-6">
+              <InputSection
+                value={inputText}
+                onChange={handleInputChange}
+                error={inputError}
+                maxChars={MAX_CHARACTERS}
+                minChars={MIN_CHARACTERS}
+                isLoading={isLoading}
+              />
             </div>
 
-            {/* Center Panel - Circular Rage Meter */}
-            <div className="xl:col-span-1 flex items-start justify-center">
-              <div className="bg-slate-800/50 backdrop-blur-xl rounded-3xl border border-slate-700/50 p-6 lg:p-8 w-full max-w-md mx-auto">
-                <CircularRageMeter
-                  value={rageLevel}
-                  onChange={setRageLevel}
-                  isLoading={isLoading}
-                  onTranslate={handleTranslate}
-                  isValid={isFormValid()}
-                  isRateLimited={isRateLimited}
-                  timeUntilNext={timeUntilNextRequest}
-                  validationMessage={getValidationMessage()}
-                />
-              </div>
+            {/* Style Selector */}
+            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 lg:p-6">
+              <StyleSelector
+                selectedStyle={selectedStyle}
+                onStyleSelect={setSelectedStyle}
+                isLoading={isLoading}
+              />
             </div>
 
-            {/* Right Panel - Output */}
-            <div className="xl:col-span-1">
-              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 lg:p-6 h-full min-h-[400px]">
-                <OutputSection
-                  outputText={outputText}
-                  rawText={rawOutputText} // Pass raw text for TTS
-                  onCopy={() => handleCopyToClipboard()}
-                  onClear={handleClearOutput}
-                  onShare={handleShare}
-                  isCopied={isCopied}
-                  isLoading={isLoading}
-                  translationStyle={selectedStyle}
-                  rageLevel={rageLevel}
-                />
-              </div>
-            </div>
-
-          </div>
-
-          {/* Mobile-Only Translate Button (for screens smaller than xl) */}
-          <div className="xl:hidden mt-8 flex justify-center">
-            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6 w-full max-w-md">
-              <TranslateButton
+            {/* Circular Rage Meter */}
+            <div className="bg-slate-800/50 backdrop-blur-xl rounded-3xl border border-slate-700/50 p-6 lg:p-8">
+              <CircularRageMeter
+                value={rageLevel}
+                onChange={setRageLevel}
+                isLoading={isLoading}
                 onTranslate={handleTranslate}
                 isValid={isFormValid()}
-                isLoading={isLoading}
                 isRateLimited={isRateLimited}
                 timeUntilNext={timeUntilNextRequest}
                 validationMessage={getValidationMessage()}
               />
             </div>
+
+            {/* Output Section */}
+            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 lg:p-6">
+              <OutputSection
+                outputText={outputText}
+                rawText={rawOutputText} // Pass raw text for TTS
+                onCopy={() => handleCopyToClipboard()}
+                onClear={handleClearOutput}
+                onShare={handleShare}
+                isCopied={isCopied}
+                isLoading={isLoading}
+                translationStyle={selectedStyle}
+                rageLevel={rageLevel}
+              />
+            </div>
+
           </div>
 
         </div>

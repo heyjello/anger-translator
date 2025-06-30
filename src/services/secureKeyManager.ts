@@ -84,7 +84,7 @@ export class SecureKeyManager {
   private validateKeyFormat(service: string, key: string): boolean {
     const patterns = {
       openrouter: /^sk-or-v1-[a-f0-9]{64}$/,
-      elevenlabs: /^[a-f0-9]{32}$/
+      elevenlabs: /^xi_[a-zA-Z0-9]{32}$/
     };
 
     const pattern = patterns[service as keyof typeof patterns];

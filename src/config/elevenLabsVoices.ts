@@ -42,7 +42,7 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   gamer: {
-    voice_id: "ErXwobaYiN019PkySvjV", // Antoni
+    voice_id: "hNGWqHFIy4rfuA92PY9D", // Antoni
     name: "Antoni",
     description: "Energetic male voice",
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
@@ -90,7 +90,7 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   'cracked-controller': {
-    voice_id: "ErXwobaYiN019PkySvjV", // Antoni (good for energetic gamer)
+    voice_id: "hNGWqHFIy4rfuA92PY9D", // Antoni (good for energetic gamer)
     name: "Antoni",
     description: "High energy voice for cracked gamer",
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }

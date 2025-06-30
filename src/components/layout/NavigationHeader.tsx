@@ -29,7 +29,6 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
         <h1 className="text-4xl md:text-6xl font-black text-white drop-shadow-2xl">
           Anger Translator
         </h1>
-        <span className="text-3xl animate-bounce">🔥</span>
       </div>
       
       <p className="text-lg md:text-xl text-slate-300 font-medium mb-6">

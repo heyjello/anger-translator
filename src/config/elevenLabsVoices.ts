@@ -26,130 +26,130 @@ export interface VoiceStyleMap {
 // Define the comprehensive RageStyle type
 export type RageStyle = 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad' | 'ny-italian' | 'enforcer' | 'highland-howler' | 'don' | 'cracked-controller';
 
-// Pre-made ElevenLabs voices with AUTHENTIC characteristics preserved
+// Updated with commonly available ElevenLabs voice IDs
 export const VOICE_CONFIGS: VoiceStyleMap = {
   corporate: {
-    voice_id: "pNInz6obpgDQGcFmaJgB", // Adam
+    voice_id: "pNInz6obpgDQGcFmaJgB", // Adam - Professional male voice
     name: "Adam",
     description: "Professional, authoritative voice for corporate rage",
     voice_settings: {
-      stability: 0.95, // High stability to preserve natural tone
-      similarity_boost: 0.95, // Maximum similarity to original voice
-      style: 0.1, // Minimal style to avoid accent changes
-      use_speaker_boost: false // Disabled to preserve natural characteristics
+      stability: 0.95,
+      similarity_boost: 0.95,
+      style: 0.1,
+      use_speaker_boost: false
     }
   },
   gamer: {
-    voice_id: "ErXwobaYiN019PkySvjV", // Antoni
+    voice_id: "ErXwobaYiN019PkySvjV", // Antoni - Energetic male voice
     name: "Antoni",
     description: "Energetic, youthful voice for cracked Gen-Z Latino gamer rage",
     voice_settings: {
-      stability: 0.9, // High stability to preserve Latino accent
-      similarity_boost: 0.95, // Maximum similarity to preserve accent
-      style: 0.2, // Minimal style to keep natural expressiveness
-      use_speaker_boost: false // Disabled to preserve authentic voice
+      stability: 0.9,
+      similarity_boost: 0.95,
+      style: 0.2,
+      use_speaker_boost: false
     }
   },
   sarcastic: {
-    voice_id: "onwK4e9ZLuTAKqWW03F9", // Daniel
+    voice_id: "onwK4e9ZLuTAKqWW03F9", // Daniel - British accent
     name: "Daniel",
     description: "Sophisticated British accent for sarcastic roasts",
     voice_settings: {
-      stability: 0.95, // High stability to preserve British accent
-      similarity_boost: 0.95, // Maximum similarity to maintain accent
-      style: 0.1, // Minimal style to preserve natural sophistication
-      use_speaker_boost: false // Disabled to keep authentic British tone
+      stability: 0.95,
+      similarity_boost: 0.95,
+      style: 0.1,
+      use_speaker_boost: false
     }
   },
   karen: {
-    voice_id: "opAH2ij5oCyMnsDUGrpR", // Custom Karen voice
-    name: "Karen",
+    voice_id: "ThT5KcBeYPX3keUQqHPh", // Dorothy - Female British voice
+    name: "Dorothy",
     description: "Entitled suburban mom voice for Karen rants",
     voice_settings: {
-      stability: 0.9, // High stability to preserve natural Karen tone
-      similarity_boost: 0.95, // Maximum similarity to original voice
-      style: 0.15, // Minimal style to keep natural entitlement
-      use_speaker_boost: false // Disabled to preserve authentic characteristics
+      stability: 0.9,
+      similarity_boost: 0.95,
+      style: 0.15,
+      use_speaker_boost: false
     }
   },
   'scottish-dad': {
-    voice_id: "JwYlCv3C5tfM0wHM3xjl", // Arnold (Scottish-sounding voice)
+    voice_id: "VR6AewLTigWG4xSOukaG", // Arnold - Deep male voice
     name: "Arnold",
     description: "Gruff Scottish dad voice for parental disappointment",
     voice_settings: {
-      stability: 0.95, // High stability to preserve Scottish accent
-      similarity_boost: 0.95, // Maximum similarity to maintain accent
-      style: 0.1, // Minimal style to preserve natural gruffness
-      use_speaker_boost: false // Disabled to keep authentic Scottish tone
+      stability: 0.95,
+      similarity_boost: 0.95,
+      style: 0.1,
+      use_speaker_boost: false
     }
   },
   'ny-italian': {
-    voice_id: "CaYmcrR5WjNfLsVo7ReL", // Arnold (works well for NY Italian)
-    name: "Vinny",
+    voice_id: "2EiwWnXFnvU5JabPnv8n", // Clyde - Mature male voice
+    name: "Clyde",
     description: "Fast-talking NY Italian-American voice for Brooklyn fury",
     voice_settings: {
-      stability: 0.9, // High stability to preserve NY accent
-      similarity_boost: 0.95, // Maximum similarity to maintain accent
-      style: 0.15, // Minimal style to keep natural fast-talking
-      use_speaker_boost: false // Disabled to preserve authentic NY tone
+      stability: 0.9,
+      similarity_boost: 0.95,
+      style: 0.15,
+      use_speaker_boost: false
     }
   },
   enforcer: {
-    voice_id: "ujTRvH905hCgW1uUwWye", // Enforcer voice
-    name: "Enforcer",
+    voice_id: "VR6AewLTigWG4xSOukaG", // Arnold - Deep, authoritative
+    name: "Arnold",
     description: "Deep, intimidating voice for law enforcement rage",
     voice_settings: {
-      stability: 0.95, // Maximum stability to preserve deep tone
-      similarity_boost: 0.95, // Maximum similarity to maintain voice characteristics
-      style: 0.05, // Minimal style to prevent any pitch/tone changes
-      use_speaker_boost: false // Disabled to prevent any artificial enhancement
+      stability: 0.95,
+      similarity_boost: 0.95,
+      style: 0.05,
+      use_speaker_boost: false
     }
   },
   'highland-howler': {
-    voice_id: "JwYlCv3C5tfM0wHM3xjl", // Arnold - Scottish accent
-    name: "Highland Howler",
+    voice_id: "VR6AewLTigWG4xSOukaG", // Arnold - Scottish accent
+    name: "Arnold",
     description: "Fierce Scottish Highland warrior voice for battle rage",
     voice_settings: {
-      stability: 0.9, // High stability to preserve Scottish accent
-      similarity_boost: 0.95, // Maximum similarity to maintain accent
-      style: 0.2, // Minimal style to keep natural fierceness
-      use_speaker_boost: false // Disabled to preserve authentic Scottish characteristics
+      stability: 0.9,
+      similarity_boost: 0.95,
+      style: 0.2,
+      use_speaker_boost: false
     }
   },
   don: {
     voice_id: "2EiwWnXFnvU5JabPnv8n", // Clyde - sophisticated, menacing
-    name: "Don",
+    name: "Clyde",
     description: "Sophisticated, menacing voice for mafia don rage",
     voice_settings: {
-      stability: 0.95, // High stability to preserve sophisticated tone
-      similarity_boost: 0.95, // Maximum similarity to original voice
-      style: 0.1, // Minimal style to preserve natural menace
-      use_speaker_boost: false // Disabled to keep authentic characteristics
+      stability: 0.95,
+      similarity_boost: 0.95,
+      style: 0.1,
+      use_speaker_boost: false
     }
   },
   'cracked-controller': {
     voice_id: "ErXwobaYiN019PkySvjV", // Antoni - high energy, erratic
-    name: "Cracked Controller",
+    name: "Antoni",
     description: "Hyper-energetic, erratic voice for gaming controller rage",
     voice_settings: {
-      stability: 0.85, // Slightly lower for natural erratic energy
-      similarity_boost: 0.95, // Maximum similarity to preserve voice
-      style: 0.25, // Minimal style for natural expressiveness
-      use_speaker_boost: false // Disabled to preserve authentic characteristics
+      stability: 0.85,
+      similarity_boost: 0.95,
+      style: 0.25,
+      use_speaker_boost: false
     }
   }
 };
 
-// Alternative voices for variety
+// Alternative voices for variety - using commonly available voice IDs
 export const ALTERNATIVE_VOICES = {
   corporate: ["VR6AewLTigWG4xSOukaG"], // Arnold
-  gamer: ["21m00Tcm4TlvDq8ikWAM"], // Rachel - for variety in gamer voice
+  gamer: ["21m00Tcm4TlvDq8ikWAM"], // Rachel
   sarcastic: ["2EiwWnXFnvU5JabPnv8n"], // Clyde
-  karen: ["ThT5KcBeYPX3keUQqHPh"], // Dorothy
+  karen: ["EXAVITQu4vr4xnSDxMaL"], // Bella
   'scottish-dad': ["2EiwWnXFnvU5JabPnv8n"], // Clyde
   'ny-italian': ["pNInz6obpgDQGcFmaJgB"], // Adam
   enforcer: ["2EiwWnXFnvU5JabPnv8n"], // Clyde
-  'highland-howler': ["VR6AewLTigWG4xSOukaG"], // Arnold
+  'highland-howler': ["2EiwWnXFnvU5JabPnv8n"], // Clyde
   don: ["pNInz6obpgDQGcFmaJgB"], // Adam
   'cracked-controller': ["21m00Tcm4TlvDq8ikWAM"] // Rachel
 };
@@ -370,7 +370,7 @@ export const createTestPhrase = (style: RageStyle): string => {
   return testPhrases[style];
 };
 
-// Export all voice IDs for easy reference
+// Export all voice IDs for easy reference - updated with commonly available voices
 export const ALL_VOICE_IDS = {
   adam: "pNInz6obpgDQGcFmaJgB",
   antoni: "ErXwobaYiN019PkySvjV", 
@@ -379,10 +379,7 @@ export const ALL_VOICE_IDS = {
   rachel: "21m00Tcm4TlvDq8ikWAM",
   clyde: "2EiwWnXFnvU5JabPnv8n",
   bella: "EXAVITQu4vr4xnSDxMaL",
-  dorothy: "ThT5KcBeYPX3keUQqHPh",
-  karen: "opAH2ij5oCyMnsDUGrpR",
-  enforcer: "ujTRvH905hCgW1uUwWye",
-  vinny: "VR6AewLTigWG4xSOukaG" // Using Arnold's voice for NY Italian
+  dorothy: "ThT5KcBeYPX3keUQqHPh"
 } as const;
 
 // Voice characteristics for UI display
@@ -417,28 +414,22 @@ export const VOICE_CHARACTERISTICS = {
     age: 'Middle-aged',
     tone: 'Elegant, Refined, British Accent'
   },
-  [ALL_VOICE_IDS.karen]: {
-    gender: 'Female',
-    accent: 'American',
-    age: 'Middle-aged',
-    tone: 'Entitled, Demanding, Suburban Accent'
-  },
   [ALL_VOICE_IDS.arnold]: {
     gender: 'Male',
-    accent: 'Scottish',
+    accent: 'American',
     age: 'Middle-aged',
-    tone: 'Gruff, Disappointed, Scottish Accent'
+    tone: 'Deep, Authoritative'
   },
-  [ALL_VOICE_IDS.enforcer]: {
-    gender: 'Male',
-    accent: 'American Urban',
-    age: 'Adult',
-    tone: 'Deep, Intimidating, Authoritative, Urban Accent'
+  [ALL_VOICE_IDS.rachel]: {
+    gender: 'Female',
+    accent: 'American',
+    age: 'Young Adult',
+    tone: 'Energetic, Expressive'
   },
-  [ALL_VOICE_IDS.vinny]: {
+  [ALL_VOICE_IDS.clyde]: {
     gender: 'Male',
-    accent: 'New York Italian',
+    accent: 'American',
     age: 'Middle-aged',
-    tone: 'Fast-talking, Animated, Brooklyn Accent'
+    tone: 'Mature, Sophisticated'
   }
 } as const;

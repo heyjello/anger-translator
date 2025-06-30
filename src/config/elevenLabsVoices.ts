@@ -54,7 +54,7 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   karen: {
-    voice_id: "EXAVITQu4vr4xnSDxMaL", // Bella
+    voice_id: "opAH2ij5oCyMnsDUGrpR", // Bella
     name: "Bella",
     description: "Female voice for Karen persona",
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }

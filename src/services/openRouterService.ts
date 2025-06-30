@@ -224,7 +224,38 @@ class OpenRouterService {
   }
 
   /**
-   * Make a request to OpenRouter API
+   * Parse and enhance OpenRouter error messages for better user experience
+   */
+  private parseOpenRouterError(errorData: any, status: number): string {
+    const errorMessage = errorData?.error?.message || 'Unknown error';
+    
+    // Handle specific OpenRouter error cases
+    if (errorMessage.includes('No endpoints found matching your data policy')) {
+      return 'OpenRouter Privacy Settings Issue: Please visit https://openrouter.ai/settings/privacy and enable "Allow training on prompts and generations" to use AI translation. This setting is required for the service to work properly.';
+    }
+    
+    if (errorMessage.includes('Invalid API key') || status === 401) {
+      return 'Invalid OpenRouter API key. Please check your API key at https://openrouter.ai/keys and update your configuration.';
+    }
+    
+    if (errorMessage.includes('Rate limit exceeded') || status === 429) {
+      return 'OpenRouter rate limit exceeded. Please wait a moment before trying again.';
+    }
+    
+    if (errorMessage.includes('Insufficient credits') || errorMessage.includes('balance')) {
+      return 'Insufficient OpenRouter credits. Please add credits to your account at https://openrouter.ai/credits';
+    }
+    
+    if (errorMessage.includes('Model not found') || errorMessage.includes('model')) {
+      return `Model "${this.config.model}" is not available. Please try a different model or check OpenRouter's available models.`;
+    }
+    
+    // Return enhanced error message with context
+    return `OpenRouter API Error: ${errorMessage}. Please check your OpenRouter account settings and configuration.`;
+  }
+
+  /**
+   * Make a request to OpenRouter API with enhanced error handling
    */
   private async makeRequest(request: OpenRouterRequest): Promise<OpenRouterResponse> {
     if (!this.isReady()) {
@@ -235,39 +266,55 @@ class OpenRouterService {
 
     console.log(`🚀 Making request to OpenRouter with ${this.config.model}`);
 
-    const response = await fetch(`${this.config.baseUrl}/chat/completions`, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${this.config.apiKey}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': window.location.origin,
-        'X-Title': appName
-      },
-      body: JSON.stringify({
-        ...request,
-        model: this.config.model
-      })
-    });
+    try {
+      const response = await fetch(`${this.config.baseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.config.apiKey}`,
+          'Content-Type': 'application/json',
+          'HTTP-Referer': window.location.origin,
+          'X-Title': appName
+        },
+        body: JSON.stringify({
+          ...request,
+          model: this.config.model
+        })
+      });
 
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error('❌ OpenRouter API error:', errorData);
+      if (!response.ok) {
+        let errorData;
+        try {
+          errorData = await response.json();
+        } catch {
+          errorData = { error: { message: `HTTP ${response.status}: ${response.statusText}` } };
+        }
+        
+        console.error('❌ OpenRouter API error:', errorData);
+        
+        // Use enhanced error parsing
+        const enhancedError = this.parseOpenRouterError(errorData, response.status);
+        throw new Error(enhancedError);
+      }
+
+      const result = await response.json();
+      console.log('✅ OpenRouter request successful');
+      console.log(`📊 Tokens used: ${result.usage?.total_tokens || 'unknown'}`);
       
-      if (response.status === 401) {
-        throw new Error('Invalid API key. Please check your OpenRouter API key from https://openrouter.ai/keys');
+      return result;
+    } catch (error) {
+      // If it's already our enhanced error, re-throw it
+      if (error instanceof Error && error.message.includes('OpenRouter Privacy Settings Issue')) {
+        throw error;
       }
       
-      throw new Error(
-        errorData.error?.message || 
-        `OpenRouter API error: ${response.status} ${response.statusText}`
-      );
+      // Handle network errors
+      if (error instanceof TypeError && error.message.includes('fetch')) {
+        throw new Error('Network error: Unable to connect to OpenRouter. Please check your internet connection.');
+      }
+      
+      // Re-throw other errors as-is
+      throw error;
     }
-
-    const result = await response.json();
-    console.log('✅ OpenRouter request successful');
-    console.log(`📊 Tokens used: ${result.usage?.total_tokens || 'unknown'}`);
-    
-    return result;
   }
 
   /**

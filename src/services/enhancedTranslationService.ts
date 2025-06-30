@@ -194,14 +194,29 @@ class EnhancedTranslationService {
       } catch (error) {
         console.warn('⚠️ AI translation failed, falling back to mock:', error);
         
-        // Fall back to mock translation with clear indication
+        // Enhanced error handling for specific OpenRouter issues
+        let fallbackError = 'AI unavailable - using fallback responses.';
+        
+        if (error instanceof Error) {
+          if (error.message.includes('OpenRouter Privacy Settings Issue')) {
+            fallbackError = 'AI disabled due to privacy settings. Please enable prompt training in your OpenRouter account settings, then refresh the page.';
+          } else if (error.message.includes('Invalid OpenRouter API key')) {
+            fallbackError = 'Invalid API key. Please check your OpenRouter configuration.';
+          } else if (error.message.includes('Insufficient credits')) {
+            fallbackError = 'Insufficient OpenRouter credits. Please add credits to your account.';
+          } else if (error.message.includes('Rate limit exceeded')) {
+            fallbackError = 'OpenRouter rate limit exceeded. Please wait before trying again.';
+          }
+        }
+        
+        // Fall back to mock translation with enhanced error context
         const mockResponse = await mockTranslate(request);
         return {
           ...mockResponse,
           translatedText: mockResponse.success ? cleanTextForUser(mockResponse.translatedText) : mockResponse.translatedText,
           rawText: mockResponse.success ? preserveRawTextForTTS(mockResponse.translatedText) : mockResponse.translatedText,
           usedAI: false,
-          error: `AI unavailable - using fallback. Configure OpenRouter for dynamic responses.`
+          error: mockResponse.success ? fallbackError : mockResponse.error
         };
       }
     }

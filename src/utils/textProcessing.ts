@@ -102,10 +102,19 @@ export function addAudioTags(text: string, angerLevel: number, style: RageStyle)
 }
 
 export function cleanTextForDisplay(text: string): string {
-  // Remove all audio tags and parenthetical stage directions for display
-  return text
+  // Remove all audio tags and ALL parenthetical content (including nested)
+  let cleaned = text
     .replace(/\[[^\]]+\]/g, '') // Remove [audio tags]
-    .replace(/\([^)]*\)/g, '') // Remove (stage directions)
+    .replace(/\([^)]*\)/g, ''); // Remove (stage directions)
+  
+  // Keep removing parentheses until they're all gone (for nested cases)
+  while (cleaned.includes('(') && cleaned.includes(')')) {
+    cleaned = cleaned.replace(/\([^)]*\)/g, '');
+  }
+  
+  // Clean up extra spaces
+  return cleaned
     .replace(/\s+/g, ' ')
+    .replace(/\s+([.,!?])/g, '$1') // Fix spacing around punctuation
     .trim();
 }

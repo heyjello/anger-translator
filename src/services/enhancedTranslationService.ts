@@ -7,6 +7,7 @@
 
 import { openRouterService } from './openRouterService';
 import { translateText as mockTranslate, TranslationRequest, TranslationResponse, rateLimiter } from './translationService';
+import { cleanTextForDisplay } from '../utils/textProcessing';
 import type { RageStyle } from '../config/elevenLabsVoices';
 
 export interface EnhancedTranslationResponse extends TranslationResponse {
@@ -15,45 +16,6 @@ export interface EnhancedTranslationResponse extends TranslationResponse {
   tokensUsed?: number;
   rawText?: string; // Keep raw text with audio tags for TTS
 }
-
-/**
- * Clean translated text for end user display by removing audio tags and tone cues
- * Preserves double asterisks for profanity bleeping
- */
-const cleanTextForUser = (text: string): string => {
-  let cleanedText = text;
-  
-  // Remove tone cues like [explosive energy], [screaming], etc.
-  cleanedText = cleanedText.replace(/\[([^\]]+)\]/g, '');
-  
-  // Remove ElevenLabs audio tags but keep the content
-  cleanedText = cleanedText.replace(/<emphasis[^>]*>([^<]+)<\/emphasis>/g, '$1');
-  cleanedText = cleanedText.replace(/<prosody[^>]*>([^<]+)<\/prosody>/g, '$1');
-  cleanedText = cleanedText.replace(/<break[^>]*\/>/g, ' ');
-  cleanedText = cleanedText.replace(/<break[^>]*><\/break>/g, ' ');
-  cleanedText = cleanedText.replace(/<[^>]+>/g, ''); // Remove any remaining tags
-  
-  // Clean up asterisk emphasis but preserve profanity markers
-  // First, temporarily replace double asterisks with a placeholder
-  cleanedText = cleanedText.replace(/\*\*([^*]+)\*\*/g, '___PROFANITY_MARKER___$1___PROFANITY_MARKER___');
-  
-  // Now remove any remaining single asterisks
-  cleanedText = cleanedText.replace(/\*/g, '');
-  
-  // Restore double asterisks for profanity
-  cleanedText = cleanedText.replace(/___PROFANITY_MARKER___([^_]+)___PROFANITY_MARKER___/g, '**$1**');
-  
-  // Remove multiple spaces and clean up
-  cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
-  
-  // Remove leading/trailing punctuation that might cause issues
-  cleanedText = cleanedText.replace(/^[,.\s]+|[,.\s]+$/g, '');
-  
-  // Clean up any double spaces that might remain
-  cleanedText = cleanedText.replace(/\s{2,}/g, ' ');
-  
-  return cleanedText;
-};
 
 /**
  * Keep raw text with audio tags for TTS processing
@@ -178,11 +140,14 @@ class EnhancedTranslationService {
           request.intensity
         );
 
-        // Clean the text for end user display
-        const cleanedText = cleanTextForUser(rawTranslatedText);
+        // Clean the text for end user display using the proper cleaning function
+        const cleanedText = cleanTextForDisplay(rawTranslatedText);
         
         // Preserve raw text for TTS
         const rawText = preserveRawTextForTTS(rawTranslatedText);
+
+        console.log('🧹 Text cleaned for display:', cleanedText);
+        console.log('🎤 Raw text preserved for TTS:', rawText);
 
         return {
           translatedText: cleanedText,
@@ -213,7 +178,7 @@ class EnhancedTranslationService {
         const mockResponse = await mockTranslate(request);
         return {
           ...mockResponse,
-          translatedText: mockResponse.success ? cleanTextForUser(mockResponse.translatedText) : mockResponse.translatedText,
+          translatedText: mockResponse.success ? cleanTextForDisplay(mockResponse.translatedText) : mockResponse.translatedText,
           rawText: mockResponse.success ? preserveRawTextForTTS(mockResponse.translatedText) : mockResponse.translatedText,
           usedAI: false,
           error: mockResponse.success ? fallbackError : mockResponse.error
@@ -226,7 +191,7 @@ class EnhancedTranslationService {
     const mockResponse = await mockTranslate(request);
     return {
       ...mockResponse,
-      translatedText: mockResponse.success ? cleanTextForUser(mockResponse.translatedText) : mockResponse.translatedText,
+      translatedText: mockResponse.success ? cleanTextForDisplay(mockResponse.translatedText) : mockResponse.translatedText,
       rawText: mockResponse.success ? preserveRawTextForTTS(mockResponse.translatedText) : mockResponse.translatedText,
       usedAI: false,
       error: mockResponse.success ? 'Using mock responses. Enable AI for dynamic generation.' : mockResponse.error

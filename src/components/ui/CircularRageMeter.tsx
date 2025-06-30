@@ -1,14 +1,15 @@
 /**
  * CircularRageMeter Component
  * 
- * Professional circular rage meter with proper text positioning to avoid overlap.
+ * Professional circular rage meter with emoji inside the gauge and 1-10 scale.
+ * Voice editor style interface with centered emoji and clean typography.
  */
 
 import React from 'react';
 import { EmojiMascot } from './EmojiMascot';
 
 interface CircularRageMeterProps {
-  value: number;
+  value: number; // 1-10 scale
   onChange: (value: number) => void;
   isLoading: boolean;
   onTranslate: () => void;
@@ -16,8 +17,6 @@ interface CircularRageMeterProps {
   isRateLimited: boolean;
   timeUntilNext: number;
   validationMessage?: string;
-  min?: number;
-  max?: number;
 }
 
 export const CircularRageMeter: React.FC<CircularRageMeterProps> = ({
@@ -28,53 +27,35 @@ export const CircularRageMeter: React.FC<CircularRageMeterProps> = ({
   isValid,
   isRateLimited,
   timeUntilNext,
-  validationMessage,
-  min = 1,
-  max = 100
+  validationMessage
 }) => {
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseInt(event.target.value);
     onChange(newValue);
   };
 
   const getAuthenticRageDescription = (level: number) => {
-    if (level <= 10) return 'Meh, Chillin';
-    if (level <= 20) return 'Slightly Annoyed';
-    if (level <= 30) return 'Getting Irritated';
-    if (level <= 40) return 'Clearly Frustrated';
-    if (level <= 50) return 'Pretty Angry';
-    if (level <= 60) return 'Really Mad';
-    if (level <= 70) return 'Seriously Pissed';
-    if (level <= 80) return 'Extremely Angry';
-    if (level <= 90) return 'Absolutely Furious';
+    if (level <= 2) return 'Meh, Chillin';
+    if (level <= 4) return 'Slightly Annoyed';
+    if (level <= 6) return 'Pretty Angry';
+    if (level <= 8) return 'Seriously Pissed';
     return 'NUCLEAR RAGE';
   };
 
   const getRageLevelColor = (level: number) => {
-    if (level <= 20) return 'text-blue-400 neon-blue';
-    if (level <= 40) return 'text-green-400 neon-green';
-    if (level <= 60) return 'text-yellow-400 neon-yellow';
-    if (level <= 80) return 'text-orange-400 neon-orange';
+    if (level <= 2) return 'text-blue-400 neon-blue';
+    if (level <= 4) return 'text-green-400 neon-green';
+    if (level <= 6) return 'text-yellow-400 neon-yellow';
+    if (level <= 8) return 'text-orange-400 neon-orange';
     return 'text-red-400 neon-red';
   };
 
   const getCircleColor = (level: number) => {
-    if (level <= 20) return '#3b82f6'; // blue
-    if (level <= 40) return '#22c55e'; // green
-    if (level <= 60) return '#eab308'; // yellow
-    if (level <= 80) return '#f97316'; // orange
+    if (level <= 2) return '#3b82f6'; // blue
+    if (level <= 4) return '#22c55e'; // green
+    if (level <= 6) return '#eab308'; // yellow
+    if (level <= 8) return '#f97316'; // orange
     return '#ef4444'; // red
-  };
-
-  // Calculate circle properties
-  const radius = 120;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDasharray = circumference;
-  const strokeDashoffset = circumference - (value / max) * circumference;
-
-  // Convert 1-100 scale to emoji mascot's 1-10 scale
-  const getMascotLevel = (level: number) => {
-    return Math.ceil(level / 10);
   };
 
   const getButtonText = () => {
@@ -92,42 +73,36 @@ export const CircularRageMeter: React.FC<CircularRageMeterProps> = ({
     return 'Please fix the input errors above';
   };
 
-  return (
-    <div className="flex flex-col items-center space-y-6">
-      {/* Emoji Mascot - Above the meter */}
-      <div className="mb-4">
-        <EmojiMascot rageLevel={getMascotLevel(value)} />
-      </div>
+  // Calculate progress for the circular gauge (0-100%)
+  const progress = ((value - 1) / 9) * 100; // Convert 1-10 to 0-100%
+  const circumference = 2 * Math.PI * 120; // radius = 120
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
 
-      {/* Circular Gauge Container */}
-      <div className="relative flex items-center justify-center">
-        {/* SVG Circular Progress */}
-        <svg 
-          width="280" 
-          height="280" 
-          className="transform -rotate-90"
-          viewBox="0 0 280 280"
-        >
-          {/* Background Circle */}
+  return (
+    <div className="flex flex-col items-center space-y-8">
+      
+      {/* Circular Gauge with Emoji Inside */}
+      <div className="relative">
+        <svg width="280" height="280" className="transform -rotate-90">
+          {/* Background circle */}
           <circle
             cx="140"
             cy="140"
-            r={radius}
+            r="120"
             stroke="rgba(71, 85, 105, 0.3)"
-            strokeWidth="8"
+            strokeWidth="12"
             fill="none"
           />
-          
-          {/* Progress Circle */}
+          {/* Progress circle */}
           <circle
             cx="140"
             cy="140"
-            r={radius}
+            r="120"
             stroke={getCircleColor(value)}
-            strokeWidth="8"
+            strokeWidth="12"
             fill="none"
             strokeLinecap="round"
-            strokeDasharray={strokeDasharray}
+            strokeDasharray={circumference}
             strokeDashoffset={strokeDashoffset}
             className="transition-all duration-500 ease-out"
             style={{
@@ -135,36 +110,41 @@ export const CircularRageMeter: React.FC<CircularRageMeterProps> = ({
             }}
           />
         </svg>
-
-        {/* Center Content - Absolutely positioned in the center */}
+        
+        {/* Center Content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
+          {/* Emoji Mascot */}
+          <div className="mb-2">
+            <EmojiMascot rageLevel={value} />
+          </div>
+          
           {/* Rage Level Number */}
-          <div className={`text-6xl font-black mb-2 ${getRageLevelColor(value)}`}>
+          <div className={`text-6xl font-black ${getRageLevelColor(value)} filter drop-shadow-lg`}>
             {value}
           </div>
           
-          {/* Rage Description - Positioned below number, within circle */}
-          <div className={`text-sm font-bold text-center px-4 ${getRageLevelColor(value)}`}>
+          {/* Description */}
+          <div className={`text-sm font-semibold ${getRageLevelColor(value)} text-center px-4 mt-1`}>
             {getAuthenticRageDescription(value)}
           </div>
         </div>
       </div>
 
-      {/* Range Slider - Below the circular gauge */}
+      {/* Range Slider */}
       <div className="w-full max-w-xs">
         <input
           type="range"
-          min={min}
-          max={max}
+          min="1"
+          max="10"
           value={value}
-          onChange={handleChange}
+          onChange={handleSliderChange}
           disabled={isLoading}
-          className="w-full h-2 bg-gradient-to-r from-blue-300 via-green-300 via-yellow-300 via-orange-300 to-red-500 rounded-lg appearance-none cursor-pointer slider-modern"
-          aria-label={`Rage level: ${value} out of ${max}`}
+          className="w-full h-3 bg-gradient-to-r from-blue-300 via-green-300 via-yellow-300 via-orange-300 to-red-500 rounded-lg appearance-none cursor-pointer slider-modern shadow-lg"
+          aria-label={`Rage level: ${value} out of 10`}
         />
         
         {/* Slider Labels */}
-        <div className="flex justify-between text-xs text-gray-400 mt-2 font-medium">
+        <div className="flex justify-between text-sm text-gray-400 mt-2 font-medium">
           <span className="neon-blue">Chill</span>
           <span className="neon-red font-bold">NUCLEAR</span>
         </div>
@@ -217,8 +197,8 @@ export const CircularRageMeter: React.FC<CircularRageMeterProps> = ({
           <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent animate-pulse"></div>
         )}
       </button>
-
-      {/* Button Help Text - Below everything */}
+      
+      {/* Button Help Text */}
       {!isValid && !isLoading && (
         <div className="text-sm text-gray-400 flex items-center justify-center gap-2 animate-slide-in text-center">
           <span>{getHelpText()}</span>

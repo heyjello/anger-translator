@@ -25,7 +25,7 @@ function App() {
   // State management
   const [inputText, setInputText] = useState('');
   const [selectedStyle, setSelectedStyle] = useState<RageStyle>('enforcer');
-  const [rageLevel, setRageLevel] = useState(5);
+  const [rageLevel, setRageLevel] = useState(5); // Now 1-10 scale
   const [isCopied, setIsCopied] = useState(false);
   const [inputError, setInputError] = useState('');
   const [showShareModal, setShowShareModal] = useState(false);
@@ -137,7 +137,7 @@ function App() {
     await translate({
       text: inputText,
       style: selectedStyle,
-      intensity: rageLevel
+      intensity: rageLevel * 10 // Convert 1-10 to 10-100 for internal processing
     });
   };
 

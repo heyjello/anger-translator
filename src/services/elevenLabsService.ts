@@ -3,6 +3,7 @@
  * 
  * Updated for ElevenLabs v3 format with proper audio tag support.
  * Uses text with audio tags directly without XML processing.
+ * Now integrated with secure key manager.
  */
 
 import { 
@@ -11,6 +12,7 @@ import {
   type VoiceConfig,
   type RageStyle
 } from '../config/elevenLabsVoices';
+import { secureKeyManager } from './secureKeyManager';
 
 export interface ElevenLabsConfig {
   apiKey: string;
@@ -43,25 +45,43 @@ export class ElevenLabsService {
   }
 
   /**
-   * Load configuration from environment variables
+   * Load configuration from secure key manager, environment variables, or localStorage
    */
   private loadConfiguration(): void {
+    // First, try secure key manager
+    const secureApiKey = secureKeyManager.getKey('elevenlabs');
+    if (secureApiKey) {
+      this.config.apiKey = secureApiKey;
+      this._isConfigured = true;
+      console.log('🎤 ElevenLabs TTS configured from secure key manager');
+      return;
+    }
+
+    // Fallback to environment variables
     const envApiKey = import.meta.env.VITE_ELEVENLABS_API_KEY;
-    
     if (envApiKey && envApiKey !== 'your_api_key_here') {
       this.config.apiKey = envApiKey;
       this._isConfigured = true;
       console.log('🎤 ElevenLabs TTS configured from environment variables');
-    } else {
-      console.log('⚠️ ElevenLabs not configured. Please set VITE_ELEVENLABS_API_KEY in .env');
-      console.log('💡 Get your API key from: https://elevenlabs.io/');
+      return;
     }
+
+    console.log('⚠️ ElevenLabs not configured. Please set up your API key.');
+    console.log('💡 Get your API key from: https://elevenlabs.io/');
   }
 
   /**
    * Check if the service is properly configured
    */
   isConfigured(): boolean {
+    // Always check secure key manager first
+    const secureKey = secureKeyManager.getKey('elevenlabs');
+    if (secureKey) {
+      this.config.apiKey = secureKey;
+      this._isConfigured = true;
+      return true;
+    }
+
     return this._isConfigured && !!this.config.apiKey && this.config.apiKey !== 'your_api_key_here';
   }
 
@@ -221,8 +241,8 @@ export class ElevenLabsService {
    */
   getStatus(): { configured: boolean; hasApiKey: boolean; model: string } {
     return {
-      configured: this._isConfigured,
-      hasApiKey: !!this.config.apiKey && this.config.apiKey !== 'your_api_key_here',
+      configured: this.isConfigured(),
+      hasApiKey: this.isConfigured(),
       model: this.config.defaultModel
     };
   }

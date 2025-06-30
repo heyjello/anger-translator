@@ -3,8 +3,10 @@
  * 
  * Uses DeepSeek v3 for dynamic, varied responses that transform user input
  * while maintaining the original message's meaning and context.
- * Now optimized for ElevenLabs v3 audio tag system.
+ * Now optimized for ElevenLabs v3 audio tag system and integrated with secure key manager.
  */
+
+import { secureKeyManager } from './secureKeyManager';
 
 export interface OpenRouterConfig {
   apiKey: string;
@@ -47,7 +49,7 @@ export interface OpenRouterResponse {
 
 // Default configuration optimized for DeepSeek v3
 const DEFAULT_CONFIG: OpenRouterConfig = {
-  apiKey: '', // Will be set from environment or user input
+  apiKey: '', // Will be set from secure key manager, environment, or user input
   model: 'deepseek/deepseek-chat-v3-0324:free', // DeepSeek v3 free model
   baseUrl: 'https://openrouter.ai/api/v1'
 };
@@ -108,9 +110,19 @@ class OpenRouterService {
   }
 
   /**
-   * Load configuration from environment variables or localStorage
+   * Load configuration from secure key manager, environment variables, or localStorage
    */
   private loadConfiguration(): void {
+    // First, try secure key manager
+    const secureApiKey = secureKeyManager.getKey('openrouter');
+    if (secureApiKey) {
+      this.config.apiKey = secureApiKey;
+      this.isConfigured = true;
+      console.log('🤖 OpenRouter configured from secure key manager');
+      console.log(`📋 Using model: ${this.config.model}`);
+      return;
+    }
+
     // Try to load from environment variables (for production)
     const envApiKey = import.meta.env.VITE_OPENROUTER_API_KEY;
     const envModel = import.meta.env.VITE_OPENROUTER_MODEL;
@@ -187,6 +199,14 @@ class OpenRouterService {
    * Check if the service is properly configured
    */
   isReady(): boolean {
+    // Always check secure key manager first
+    const secureKey = secureKeyManager.getKey('openrouter');
+    if (secureKey) {
+      this.config.apiKey = secureKey;
+      this.isConfigured = true;
+      return true;
+    }
+
     return this.isConfigured && !!this.config.apiKey && this.config.apiKey !== 'your_api_key_here';
   }
 
@@ -195,9 +215,9 @@ class OpenRouterService {
    */
   getStatus(): { configured: boolean; model: string; hasApiKey: boolean } {
     return {
-      configured: this.isConfigured,
+      configured: this.isReady(),
       model: this.config.model,
-      hasApiKey: !!this.config.apiKey && this.config.apiKey !== 'your_api_key_here'
+      hasApiKey: this.isReady()
     };
   }
 

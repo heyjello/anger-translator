@@ -3,7 +3,7 @@
  * 
  * Uses DeepSeek v3 for dynamic, varied responses that transform user input
  * while maintaining the original message's meaning and context.
- * Updated to prevent stage directions and parenthetical content.
+ * Now allows stage directions for emotional guidance and converts them to audio tags.
  */
 
 export interface OpenRouterConfig {
@@ -319,41 +319,8 @@ class OpenRouterService {
   }
 
   /**
-   * Clean output text to remove stage directions and unwanted content
-   */
-  private cleanOutput(text: string): string {
-    let cleaned = text.trim();
-    
-    // Remove stage directions in parentheses
-    cleaned = cleaned.replace(/\([^)]*\)/g, '');
-    
-    // Remove any quotes that wrap the entire response
-    if (cleaned.startsWith('"') && cleaned.endsWith('"')) {
-      cleaned = cleaned.slice(1, -1);
-    }
-    
-    // Remove any quotes that wrap the entire response with single quotes
-    if (cleaned.startsWith("'") && cleaned.endsWith("'")) {
-      cleaned = cleaned.slice(1, -1);
-    }
-    
-    // Remove any stage direction patterns that might slip through
-    cleaned = cleaned.replace(/\[([^\]]*)\]/g, ''); // Remove [stage directions]
-    cleaned = cleaned.replace(/\*([^*]*)\*/g, '$1'); // Remove *emphasis* but keep content
-    
-    // Clean up multiple spaces
-    cleaned = cleaned.replace(/\s+/g, ' ').trim();
-    
-    // Ensure it ends with proper punctuation for anger
-    if (!/[.!?]$/.test(cleaned)) {
-      cleaned += '!';
-    }
-    
-    return cleaned;
-  }
-
-  /**
    * Dynamic Translation Engine - Transforms user input while preserving meaning
+   * Now allows stage directions for emotional guidance
    */
   async translateText(
     text: string, 
@@ -364,7 +331,7 @@ class OpenRouterService {
       throw new Error('OpenRouter API key not configured. Please set up your API key from https://openrouter.ai/keys');
     }
 
-    // Build dynamic prompt that actually uses the user's input
+    // Build dynamic prompt that allows stage directions for emotional guidance
     const prompt = this.buildDynamicTransformationPrompt(text, persona, rageLevel);
 
     const request: OpenRouterRequest = {
@@ -387,11 +354,12 @@ class OpenRouterService {
         throw new Error('No content received from AI model');
       }
 
-      // Clean the output to remove stage directions and unwanted content
-      const cleanedContent = this.cleanOutput(content);
+      // Return raw content with stage directions intact
+      // The textProcessing utility will convert them to audio tags
+      const cleanedContent = content.trim();
       
       console.log('🎭 Dynamic translation generated with DeepSeek v3');
-      console.log('🧹 Stage directions and parenthetical content removed');
+      console.log('🎬 Stage directions preserved for audio tag conversion');
       
       return cleanedContent;
     } catch (error) {
@@ -401,7 +369,7 @@ class OpenRouterService {
   }
 
   /**
-   * Build dynamic transformation prompts that actually use the user's input
+   * Build dynamic transformation prompts that allow stage directions
    */
   private buildDynamicTransformationPrompt(text: string, persona: string, rageLevel: number): string {
     const basePrompt = `Transform this message into an angry ${persona} rant while keeping the exact same topic/subject matter:
@@ -412,13 +380,13 @@ CRITICAL RULES:
 1. Keep the core message/topic identical - just change the delivery to angry
 2. Match the ${persona} style exactly
 3. Anger level: ${rageLevel}/100 (scale intensity accordingly)
-4. Use natural speech patterns, not a script
+4. Use natural speech patterns with emotional cues
 5. Include profanity as f*ck, sh*t, d*mn, etc. (with asterisks for bleeping)
 6. Make it feel like a real person losing their composure
 7. NEVER repeat the original text - transform it completely
 8. Maximum 3 sentences, punchy and impactful
-9. ONLY output the angry dialogue - NO stage directions, NO parentheses, NO descriptions
-10. NO (pacing), NO (tone), NO (body language) - JUST the angry words`;
+9. Include stage directions in parentheses for emotional guidance
+10. Use f*ck, sh*t, etc. Natural speech with emotional cues.`;
 
     // Add persona-specific instructions
     switch (persona) {
@@ -431,7 +399,7 @@ ENFORCER STYLE (Angry Black Man - Righteous Fury):
 - Call out disrespect and demand better
 - End with authority: "CASE CLOSED!" or "AND THAT'S FINAL!"
 
-Transform the message now - DIALOGUE ONLY:`;
+Transform the message now:`;
 
       case 'highland-howler':
         return `${basePrompt}
@@ -442,7 +410,7 @@ HIGHLAND HOWLER STYLE (Explosive Scottish Dad):
 - Threaten to "do it maself" 
 - Use Scottish insults: "bampot", "weapon", "daft"
 
-Transform the message now - DIALOGUE ONLY:`;
+Transform the message now:`;
 
       case 'don':
         return `${basePrompt}
@@ -453,7 +421,7 @@ THE DON STYLE (NY Italian-American Mobster):
 - Reference respect and family honor
 - End with veiled threats or "Don't make me come down there!"
 
-Transform the message now - DIALOGUE ONLY:`;
+Transform the message now:`;
 
       case 'cracked-controller':
         return `${basePrompt}
@@ -464,7 +432,7 @@ CRACKED CONTROLLER STYLE (Gen-Z Latino Gamer):
 - Reference gaming: "uninstall", "rage quit", "touching grass"
 - Mix English and Spanish expressions
 
-Transform the message now - DIALOGUE ONLY:`;
+Transform the message now:`;
 
       case 'karen':
         return `${basePrompt}
@@ -475,7 +443,7 @@ KAREN STYLE (Suburban Entitlement Rage):
 - Use entitled language: "I'm a paying customer!", "This is unacceptable!"
 - Reference husband's job, social media threats
 
-Transform the message now - DIALOGUE ONLY:`;
+Transform the message now:`;
 
       case 'corporate':
         return `${basePrompt}
@@ -486,7 +454,7 @@ CORPORATE STYLE (Professional Office Meltdown):
 - Reference competence, escalation, and proper procedures
 - Maintain professional tone while expressing rage
 
-Transform the message now - DIALOGUE ONLY:`;
+Transform the message now:`;
 
       case 'sarcastic':
         return `${basePrompt}
@@ -497,12 +465,12 @@ SARCASTIC STYLE (Intellectual Destruction):
 - Use sophisticated vocabulary to deliver devastating insults
 - Mock with fake enthusiasm and backhanded compliments
 
-Transform the message now - DIALOGUE ONLY:`;
+Transform the message now:`;
 
       default:
         return `${basePrompt}
 
-Transform the message now - DIALOGUE ONLY:`;
+Transform the message now:`;
     }
   }
 

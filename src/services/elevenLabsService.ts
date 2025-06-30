@@ -11,7 +11,8 @@ import {
   getAdvancedVoiceConfig,
   preprocessTextForStyle,
   VOICE_MODELS,
-  type VoiceConfig
+  type VoiceConfig,
+  type RageStyle
 } from '../config/elevenLabsVoices';
 
 export interface ElevenLabsConfig {
@@ -154,7 +155,7 @@ export class ElevenLabsService {
    */
   async textToSpeech(
     text: string, 
-    style: 'corporate' | 'gamer' | 'sarcastic' | 'scottish-dad',
+    style: RageStyle,
     intensity: number
   ): Promise<ArrayBuffer> {
     if (!this.isConfigured()) {
@@ -223,7 +224,7 @@ export class ElevenLabsService {
   /**
    * Get current voice info for a style
    */
-  getCurrentVoiceInfo(style: 'corporate' | 'gamer' | 'sarcastic' | 'scottish-dad'): string {
+  getCurrentVoiceInfo(style: RageStyle): string {
     const voice = getVoiceForStyle(style);
     return `${voice.name} - ${voice.description}`;
   }
@@ -242,7 +243,7 @@ export class ElevenLabsService {
 
     // Get advanced voice configuration
     const voiceConfig = getAdvancedVoiceConfig(
-      style as 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad', 
+      style as RageStyle, 
       rageLevel
     );
     
@@ -256,7 +257,7 @@ export class ElevenLabsService {
     // Preprocess text for better speech synthesis
     const processedText = preprocessTextForStyle(
       text, 
-      style as 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad', 
+      style as RageStyle, 
       rageLevel
     );
 
@@ -292,7 +293,7 @@ export class ElevenLabsService {
   /**
    * Test the API connection with a style-specific test phrase
    */
-  async testConnection(style: 'corporate' | 'gamer' | 'sarcastic' | 'scottish-dad' = 'corporate'): Promise<{ success: boolean; error?: string }> {
+  async testConnection(style: RageStyle = 'corporate'): Promise<{ success: boolean; error?: string }> {
     try {
       console.log('🧪 Testing ElevenLabs connection...');
       
@@ -368,7 +369,7 @@ export class ElevenLabsService {
    * Get voice configuration for a specific style
    */
   getVoiceConfig(style: string): VoiceConfig {
-    const validStyle = style as 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad';
+    const validStyle = style as RageStyle;
     return getVoiceForStyle(validStyle);
   }
 }

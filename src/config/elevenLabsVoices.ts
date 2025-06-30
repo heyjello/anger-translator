@@ -17,7 +17,14 @@ export interface VoiceStyleMap {
   karen: VoiceConfig;
   'scottish-dad': VoiceConfig;
   'ny-italian': VoiceConfig;
+  enforcer: VoiceConfig;
+  'highland-howler': VoiceConfig;
+  don: VoiceConfig;
+  'cracked-controller': VoiceConfig;
 }
+
+// Define the comprehensive RageStyle type
+export type RageStyle = 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad' | 'ny-italian' | 'enforcer' | 'highland-howler' | 'don' | 'cracked-controller';
 
 // Pre-made ElevenLabs voices optimized for each style
 export const VOICE_CONFIGS: VoiceStyleMap = {
@@ -86,6 +93,50 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
       style: 0.8,
       use_speaker_boost: true
     }
+  },
+  enforcer: {
+    voice_id: "VR6AewLTigWG4xSOukaG", // Arnold - deep, authoritative
+    name: "Enforcer",
+    description: "Deep, intimidating voice for law enforcement rage",
+    voice_settings: {
+      stability: 0.8,
+      similarity_boost: 0.8,
+      style: 0.4,
+      use_speaker_boost: true
+    }
+  },
+  'highland-howler': {
+    voice_id: "QweS0d0FetCxpq95g9bA", // Arnold - Scottish accent
+    name: "Highland Howler",
+    description: "Fierce Scottish Highland warrior voice for battle rage",
+    voice_settings: {
+      stability: 0.4,
+      similarity_boost: 0.7,
+      style: 0.8,
+      use_speaker_boost: true
+    }
+  },
+  don: {
+    voice_id: "2EiwWnXFnvU5JabPnv8n", // Clyde - sophisticated, menacing
+    name: "Don",
+    description: "Sophisticated, menacing voice for mafia don rage",
+    voice_settings: {
+      stability: 0.8,
+      similarity_boost: 0.8,
+      style: 0.5,
+      use_speaker_boost: true
+    }
+  },
+  'cracked-controller': {
+    voice_id: "ErXwobaYiN019PkySvjV", // Antoni - high energy, erratic
+    name: "Cracked Controller",
+    description: "Hyper-energetic, erratic voice for gaming controller rage",
+    voice_settings: {
+      stability: 0.2, // Very low stability for maximum chaos
+      similarity_boost: 0.5,
+      style: 1.0, // Maximum style for extreme expressiveness
+      use_speaker_boost: true
+    }
   }
 };
 
@@ -96,11 +147,15 @@ export const ALTERNATIVE_VOICES = {
   sarcastic: ["2EiwWnXFnvU5JabPnv8n"], // Clyde
   karen: ["ThT5KcBeYPX3keUQqHPh"], // Dorothy
   'scottish-dad': ["2EiwWnXFnvU5JabPnv8n"], // Clyde
-  'ny-italian': ["pNInz6obpgDQGcFmaJgB"] // Adam
+  'ny-italian': ["pNInz6obpgDQGcFmaJgB"], // Adam
+  enforcer: ["2EiwWnXFnvU5JabPnv8n"], // Clyde
+  'highland-howler': ["VR6AewLTigWG4xSOukaG"], // Arnold
+  don: ["pNInz6obpgDQGcFmaJgB"], // Adam
+  'cracked-controller': ["21m00Tcm4TlvDq8ikWAM"] // Rachel
 };
 
 // Get voice configuration based on style
-export const getVoiceForStyle = (style: 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad' | 'ny-italian'): VoiceConfig => {
+export const getVoiceForStyle = (style: RageStyle): VoiceConfig => {
   return VOICE_CONFIGS[style];
 };
 
@@ -164,14 +219,14 @@ export const getEmotionalPreset = (rageLevel: number): keyof typeof EMOTIONAL_PR
 
 // Advanced voice configuration with style-specific adjustments
 export const getAdvancedVoiceConfig = (
-  style: 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad' | 'ny-italian',
+  style: RageStyle,
   intensity: number
 ): VoiceConfig => {
   const baseConfig = getVoiceForStyle(style);
   const emotionalPreset = EMOTIONAL_PRESETS[getEmotionalPreset(intensity)];
   
-  // Special handling for gamer style - more erratic at higher intensities
-  if (style === 'gamer') {
+  // Special handling for gamer and cracked-controller styles - more erratic at higher intensities
+  if (style === 'gamer' || style === 'cracked-controller') {
     const crackedFactor = intensity / 10;
     const blendedSettings = {
       stability: Math.max(0.1, baseConfig.voice_settings.stability - (crackedFactor * 0.4)), // More unstable
@@ -225,7 +280,7 @@ export const VOICE_MODELS = {
 // Text preprocessing for better speech synthesis
 export const preprocessTextForStyle = (
   text: string, 
-  style: 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad' | 'ny-italian',
+  style: RageStyle,
   intensity: number
 ): string => {
   let processedText = text;
@@ -244,6 +299,7 @@ export const preprocessTextForStyle = (
       break;
       
     case 'gamer':
+    case 'cracked-controller':
       // Emphasize gamer terms and add cracked energy
       processedText = processedText.replace(/(NAH BRO|BRUH MOMENT|THAT'S CAP|NO SHOT|SKILL ISSUE|GATORADE|ADDERALL)/g, '<emphasis level="strong">$1</emphasis>');
       processedText = processedText.replace(/\*\*BLEEP\*\*/g, '<emphasis level="strong">BLEEP</emphasis>');
@@ -275,6 +331,7 @@ export const preprocessTextForStyle = (
       break;
 
     case 'scottish-dad':
+    case 'highland-howler':
       // Add Scottish dad-specific emphasis and disappointed pauses
       processedText = processedText.replace(/(LADDIE|LASSIE|BLOODY HELL|FOR CRYING OUT LOUD)/g, '<emphasis level="strong">$1</emphasis>');
       processedText = processedText.replace(/\*sighs heavily\*/g, '<break time="0.5s"/>');
@@ -293,6 +350,24 @@ export const preprocessTextForStyle = (
         processedText = `<prosody rate="1.3" pitch="+8%">${processedText}</prosody>`; // Fast-talking NY style
       }
       break;
+
+    case 'enforcer':
+      // Add law enforcement emphasis and authoritative pauses
+      processedText = processedText.replace(/(STOP|FREEZE|HANDS UP|COMPLY|VIOLATION)/g, '<emphasis level="strong">$1</emphasis>');
+      processedText = processedText.replace(/,/g, ', <break time="0.3s"/>');
+      if (intensity >= 6) {
+        processedText = `<prosody rate="0.9" pitch="-10%">${processedText}</prosody>`;
+      }
+      break;
+
+    case 'don':
+      // Add mafia don emphasis and menacing pauses
+      processedText = processedText.replace(/(CAPISCE|FAMIGLIA|RESPECT|BUSINESS)/g, '<emphasis level="strong">$1</emphasis>');
+      processedText = processedText.replace(/\.\.\./g, '... <break time="0.8s"/>'); // Longer pauses for menacing effect
+      if (intensity >= 6) {
+        processedText = `<prosody rate="0.8" pitch="-5%">${processedText}</prosody>`;
+      }
+      break;
   }
 
   // Intensity-based adjustments
@@ -304,14 +379,18 @@ export const preprocessTextForStyle = (
 };
 
 // Voice testing utilities
-export const createTestPhrase = (style: 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad' | 'ny-italian'): string => {
+export const createTestPhrase = (style: RageStyle): string => {
   const testPhrases = {
     corporate: "As per my previous email, I need you to review this document immediately. Please advise how we can move forward with some actual competence!",
     gamer: "[screaming] NAH BRO! This is straight **BLEEP**! SKILL ISSUE FR FR, órale! I'm about to UNINSTALL this trash!",
     sarcastic: "Oh, how absolutely riveting! I'm just thrilled to deal with this masterpiece of communication. Truly, your eloquence knows no bounds!",
     karen: "Excuse me, I want to speak to your manager RIGHT NOW! This is completely unacceptable and I'm calling corporate!",
     'scottish-dad': "Och, for crying out loud! What in the bloody hell were ye thinking, laddie? I'm not angry, just... deeply disappointed in ye!",
-    'ny-italian': "Ay, what's ya problem here? You gotta be kiddin' me with this! Fuggedaboutit - I'm done with this nonsense, capisce?"
+    'ny-italian': "Ay, what's ya problem here? You gotta be kiddin' me with this! Fuggedaboutit - I'm done with this nonsense, capisce?",
+    enforcer: "STOP right there! You're in violation of protocol! COMPLY immediately or face the consequences!",
+    'highland-howler': "BY THE HIGHLANDS! What manner of foolishness is this?! Ye've dishonored the clan with yer incompetence!",
+    don: "You come to me... on this day... with such disrespect? This is not how we do business in the famiglia, capisce?",
+    'cracked-controller': "[SCREAMING] YOOO THIS CONTROLLER IS STRAIGHT TRASH! I'M ABOUT TO THROW THIS THING THROUGH THE WALL! NO CAP!"
   };
   
   return testPhrases[style];

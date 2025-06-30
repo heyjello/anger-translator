@@ -8,6 +8,7 @@
 
 import { openRouterService } from './openRouterService';
 import { translateText as mockTranslate, TranslationRequest, TranslationResponse, rateLimiter } from './translationService';
+import type { RageStyle } from '../config/elevenLabsVoices';
 
 export interface EnhancedTranslationResponse extends TranslationResponse {
   usedAI: boolean;
@@ -116,7 +117,7 @@ class EnhancedTranslationService {
         console.log('🤖 Using AI translation for dynamic response generation');
         const translatedText = await openRouterService.translateText(
           request.text,
-          request.style as 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad' | 'ny-italian',
+          request.style as RageStyle,
           request.intensity
         );
 

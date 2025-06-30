@@ -3,7 +3,7 @@
  * 
  * Integrates OpenRouter AI service with fallback to mock translation.
  * Provides seamless switching between AI and mock modes.
- * Now prioritizes AI translation for dynamic responses.
+ * Now prioritizes AI translation for dynamic responses and cleans output for users.
  */
 
 import { openRouterService } from './openRouterService';
@@ -15,6 +15,27 @@ export interface EnhancedTranslationResponse extends TranslationResponse {
   model?: string;
   tokensUsed?: number;
 }
+
+/**
+ * Clean translated text for end user display by removing tone cues and formatting
+ */
+const cleanTextForUser = (text: string): string => {
+  let cleanedText = text;
+  
+  // Remove tone cues like [explosive energy], [screaming], etc.
+  cleanedText = cleanedText.replace(/\[([^\]]+)\]/g, '');
+  
+  // Remove multiple spaces and clean up
+  cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
+  
+  // Remove leading/trailing punctuation that might cause issues
+  cleanedText = cleanedText.replace(/^[,.\s]+|[,.\s]+$/g, '');
+  
+  // Clean up any double spaces that might remain
+  cleanedText = cleanedText.replace(/\s{2,}/g, ' ');
+  
+  return cleanedText;
+};
 
 class EnhancedTranslationService {
   private useAI: boolean = true; // Default to AI enabled
@@ -76,6 +97,7 @@ class EnhancedTranslationService {
 
   /**
    * Main translation function with AI prioritized for dynamic responses
+   * Now cleans output text for end users
    */
   async translateText(request: TranslationRequest): Promise<EnhancedTranslationResponse> {
     // Input validation
@@ -115,14 +137,17 @@ class EnhancedTranslationService {
     if (this.useAI && this.isAIAvailable()) {
       try {
         console.log('🤖 Using AI translation for dynamic response generation');
-        const translatedText = await openRouterService.translateText(
+        const rawTranslatedText = await openRouterService.translateText(
           request.text,
           request.style as RageStyle,
           request.intensity
         );
 
+        // Clean the text for end user display
+        const cleanedText = cleanTextForUser(rawTranslatedText);
+
         return {
-          translatedText,
+          translatedText: cleanedText,
           success: true,
           usedAI: true,
           model: openRouterService.getCurrentModel().name
@@ -134,6 +159,7 @@ class EnhancedTranslationService {
         const mockResponse = await mockTranslate(request);
         return {
           ...mockResponse,
+          translatedText: mockResponse.success ? cleanTextForUser(mockResponse.translatedText) : mockResponse.translatedText,
           usedAI: false,
           error: `AI unavailable - using fallback. Configure OpenRouter for dynamic responses.`
         };
@@ -145,6 +171,7 @@ class EnhancedTranslationService {
     const mockResponse = await mockTranslate(request);
     return {
       ...mockResponse,
+      translatedText: mockResponse.success ? cleanTextForUser(mockResponse.translatedText) : mockResponse.translatedText,
       usedAI: false,
       error: mockResponse.success ? 'Using mock responses. Enable AI for dynamic generation.' : mockResponse.error
     };

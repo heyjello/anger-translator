@@ -1,8 +1,8 @@
 /**
  * Enhanced TTS Service
  * 
- * Uses ElevenLabs voices EXACTLY as they come from the service.
- * NO modifications to voice settings whatsoever.
+ * Combines ElevenLabs TTS with bleep sound effects for censored profanity.
+ * Words surrounded by ** are treated as profanity and replaced with bleeps.
  */
 
 import { elevenLabsService } from './elevenLabsService';
@@ -20,23 +20,23 @@ export class EnhancedTTSService {
   private currentAudio: HTMLAudioElement | null = null;
 
   /**
-   * Process text and play with bleep replacements
-   * Uses voices EXACTLY as configured in ElevenLabs
+   * Process text and play with bleep replacements for profanity
    */
   async speakWithBleeps(
     text: string, 
     options: EnhancedTTSOptions
   ): Promise<void> {
-    console.log('🎤 Enhanced TTS starting (NO VOICE MODIFICATIONS)');
+    console.log('🎤 Enhanced TTS starting - checking for profanity bleeps');
 
     // Stop any currently playing audio
     this.stopCurrentAudio();
 
-    if (!options.enableBleeps || !this.hasBleepMarkers(text)) {
-      // No bleeps needed, use regular TTS with UNMODIFIED voice
-      console.log('📢 No bleeps detected, using regular TTS with ORIGINAL voice settings');
+    if (!options.enableBleeps || !this.hasProfanityMarkers(text)) {
+      // No profanity bleeps needed, use regular TTS
+      console.log('📢 No profanity detected, using regular TTS');
       try {
-        const audioUrl = await elevenLabsService.generateSpeech(text, options.style, options.rageLevel);
+        const cleanedText = this.cleanTextForSpeech(text);
+        const audioUrl = await elevenLabsService.generateSpeech(cleanedText, options.style, options.rageLevel);
         await this.playAudio(audioUrl);
       } catch (error) {
         console.error('❌ Regular TTS failed:', error);
@@ -45,31 +45,34 @@ export class EnhancedTTSService {
       return;
     }
 
-    console.log('🔊 Bleeps detected, using enhanced TTS with ORIGINAL voice settings');
+    console.log('🔊 Profanity detected, using enhanced TTS with bleeps');
 
-    // Split text into segments with bleep markers
-    const segments = this.parseTextWithBleeps(text);
+    // Split text into segments with profanity markers
+    const segments = this.parseTextWithProfanity(text);
+    console.log('📝 Parsed segments:', segments.length);
     
     for (let i = 0; i < segments.length; i++) {
       const segment = segments[i];
+      console.log(`🎯 Processing segment ${i + 1}/${segments.length}:`, segment.type);
       
       try {
         if (segment.type === 'text' && segment.content.trim()) {
-          // Speak the text with UNMODIFIED voice settings
-          console.log('🗣️ Generating speech with ORIGINAL ElevenLabs voice');
+          // Speak the clean text
+          console.log('🗣️ Generating speech for clean text segment');
+          const cleanedText = this.cleanTextForSpeech(segment.content);
           const audioUrl = await elevenLabsService.generateSpeech(
-            segment.content.trim(), 
+            cleanedText, 
             options.style, 
             options.rageLevel
           );
           await this.playAudio(audioUrl);
-        } else if (segment.type === 'bleep') {
-          // Play bleep sound
-          console.log('🔊 Playing bleep for:', segment.content);
+        } else if (segment.type === 'profanity') {
+          // Play bleep sound for profanity
+          console.log('🔊 Playing bleep for profanity:', segment.content);
           await bleepSoundService.bleepForText(segment.content);
         }
         
-        // Minimal pause between segments
+        // Minimal pause between segments for natural flow
         if (i < segments.length - 1) {
           await new Promise(resolve => setTimeout(resolve, 50));
         }
@@ -80,35 +83,53 @@ export class EnhancedTTSService {
       }
     }
     
-    console.log('✅ Enhanced TTS playback complete (ORIGINAL voice used)');
+    console.log('✅ Enhanced TTS playback complete');
   }
 
   /**
-   * Check if text contains bleep markers
+   * Check if text contains profanity markers (**)
    */
-  private hasBleepMarkers(text: string): boolean {
+  private hasProfanityMarkers(text: string): boolean {
     return /\*\*[^*]+\*\*/.test(text);
   }
 
   /**
-   * Parse text into speech and bleep segments
+   * Clean text for speech by removing tone cues but preserving profanity markers
    */
-  private parseTextWithBleeps(text: string): Array<{ type: 'text' | 'bleep'; content: string }> {
-    const segments: Array<{ type: 'text' | 'bleep'; content: string }> = [];
+  private cleanTextForSpeech(text: string): string {
+    let cleanedText = text;
     
+    // Remove tone cues like [explosive energy], [screaming], etc.
+    cleanedText = cleanedText.replace(/\[([^\]]+)\]/g, '');
+    
+    // Remove multiple spaces and clean up
+    cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
+    
+    return cleanedText;
+  }
+
+  /**
+   * Parse text into speech and profanity segments
+   * ** markers indicate profanity that should be bleeped
+   */
+  private parseTextWithProfanity(text: string): Array<{ type: 'text' | 'profanity'; content: string }> {
+    const segments: Array<{ type: 'text' | 'profanity'; content: string }> = [];
+    
+    // Split on ** markers while preserving them
     const parts = text.split(/(\*\*[^*]*\*\*)/);
     
     for (const part of parts) {
       if (!part) continue;
       
       if (part.startsWith('**') && part.endsWith('**')) {
-        const bleepContent = part.replace(/\*\*/g, '');
-        if (bleepContent) {
-          segments.push({ type: 'bleep', content: bleepContent });
+        // This is profanity that should be bleeped
+        const profanityContent = part.replace(/\*\*/g, '');
+        if (profanityContent) {
+          segments.push({ type: 'profanity', content: profanityContent });
         }
       } else if (part.trim()) {
-        // Clean tone cues but preserve text content
-        const cleanedText = cleanTextForTTS(part);
+        // This is regular text that should be spoken
+        const cleanedText = this.cleanTextForSpeech(part);
         if (cleanedText) {
           segments.push({ type: 'text', content: cleanedText });
         }
@@ -227,19 +248,29 @@ export class EnhancedTTSService {
   }
 
   /**
-   * Test the enhanced TTS with ORIGINAL voice settings
+   * Test the enhanced TTS with profanity bleeps
    */
   async testEnhancedTTS(): Promise<void> {
-    const testText = "This is a test of the enhanced TTS system with **CENSORED** words!";
+    const testText = "This is a test of the enhanced TTS system with **DAMN** profanity words!";
     
-    console.log('🧪 Testing enhanced TTS with ORIGINAL ElevenLabs voices...');
+    console.log('🧪 Testing enhanced TTS with profanity bleeps...');
     await this.speakWithBleeps(testText, {
       style: 'highland-howler',
       rageLevel: 70,
       enableBleeps: true,
       bleepStyle: 'tv'
     });
-    console.log('✅ Enhanced TTS test complete (ORIGINAL voice used)');
+    console.log('✅ Enhanced TTS test complete');
+  }
+
+  /**
+   * Test profanity parsing
+   */
+  testProfanityParsing(text: string): Array<{ type: 'text' | 'profanity'; content: string }> {
+    console.log('🧪 Testing profanity parsing for:', text);
+    const segments = this.parseTextWithProfanity(text);
+    console.log('📝 Parsed segments:', segments);
+    return segments;
   }
 }
 

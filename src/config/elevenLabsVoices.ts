@@ -141,19 +141,21 @@ export const VOICE_MODELS = {
 } as const;
 
 /**
- * Clean text for TTS - preserves ElevenLabs v3 audio tags and profanity markers
- * - Removes [tone cues] completely (not needed for TTS)
- * - Preserves <audio>tags</audio> for ElevenLabs v3 processing
- * - Preserves **profanity** markers for bleeping system
+ * Clean text for TTS - UPDATED for ElevenLabs v3 audio tag system
+ * - Removes (parenthetical stage directions) that shouldn't be spoken
+ * - Preserves [square bracket audio tags] for ElevenLabs v3 processing
+ * - Preserves *single asterisk emphasis* for ElevenLabs v3
+ * - Preserves **double asterisk profanity** markers for bleeping system
  */
 export const cleanTextForTTS = (text: string): string => {
   let cleanedText = text;
   
-  // Remove tone cues like [explosive energy], [screaming], etc.
-  cleanedText = cleanedText.replace(/\[([^\]]+)\]/g, '');
+  // Remove parenthetical stage directions like (Deep inhale, fake-calm voice)
+  cleanedText = cleanedText.replace(/\([^)]*\)/g, '');
   
-  // Keep ElevenLabs v3 audio tags like <emphasis>, <break>, <prosody>
-  // Keep **profanity** markers for bleeping system
+  // Keep [square bracket audio tags] for ElevenLabs v3: [laughs], [whispers], [pause], etc.
+  // Keep *single asterisk emphasis* for ElevenLabs v3
+  // Keep **double asterisk profanity** markers for bleeping system
   
   // Remove multiple spaces and clean up
   cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
@@ -162,25 +164,24 @@ export const cleanTextForTTS = (text: string): string => {
 };
 
 /**
- * Clean text for user display - removes tone cues and audio tags, preserves profanity markers
- * - Removes [tone cues] (user doesn't need to see these)
- * - Removes <audio>tags</audio> but keeps the content (user doesn't need to see markup)
+ * Clean text for user display - removes all audio formatting for clean reading
+ * - Removes [audio tags] (user doesn't need to see these)
+ * - Removes *emphasis* markers but keeps the content
  * - Preserves **profanity** markers for visual indication of bleeping
  */
 export const cleanTextForUser = (text: string): string => {
   let cleanedText = text;
   
-  // Remove tone cues like [explosive energy], [screaming], etc.
+  // Remove parenthetical stage directions
+  cleanedText = cleanedText.replace(/\([^)]*\)/g, '');
+  
+  // Remove [square bracket audio tags] but keep any content
   cleanedText = cleanedText.replace(/\[([^\]]+)\]/g, '');
   
-  // Remove ElevenLabs v3 audio tags but keep the content
-  cleanedText = cleanedText.replace(/<emphasis[^>]*>([^<]+)<\/emphasis>/g, '$1');
-  cleanedText = cleanedText.replace(/<break[^>]*\/>/g, ' ');
-  cleanedText = cleanedText.replace(/<break[^>]*><\/break>/g, ' ');
-  cleanedText = cleanedText.replace(/<prosody[^>]*>([^<]+)<\/prosody>/g, '$1');
-  cleanedText = cleanedText.replace(/<[^>]+>/g, ''); // Remove any remaining tags
+  // Remove *single asterisk emphasis* but keep the content
+  cleanedText = cleanedText.replace(/\*([^*]+)\*/g, '$1');
   
-  // Keep **profanity** markers for visual indication and bleeping
+  // Keep **double asterisk profanity** markers for visual indication
   
   // Remove multiple spaces and clean up
   cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
@@ -188,29 +189,29 @@ export const cleanTextForUser = (text: string): string => {
   return cleanedText;
 };
 
-// NO TEXT PREPROCESSING - Just clean tone cues, preserve audio tags and profanity
+// NO TEXT PREPROCESSING - Just clean parentheses, preserve audio tags and profanity
 export const preprocessTextForStyle = (
   text: string, 
   style: RageStyle,
   intensity: number
 ): string => {
-  // Only remove tone cues, preserve audio tags and profanity markers
+  // Only remove parenthetical directions, preserve ElevenLabs v3 audio tags and profanity markers
   return cleanTextForTTS(text);
 };
 
 // Voice testing utilities
 export const createTestPhrase = (style: RageStyle): string => {
   const testPhrases = {
-    corporate: "As per my previous email, I need you to review this document immediately.",
-    gamer: "This is straight trash! I'm about to uninstall this whole thing!",
-    sarcastic: "Oh, how absolutely riveting! Truly, your eloquence knows no bounds!",
-    karen: "Excuse me, I want to speak to your manager RIGHT NOW!",
-    'scottish-dad': "What in the bloody hell were ye thinking, laddie?",
-    'ny-italian': "You gotta be kiddin' me with this! Fuggedaboutit!",
-    enforcer: "OH HELL NAH! You must be joking if you think I'm gonna let this slide!",
-    'highland-howler': "What in the name of the wee man is this nonsense?!",
-    don: "You come to me with such disrespect? This is not how we do business!",
-    'cracked-controller': "This controller is straight trash! I'm about to throw this thing!"
+    corporate: "[professional] As per my previous email, I need you to review this document *immediately*.",
+    gamer: "[shouting] This is straight **trash**! I'm about to uninstall this whole thing!",
+    sarcastic: "[sarcastic] Oh, how absolutely *riveting*! Truly, your eloquence knows no bounds!",
+    karen: "[demanding] Excuse me, I want to speak to your manager *RIGHT NOW*!",
+    'scottish-dad': "[angry] What in the **bloody hell** were ye thinking, laddie?",
+    'ny-italian': "[tough] You gotta be kiddin' me with this! Fuggedaboutit!",
+    enforcer: "[threatening] OH HELL NAH! You must be joking if you think I'm gonna let this slide!",
+    'highland-howler': "[explosive] What in the name of the wee man is this **nonsense**?!",
+    don: "[calm threatening] You come to me with such disrespect? This is not how we do business!",
+    'cracked-controller': "[panicked] This controller is straight **trash**! I'm about to throw this thing!"
   };
   
   return testPhrases[style];

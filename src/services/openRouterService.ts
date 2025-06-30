@@ -3,7 +3,7 @@
  * 
  * Uses DeepSeek v3 for dynamic, varied responses that transform user input
  * while maintaining the original message's meaning and context.
- * Now includes post-processing to handle markdown formatting.
+ * Now optimized for ElevenLabs v3 audio tag system.
  */
 
 export interface OpenRouterConfig {
@@ -319,8 +319,8 @@ class OpenRouterService {
   }
 
   /**
-   * Dynamic Translation Engine - Transforms user input while preserving meaning
-   * Now includes post-processing to handle markdown formatting
+   * Dynamic Translation Engine - Optimized for ElevenLabs v3 Audio Tags
+   * Creates SHORT, punchy responses with proper audio formatting
    */
   async translateText(
     text: string, 
@@ -331,15 +331,15 @@ class OpenRouterService {
       throw new Error('OpenRouter API key not configured. Please set up your API key from https://openrouter.ai/keys');
     }
 
-    // Build dynamic prompt that allows stage directions for emotional guidance
-    const prompt = this.buildDynamicTransformationPrompt(text, persona, rageLevel);
+    // Build dynamic prompt optimized for ElevenLabs v3
+    const prompt = this.buildElevenLabsV3Prompt(text, persona, rageLevel);
 
     const request: OpenRouterRequest = {
       model: this.config.model,
       messages: [
         { role: 'user', content: prompt }
       ],
-      max_tokens: 150, // Allow for longer, more dynamic responses
+      max_tokens: 100, // Shorter responses for punchy delivery
       temperature: 0.9, // High creativity for varied responses
       top_p: 0.9,
       frequency_penalty: 0.6, // Avoid repetition
@@ -354,7 +354,7 @@ class OpenRouterService {
         throw new Error('No content received from AI model');
       }
 
-      // Clean up markdown formatting that might come from the LLM
+      // Clean up any markdown formatting
       let output = content.trim();
       
       // Remove leading/trailing markdown bold markers
@@ -367,8 +367,8 @@ class OpenRouterService {
       
       output = output.trim();
       
-      console.log('🎭 Dynamic translation generated with DeepSeek v3');
-      console.log('🧹 Markdown formatting cleaned from output');
+      console.log('🎭 ElevenLabs v3 optimized response generated');
+      console.log('🎤 Audio tags formatted for natural TTS delivery');
       
       return output;
     } catch (error) {
@@ -378,108 +378,143 @@ class OpenRouterService {
   }
 
   /**
-   * Build dynamic transformation prompts that allow stage directions
+   * Build ElevenLabs v3 optimized prompts with proper audio tag formatting
    */
-  private buildDynamicTransformationPrompt(text: string, persona: string, rageLevel: number): string {
-    const basePrompt = `Transform this message into an angry ${persona} rant while keeping the exact same topic/subject matter:
+  private buildElevenLabsV3Prompt(text: string, persona: string, rageLevel: number): string {
+    const baseRules = `You create SHORT, punchy anger responses. MAXIMUM 3 sentences. Use ONLY ElevenLabs v3 audio tags.
 
-Original message: "${text}"
+ELEVENLABS V3 AUDIO TAG SYSTEM (ONLY use these approved formats):
+[Square bracket tags]: [laughs], [whispers], [pause], [rushed], [drawn out], [sarcastic], [angry], [shouting], [sighs], [gulps], [nervous], [hesitant]
+*Single asterisk emphasis*: *WORD* (for stressed/emphasized words)
+**Double asterisk profanity**: **DAMN**, **SHIT**, **HELL**, **FUCK** (only for actual profanity)
+
+CHAINING TAGS: You can combine tags like [whispering][pause] or [angry][shouting]
 
 CRITICAL RULES:
-1. Keep the core message/topic identical - just change the delivery to angry
-2. Match the ${persona} style exactly
-3. Anger level: ${rageLevel}/100 (scale intensity accordingly)
-4. Use natural speech patterns with emotional cues
-5. Include profanity as f*ck, sh*t, d*mn, etc. (with asterisks for bleeping)
-6. Make it feel like a real person losing their composure
-7. NEVER repeat the original text - transform it completely
-8. Maximum 3 sentences, punchy and impactful
-9. Include stage directions in parentheses for emotional guidance
-10. DO NOT use markdown bold (**) formatting in your response`;
+- NEVER use parenthetical stage directions like (Deep inhale) or (sudden pitch rise)
+- NEVER use XML tags like <emphasis level="strong">
+- Use [pause] for dramatic pauses, not <break>
+- Use *word* for emphasis, not <emphasis>
+- Use ** ONLY for actual profanity that needs bleeping
+
+DELIVERY CONTROL EXAMPLES:
+- [drawn out] Sooooo... you're saying... [suspicious tone] 
+- [rushed] Hide! Now!
+- [whispering][pause] Did you hear that?
+- [laughs] That's just *perfect*!
+
+FORBIDDEN:
+- (parenthetical directions)
+- <XML tags>
+- Any non-ElevenLabs v3 formats
+
+RULES:
+- Maximum 3 sentences, under 50 words total
+- Pack maximum emotional impact into minimum words
+- NEVER repeat the user's input text
+- End with dramatic punctuation
+
+Rage Level: ${rageLevel}/100`;
 
     // Add persona-specific instructions
     switch (persona) {
       case 'enforcer':
-        return `${basePrompt}
+        return `${baseRules}
 
-ENFORCER STYLE (Angry Black Man - Righteous Fury):
-- Use Black vernacular: "OH HELL NAH!", "I wish you would", "Bet", "And that's on PERIOD!"
+ENFORCER STYLE (Righteous Fury):
+- Use: [angry], [shouting], [pause], [drawn out]
+- Black vernacular: "OH HELL NAH!", "I wish you would", "Bet", "And that's on PERIOD!"
 - Righteous indignation and moral authority
-- Call out disrespect and demand better
 - End with authority: "CASE CLOSED!" or "AND THAT'S FINAL!"
 
-Transform the message now:`;
+Transform: "${text}"
+
+Response:`;
 
       case 'highland-howler':
-        return `${basePrompt}
+        return `${baseRules}
 
-HIGHLAND HOWLER STYLE (Explosive Scottish Dad):
-- Use Scottish expressions: "Och!", "Ya numpty!", "What in the name of the wee man!"
-- Explosive, sputtering anger with Scottish accent
-- Threaten to "do it maself" 
-- Use Scottish insults: "bampot", "weapon", "daft"
+HIGHLAND HOWLER STYLE (Explosive Scottish):
+- Use: [shouting], [sputtering], [angry], [pause]
+- Scottish expressions: "Och!", "Ya numpty!", "What in the name of the wee man!"
+- Explosive, sputtering anger
+- Scottish insults: "bampot", "weapon", "daft"
 
-Transform the message now:`;
+Transform: "${text}"
+
+Response:`;
 
       case 'don':
-        return `${basePrompt}
+        return `${baseRules}
 
-THE DON STYLE (NY Italian-American Mobster):
-- Use NY Italian expressions: "Capisce?", "Ya mook!", "Madonna mia!", "Fuggedaboutit!"
+THE DON STYLE (NY Italian-American):
+- Use: [threatening], [calm], [angry], [pause]
+- NY Italian: "Capisce?", "Ya mook!", "Madonna mia!", "Fuggedaboutit!"
 - Threatening calm that builds to explosion
-- Reference respect and family honor
-- End with veiled threats or "Don't make me come down there!"
+- End with veiled threats
 
-Transform the message now:`;
+Transform: "${text}"
+
+Response:`;
 
       case 'cracked-controller':
-        return `${basePrompt}
+        return `${baseRules}
 
-CRACKED CONTROLLER STYLE (Gen-Z Latino Gamer):
-- Use gamer/Gen-Z slang: "¡No mames!", "RATIO + L + BOZO!", "This is straight trash!"
+CRACKED CONTROLLER STYLE (Gen-Z Gamer):
+- Use: [panicked], [rushed], [shouting], [nervous]
+- Gamer/Gen-Z slang: "¡No mames!", "RATIO + L + BOZO!", "This is straight trash!"
 - Hyperactive, panicked energy
-- Reference gaming: "uninstall", "rage quit", "touching grass"
-- Mix English and Spanish expressions
+- Gaming references: "uninstall", "rage quit"
 
-Transform the message now:`;
+Transform: "${text}"
+
+Response:`;
 
       case 'karen':
-        return `${basePrompt}
+        return `${baseRules}
 
-KAREN STYLE (Suburban Entitlement Rage):
-- Start fake-nice then escalate to screeching
-- Demand managers, threaten reviews and corporate calls
-- Use entitled language: "I'm a paying customer!", "This is unacceptable!"
-- Reference husband's job, social media threats
+KAREN STYLE (Suburban Entitlement):
+- Use: [fake sweet], [shouting], [demanding], [pause]
+- Start fake-nice then escalate
+- "I'm a paying customer!", "This is unacceptable!"
+- Threaten managers and reviews
 
-Transform the message now:`;
+Transform: "${text}"
+
+Response:`;
 
       case 'corporate':
-        return `${basePrompt}
+        return `${baseRules}
 
-CORPORATE STYLE (Professional Office Meltdown):
-- Use corporate buzzwords: "As per my previous email", "Please advise", "Moving forward"
-- Passive-aggressive that builds to professional fury
-- Reference competence, escalation, and proper procedures
-- Maintain professional tone while expressing rage
+CORPORATE STYLE (Professional Meltdown):
+- Use: [passive aggressive], [building anger], [professional], [pause]
+- Corporate buzzwords: "As per my previous email", "Please advise"
+- Passive-aggressive building to fury
+- Maintain professional tone while raging
 
-Transform the message now:`;
+Transform: "${text}"
+
+Response:`;
 
       case 'sarcastic':
-        return `${basePrompt}
+        return `${baseRules}
 
 SARCASTIC STYLE (Intellectual Destruction):
-- Dripping sarcasm: "How lovely!", "Absolutely riveting!", "What a masterpiece!"
+- Use: [sarcastic], [mocking], [fake enthusiasm], [pause]
+- Dripping sarcasm: "How lovely!", "Absolutely riveting!"
 - Intellectual superiority with cutting wit
-- Use sophisticated vocabulary to deliver devastating insults
-- Mock with fake enthusiasm and backhanded compliments
+- Mock with fake enthusiasm
 
-Transform the message now:`;
+Transform: "${text}"
+
+Response:`;
 
       default:
-        return `${basePrompt}
+        return `${baseRules}
 
-Transform the message now:`;
+Transform: "${text}"
+
+Response:`;
     }
   }
 
@@ -488,7 +523,7 @@ Transform the message now:`;
    */
   async testConnection(): Promise<{ success: boolean; model: string; error?: string }> {
     try {
-      console.log('🧪 Testing OpenRouter connection with DeepSeek v3...');
+      console.log('🧪 Testing OpenRouter connection with ElevenLabs v3 format...');
       const response = await this.translateText(
         "Hello, this is a test message.",
         "enforcer",

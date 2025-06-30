@@ -3,10 +3,12 @@
  * 
  * Combines ElevenLabs TTS with bleep sound effects for censored content.
  * Optimized for natural conversational flow with minimal pauses.
+ * Now properly handles tone cues for TTS while keeping them hidden from users.
  */
 
 import { elevenLabsService } from './elevenLabsService';
 import { bleepSoundService } from './bleepSoundService';
+import { cleanTextForTTS } from '../config/elevenLabsVoices';
 
 export interface EnhancedTTSOptions {
   style: string;
@@ -20,6 +22,7 @@ export class EnhancedTTSService {
 
   /**
    * Process text and play with bleep replacements
+   * Now preserves tone cues for TTS processing
    */
   async speakWithBleeps(
     text: string, 
@@ -33,6 +36,7 @@ export class EnhancedTTSService {
 
     if (!options.enableBleeps || !this.hasBleepMarkers(text)) {
       // No bleeps needed, use regular TTS
+      // Keep tone cues for TTS processing but clean for display
       console.log('📢 No bleeps detected, using regular TTS');
       try {
         const audioUrl = await elevenLabsService.generateSpeech(text, options.style, options.rageLevel);
@@ -56,7 +60,7 @@ export class EnhancedTTSService {
       
       try {
         if (segment.type === 'text' && segment.content.trim()) {
-          // Speak the text
+          // Speak the text - tone cues will be processed by TTS
           console.log('🗣️ Generating speech for text segment');
           const audioUrl = await elevenLabsService.generateSpeech(
             segment.content.trim(), 
@@ -71,7 +75,6 @@ export class EnhancedTTSService {
         }
         
         // Minimal pause between segments for natural conversational flow
-        // Only add pause between text segments, not before/after bleeps
         if (i < segments.length - 1) {
           const nextSegment = segments[i + 1];
           const currentIsText = segment.type === 'text';
@@ -103,6 +106,7 @@ export class EnhancedTTSService {
 
   /**
    * Parse text into speech and bleep segments with smart text handling
+   * Preserves tone cues in text segments for TTS processing
    */
   private parseTextWithBleeps(text: string): Array<{ type: 'text' | 'bleep'; content: string }> {
     const segments: Array<{ type: 'text' | 'bleep'; content: string }> = [];
@@ -120,15 +124,14 @@ export class EnhancedTTSService {
           segments.push({ type: 'bleep', content: bleepContent });
         }
       } else if (part.trim()) {
-        // This is regular text - clean up spacing around bleeps
-        let cleanText = part;
+        // This is regular text - preserve tone cues for TTS
+        let textContent = part;
         
-        // Remove extra spaces that might cause awkward pauses
-        cleanText = cleanText.replace(/\s+/g, ' ').trim();
+        // Only clean up excessive spacing, keep tone cues intact
+        textContent = textContent.replace(/\s+/g, ' ').trim();
         
-        // If this text segment starts or ends with punctuation, preserve natural flow
-        if (cleanText) {
-          segments.push({ type: 'text', content: cleanText });
+        if (textContent) {
+          segments.push({ type: 'text', content: textContent });
         }
       }
     }
@@ -191,12 +194,12 @@ export class EnhancedTTSService {
    * Test the enhanced TTS with bleeps
    */
   async testEnhancedTTS(): Promise<void> {
-    const testText = "This is a **BLEEP** test of the enhanced TTS system with **CENSORED** words!";
+    const testText = "[angry] This is a **BLEEP** test of the enhanced TTS system with **CENSORED** words!";
     
     console.log('🧪 Testing enhanced TTS with bleeps...');
     await this.speakWithBleeps(testText, {
-      style: 'ny-italian',
-      rageLevel: 7,
+      style: 'highland-howler',
+      rageLevel: 70,
       enableBleeps: true,
       bleepStyle: 'tv'
     });

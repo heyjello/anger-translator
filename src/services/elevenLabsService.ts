@@ -12,7 +12,8 @@ import {
   preprocessTextForStyle,
   VOICE_MODELS,
   type VoiceConfig,
-  type RageStyle
+  type RageStyle,
+  cleanTextForTTS
 } from '../config/elevenLabsVoices';
 
 export interface ElevenLabsConfig {
@@ -171,8 +172,9 @@ export class ElevenLabsService {
       intensity
     );
 
-    // Preprocess text for better speech delivery
-    const processedText = this.preprocessText(text, intensity);
+    // Clean and preprocess text for TTS (removes tone cues)
+    const cleanedText = cleanTextForTTS(text);
+    const processedText = this.preprocessText(cleanedText, intensity);
 
     const response = await fetch(
       `https://api.elevenlabs.io/v1/text-to-speech/${voiceConfig.voice_id}`,
@@ -209,12 +211,12 @@ export class ElevenLabsService {
       .replace(/\.\.\./g, ' ... ... ');
 
     // For high intensity, add more dramatic pauses
-    if (intensity >= 7) {
+    if (intensity >= 70) {
       processed = processed.replace(/,/g, ', ... ');
     }
 
     // Add emphasis for all caps words
-    if (intensity >= 8) {
+    if (intensity >= 80) {
       processed = processed.replace(/([A-Z]{3,})/g, '<emphasis level="strong">$1</emphasis>');
     }
 
@@ -231,6 +233,7 @@ export class ElevenLabsService {
 
   /**
    * Convert text to speech with advanced voice configuration (enhanced version)
+   * Now properly cleans text before TTS processing
    */
   async generateSpeech(
     text: string, 
@@ -247,16 +250,17 @@ export class ElevenLabsService {
       rageLevel
     );
     
-    // Check cache first
-    const cacheKey = this.getCacheKey(text, voiceConfig.voice_id, voiceConfig.voice_settings);
+    // Clean text first to remove tone cues, then check cache
+    const cleanedText = cleanTextForTTS(text);
+    const cacheKey = this.getCacheKey(cleanedText, voiceConfig.voice_id, voiceConfig.voice_settings);
     if (this.audioCache.has(cacheKey)) {
       console.log('🎵 Using cached audio');
       return this.audioCache.get(cacheKey)!;
     }
 
-    // Preprocess text for better speech synthesis
+    // Preprocess the cleaned text for better speech synthesis
     const processedText = preprocessTextForStyle(
-      text, 
+      cleanedText, 
       style as RageStyle, 
       rageLevel
     );
@@ -301,7 +305,7 @@ export class ElevenLabsService {
       const { createTestPhrase } = await import('../config/elevenLabsVoices');
       const testText = createTestPhrase(style);
       
-      const audioUrl = await this.generateSpeech(testText, style, 3);
+      const audioUrl = await this.generateSpeech(testText, style, 30);
       
       // Clean up test audio
       URL.revokeObjectURL(audioUrl);

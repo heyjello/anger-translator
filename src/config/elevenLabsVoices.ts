@@ -60,7 +60,7 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   'scottish-dad': {
-    voice_id: "VR6AewLTigWG4xSOukaG", // Arnold
+    voice_id: "cTMt3eRoD8RF6F0MIt0q", // Arnold
     name: "Arnold",
     description: "Deep male voice",
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }

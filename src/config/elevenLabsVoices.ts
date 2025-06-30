@@ -277,19 +277,38 @@ export const VOICE_MODELS = {
   }
 } as const;
 
-// Text preprocessing for better speech synthesis
+/**
+ * Clean text for TTS by removing tone cues and formatting for speech
+ */
+export const cleanTextForTTS = (text: string): string => {
+  let cleanedText = text;
+  
+  // Remove tone cues like [explosive energy], [screaming], etc.
+  cleanedText = cleanedText.replace(/\[([^\]]+)\]/g, '');
+  
+  // Remove multiple spaces and clean up
+  cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
+  
+  // Remove leading/trailing punctuation that might cause issues
+  cleanedText = cleanedText.replace(/^[,.\s]+|[,.\s]+$/g, '');
+  
+  return cleanedText;
+};
+
+// Text preprocessing for better speech synthesis (now with tone cue removal)
 export const preprocessTextForStyle = (
   text: string, 
   style: RageStyle,
   intensity: number
 ): string => {
-  let processedText = text;
+  // First, clean the text by removing tone cues
+  let processedText = cleanTextForTTS(text);
 
-  // Common preprocessing
+  // Common preprocessing for speech
   processedText = processedText.replace(/\.\.\./g, '... <break time="0.5s"/>');
   processedText = processedText.replace(/!!!/g, '!!! <break time="0.3s"/>');
   
-  // Style-specific preprocessing
+  // Style-specific preprocessing (without tone cues)
   switch (style) {
     case 'corporate':
       // Add professional pauses and emphasis
@@ -305,9 +324,6 @@ export const preprocessTextForStyle = (
       processedText = processedText.replace(/\*\*BLEEP\*\*/g, '<emphasis level="strong">BLEEP</emphasis>');
       processedText = processedText.replace(/!!!/g, '!!! <break time="0.1s"/>'); // Faster for cracked energy
       
-      // Add Latino expressions with emphasis
-      processedText = processedText.replace(/(órale|no mames|qué pedo|ese|vato|chale)/g, '<emphasis level="moderate">$1</emphasis>');
-      
       if (intensity >= 7) {
         processedText = `<prosody rate="1.3" pitch="+20%">${processedText}</prosody>`; // Faster, higher pitch for cracked energy
       }
@@ -322,7 +338,6 @@ export const preprocessTextForStyle = (
       
     case 'karen':
       // Add Karen-specific emphasis and dramatic pauses
-      processedText = processedText.replace(/\[([^\]]+)\]/g, '<break time="0.3s"/>'); // Remove tone cues but add pauses
       processedText = processedText.replace(/(EXCUSE ME|MANAGER|UNACCEPTABLE|RIDICULOUS)/g, '<emphasis level="strong">$1</emphasis>');
       processedText = processedText.replace(/\*\*([^*]+)\*\*/g, '<emphasis level="strong">$1</emphasis>'); // Convert **text** to emphasis
       if (intensity >= 6) {
@@ -334,8 +349,6 @@ export const preprocessTextForStyle = (
     case 'highland-howler':
       // Add Scottish dad-specific emphasis and disappointed pauses
       processedText = processedText.replace(/(LADDIE|LASSIE|BLOODY HELL|FOR CRYING OUT LOUD)/g, '<emphasis level="strong">$1</emphasis>');
-      processedText = processedText.replace(/\*sighs heavily\*/g, '<break time="0.5s"/>');
-      processedText = processedText.replace(/\*shakes head\*/g, '<break time="0.3s"/>');
       if (intensity >= 6) {
         processedText = `<prosody rate="0.95" pitch="-5%">${processedText}</prosody>`;
       }
@@ -343,7 +356,6 @@ export const preprocessTextForStyle = (
 
     case 'ny-italian':
       // Add NY Italian-specific emphasis and fast-talking energy
-      processedText = processedText.replace(/\[([^\]]+)\]/g, '<break time="0.2s"/>'); // Remove tone cues but add quick pauses
       processedText = processedText.replace(/(AY|FUGGEDABOUTIT|CAPISCE|MADONNA MIA)/g, '<emphasis level="strong">$1</emphasis>');
       processedText = processedText.replace(/\*\*([^*]+)\*\*/g, '<emphasis level="strong">$1</emphasis>'); // Convert **text** to emphasis
       if (intensity >= 6) {
@@ -382,7 +394,7 @@ export const preprocessTextForStyle = (
 export const createTestPhrase = (style: RageStyle): string => {
   const testPhrases = {
     corporate: "As per my previous email, I need you to review this document immediately. Please advise how we can move forward with some actual competence!",
-    gamer: "[screaming] NAH BRO! This is straight **BLEEP**! SKILL ISSUE FR FR, órale! I'm about to UNINSTALL this trash!",
+    gamer: "NAH BRO! This is straight **BLEEP**! SKILL ISSUE FR FR! I'm about to UNINSTALL this trash!",
     sarcastic: "Oh, how absolutely riveting! I'm just thrilled to deal with this masterpiece of communication. Truly, your eloquence knows no bounds!",
     karen: "Excuse me, I want to speak to your manager RIGHT NOW! This is completely unacceptable and I'm calling corporate!",
     'scottish-dad': "Och, for crying out loud! What in the bloody hell were ye thinking, laddie? I'm not angry, just... deeply disappointed in ye!",
@@ -390,7 +402,7 @@ export const createTestPhrase = (style: RageStyle): string => {
     enforcer: "STOP right there! You're in violation of protocol! COMPLY immediately or face the consequences!",
     'highland-howler': "BY THE HIGHLANDS! What manner of foolishness is this?! Ye've dishonored the clan with yer incompetence!",
     don: "You come to me... on this day... with such disrespect? This is not how we do business in the famiglia, capisce?",
-    'cracked-controller': "[SCREAMING] YOOO THIS CONTROLLER IS STRAIGHT TRASH! I'M ABOUT TO THROW THIS THING THROUGH THE WALL! NO CAP!"
+    'cracked-controller': "YOOO THIS CONTROLLER IS STRAIGHT TRASH! I'M ABOUT TO THROW THIS THING THROUGH THE WALL! NO CAP!"
   };
   
   return testPhrases[style];

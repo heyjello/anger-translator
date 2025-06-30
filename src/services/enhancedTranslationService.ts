@@ -17,13 +17,24 @@ export interface EnhancedTranslationResponse extends TranslationResponse {
 }
 
 /**
- * Clean translated text for end user display by removing tone cues and formatting
+ * Clean translated text for end user display by removing tone cues and single asterisks
+ * Preserves double asterisks for profanity bleeping
  */
 const cleanTextForUser = (text: string): string => {
   let cleanedText = text;
   
   // Remove tone cues like [explosive energy], [screaming], etc.
   cleanedText = cleanedText.replace(/\[([^\]]+)\]/g, '');
+  
+  // Remove single asterisks (emphasis) but preserve double asterisks (profanity)
+  // First, temporarily replace double asterisks with a placeholder
+  cleanedText = cleanedText.replace(/\*\*([^*]+)\*\*/g, '___PROFANITY_MARKER___$1___PROFANITY_MARKER___');
+  
+  // Now remove any remaining single asterisks
+  cleanedText = cleanedText.replace(/\*/g, '');
+  
+  // Restore double asterisks for profanity
+  cleanedText = cleanedText.replace(/___PROFANITY_MARKER___([^_]+)___PROFANITY_MARKER___/g, '**$1**');
   
   // Remove multiple spaces and clean up
   cleanedText = cleanedText.replace(/\s+/g, ' ').trim();

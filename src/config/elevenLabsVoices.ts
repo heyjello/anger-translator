@@ -141,7 +141,8 @@ export const VOICE_MODELS = {
 } as const;
 
 /**
- * Clean text for TTS by removing tone cues ONLY
+ * Clean text for TTS by removing tone cues AND single asterisks
+ * Preserves double asterisks (**) for profanity bleeping
  */
 export const cleanTextForTTS = (text: string): string => {
   let cleanedText = text;
@@ -149,19 +150,29 @@ export const cleanTextForTTS = (text: string): string => {
   // Remove tone cues like [explosive energy], [screaming], etc.
   cleanedText = cleanedText.replace(/\[([^\]]+)\]/g, '');
   
+  // Remove single asterisks (emphasis) but preserve double asterisks (profanity)
+  // First, temporarily replace double asterisks with a placeholder
+  cleanedText = cleanedText.replace(/\*\*([^*]+)\*\*/g, '___PROFANITY_MARKER___$1___PROFANITY_MARKER___');
+  
+  // Now remove any remaining single asterisks
+  cleanedText = cleanedText.replace(/\*/g, '');
+  
+  // Restore double asterisks for profanity
+  cleanedText = cleanedText.replace(/___PROFANITY_MARKER___([^_]+)___PROFANITY_MARKER___/g, '**$1**');
+  
   // Remove multiple spaces and clean up
   cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
   
   return cleanedText;
 };
 
-// NO TEXT PREPROCESSING - Just clean tone cues
+// NO TEXT PREPROCESSING - Just clean tone cues and single asterisks
 export const preprocessTextForStyle = (
   text: string, 
   style: RageStyle,
   intensity: number
 ): string => {
-  // Only remove tone cues, NO OTHER MODIFICATIONS
+  // Only remove tone cues and single asterisks, NO OTHER MODIFICATIONS
   return cleanTextForTTS(text);
 };
 

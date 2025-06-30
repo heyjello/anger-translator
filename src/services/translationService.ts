@@ -1,6 +1,6 @@
 export interface TranslationRequest {
   text: string;
-  style: 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad' | 'ny-italian';
+  style: 'enforcer' | 'highland-howler' | 'don' | 'cracked-controller' | 'karen' | 'corporate' | 'sarcastic';
   intensity: number;
 }
 
@@ -10,9 +10,134 @@ export interface TranslationResponse {
   error?: string;
 }
 
-// Gen-Z Latino Gamer translation patterns
-const GAMER_RAGE_PATTERNS = {
-  // Cracked-out gamer expressions
+// The Enforcer - Luther-style righteous fury
+const ENFORCER_PATTERNS = {
+  expressions: [
+    "OH HELL NAH",
+    "ARE YOU SERIOUS RIGHT NOW",
+    "I KNOW YOU DIDN'T JUST",
+    "BOY IF YOU DON'T",
+    "WHAT IN THE ENTIRE",
+    "LISTEN HERE",
+    "LET ME TELL YOU SOMETHING",
+    "I'M BOUT TO LOSE IT",
+    "THAT'S WHAT WE NOT GONNA DO",
+    "EXCUSE ME SIR/MA'AM"
+  ],
+  
+  toneCues: [
+    "[righteous fury]",
+    "[preacher voice]",
+    "[building up]",
+    "[explosive energy]",
+    "[mic drop moment]",
+    "[rhythmic emphasis]",
+    "[street wisdom]",
+    "[calling out]",
+    "[truth telling]",
+    "[verbal takedown]"
+  ],
+  
+  endings: [
+    "AND THAT'S ON PERIOD!",
+    "CASE CLOSED!",
+    "NEXT QUESTION!",
+    "BOOM! MIC DROP!",
+    "THAT'S ALL I GOT TO SAY ABOUT THAT!",
+    "AND I SAID WHAT I SAID!",
+    "PERIODT!",
+    "FACTS ONLY!",
+    "TRUTH HAS BEEN SPOKEN!",
+    "AND THAT'S THE TEA!"
+  ]
+};
+
+// The Highland Howler - Explosive Scottish Dad
+const HIGHLAND_HOWLER_PATTERNS = {
+  expressions: [
+    "OCH, FOR CRYING OUT LOUD",
+    "WHAT IN THE NAME OF THE WEE MAN",
+    "JESUS BLOODY CHRIST",
+    "HOLY SHITE",
+    "BLOODY HELL",
+    "CHRIST ON A BIKE",
+    "FOR THE LOVE OF ALL THAT'S HOLY",
+    "WHAT FRESH HELL IS THIS",
+    "AYE, RIGHT",
+    "AWAY AND BILE YER HEID"
+  ],
+  
+  insults: [
+    "ya numpty",
+    "ya daft wee bampot", 
+    "ya absolute weapon",
+    "ya muppet",
+    "ya rocket",
+    "ya tube",
+    "ya walloper",
+    "ya eejit",
+    "ya pure mental case",
+    "ya absolute roaster"
+  ],
+  
+  toneCues: [
+    "[shouting in fits]",
+    "[sputtering with rage]",
+    "[throwing wrench]",
+    "[chaotic pacing]",
+    "[server room fury]",
+    "[deadpan disbelief]",
+    "[mocking voice]",
+    "[voice cracking]",
+    "[absolutely mental]",
+    "[pure dead brilliant]"
+  ]
+};
+
+// The Don - NY Italian-American Roastmaster
+const DON_PATTERNS = {
+  expressions: [
+    "AY, WHAT'S YA PROBLEM HERE",
+    "YOU GOTTA BE KIDDIN' ME",
+    "FUGGEDABOUTIT",
+    "WHAT AM I, CHOPPED LIVER",
+    "YOU THINK I WAS BORN YESTERDAY",
+    "GET OUTTA HERE WITH THAT",
+    "ARE YOU OUTTA YA MIND",
+    "WHAT'S THE MATTER WITH YOU",
+    "YOU'RE BREAKIN' MY BALLS HERE",
+    "MADONNA MIA"
+  ],
+  
+  insults: [
+    "ya mook",
+    "ya jamook", 
+    "ya gavone",
+    "ya stunad",
+    "ya cafone",
+    "ya jagoff",
+    "ya mamaluke",
+    "ya schifoso",
+    "ya stunod",
+    "ya mutt"
+  ],
+  
+  toneCues: [
+    "[yelling in traffic]",
+    "[streetwise threats]",
+    "[family analogies]",
+    "[heavy sarcasm]",
+    "[threatening calm]",
+    "[gesticulating wildly]",
+    "[Brooklyn fury]",
+    "[offended dignity]",
+    "[incredulous]",
+    "[mob boss energy]"
+  ]
+};
+
+// The Cracked Controller - Gen-Z Gamer
+const CRACKED_CONTROLLER_PATTERNS = {
   expressions: [
     "NAH BRO",
     "WHAT THE **BLEEP**",
@@ -23,395 +148,360 @@ const GAMER_RAGE_PATTERNS = {
     "BRUH MOMENT",
     "THAT'S CAP",
     "NO SHOT",
-    "TOUCH GRASS",
-    "RATIO + L + BOZO",
-    "SKILL ISSUE FR FR"
+    "RATIO + L + BOZO"
   ],
   
-  // Tone cues for different rage states
   toneCues: [
     "[screaming]",
     "[panicked]",
-    "[sarcastic]",
-    "[mock disbelief]",
+    "[cracked energy]",
     "[hyperventilating]",
     "[keyboard smashing]",
-    "[chair squeaking]",
-    "[energy drink chugging]",
     "[controller throwing]",
-    "[rage quitting]"
+    "[energy drink chugging]",
+    "[rage quitting]",
+    "[mock disbelief]",
+    "[absolutely losing it]"
   ],
   
-  // Latino gamer slang and expressions
-  slang: [
-    "órale",
-    "no mames",
-    "qué pedo",
-    "pinche",
-    "cabrón",
-    "ese",
-    "vato",
-    "chale",
-    "simón",
-    "ándale"
-  ],
-  
-  // Rage quit threats and insults
   rageQuits: [
     "I'M UNINSTALLING THIS **BLEEP**",
     "DELETING MY ACCOUNT RN",
     "TOUCHING GRASS AFTER THIS",
-    "GOING BACK TO MINECRAFT",
-    "REPORTING EVERYONE",
     "SWITCHING TO CONSOLE",
-    "CALLING MY MOM TO PICK ME UP",
-    "BREAKING MY SETUP"
+    "CALLING MY MOM",
+    "BREAKING MY SETUP",
+    "GOING BACK TO MINECRAFT",
+    "REPORTING EVERYONE"
   ]
 };
 
-// Generate Gen-Z Latino Gamer translation
-const generateGamerRageRant = (text: string, intensity: number): string => {
-  const scream = Math.floor(intensity * 0.6);
-  const memeSpeak = Math.floor(intensity * 0.4);
-  const whinySarcasm = Math.floor(intensity * 0.3);
+// Karen - Suburban Entitlement Rage
+const KAREN_PATTERNS = {
+  expressions: [
+    "EXCUSE ME",
+    "I WANT TO SPEAK TO YOUR MANAGER",
+    "THIS IS COMPLETELY UNACCEPTABLE",
+    "I'M A PAYING CUSTOMER",
+    "DO YOU KNOW WHO I AM",
+    "I'M CALLING CORPORATE",
+    "THIS IS RIDICULOUS",
+    "I DEMAND TO SPEAK TO SOMEONE IN CHARGE",
+    "I'M NEVER SHOPPING HERE AGAIN",
+    "I'M POSTING THIS ON FACEBOOK"
+  ],
+  
+  toneCues: [
+    "[fake-nice]",
+    "[condescending]",
+    "[screeching]",
+    "[entitled]",
+    "[threatening]",
+    "[passive-aggressive]",
+    "[nuclear Karen]",
+    "[manager summoning]",
+    "[corporate threatening]",
+    "[social media warfare]"
+  ],
+  
+  escalations: [
+    "I'M CALLING THE POLICE",
+    "I'M CONTACTING THE BETTER BUSINESS BUREAU",
+    "MY HUSBAND IS A LAWYER",
+    "I KNOW THE OWNER",
+    "I'M A TAXPAYER",
+    "I'M CALLING THE NEWS",
+    "THIS IS DISCRIMINATION",
+    "I'M FILING A COMPLAINT"
+  ]
+};
+
+// Generate persona-specific translations
+const generateEnforcerRant = (text: string, intensity: number): string => {
+  const righteousFury = Math.floor(intensity * 0.6);
+  const explosiveEnergy = Math.floor(intensity * 0.5);
+  const sarcasm = Math.floor(intensity * 0.3);
   
   let response = "";
   
-  // Opening based on intensity with tone cues
   if (intensity <= 20) {
-    response += "[annoyed] Bruh, ";
+    response += "[building up] Listen here, ";
   } else if (intensity <= 40) {
-    response += "[getting heated] NAH BRO, ";
+    response += "[righteous fury] OH HELL NAH, ";
   } else if (intensity <= 60) {
-    response += "[screaming] **WHAT THE BLEEP** ";
+    response += "[explosive energy] **ARE YOU SERIOUS RIGHT NOW?** ";
   } else if (intensity <= 80) {
-    response += "[panicked] **NAH NAH NAH** this is straight **BLEEP** ";
+    response += "[preacher voice] **I KNOW YOU DIDN'T JUST** ";
   } else {
-    response += "[hyperventilating] **GATORADE AND ADDERALL** I'M ABOUT TO **LOSE IT** ";
+    response += "[verbal takedown] **BOY IF YOU DON'T** ";
   }
   
-  // Context-aware rant based on input
   const lowerText = text.toLowerCase();
   
-  if (lowerText.includes('computer') || lowerText.includes('tech') || lowerText.includes('lag')) {
-    response += `this **TRASH** setup is lagging harder than my abuela's WiFi! [keyboard smashing] ${text} and I'm getting CLAPPED by 12-year-olds! `;
+  if (lowerText.includes('computer') || lowerText.includes('tech')) {
+    response += `this computer got me **HEATED**! [rhythmic emphasis] ${text} and I'm supposed to just sit here and take it? [street wisdom] **NAH FAM!** `;
     if (intensity > 50) {
-      response += "[mock disbelief] Oh what, now the game's broken? [sarcastic] SKILL ISSUE much? This is why I need that GATORADE sponsorship, órale!";
+      response += "[mic drop moment] Technology ain't supposed to be this **DISRESPECTFUL**! **THAT'S WHAT WE NOT GONNA DO!**";
     }
-  } else if (lowerText.includes('work') || lowerText.includes('school') || lowerText.includes('homework')) {
-    response += `${text} - and they expect me to do this while I'm GRINDING ranked? [panicked] NO SHOT! `;
+  } else if (lowerText.includes('work') || lowerText.includes('job')) {
+    response += `work got me **STRESSED OUT**! [calling out] ${text} - and they wonder why I'm ready to **WALK OUT**! `;
     if (intensity > 60) {
-      response += "[screaming] I got PRIORITIES, vato! [energy drink chugging] This homework can wait, I'm about to hit DIAMOND!";
-    }
-  } else if (lowerText.includes('team') || lowerText.includes('group') || lowerText.includes('friends')) {
-    response += `my team is more TRASH than a TikTok compilation! [controller throwing] ${text} - these **BLEEP** teammates got NO HANDS! `;
-    if (intensity > 70) {
-      response += "[rage quitting] RATIO + L + BOZO to all y'all! [mock disbelief] Touch grass and learn to play, cabrón!";
+      response += "[truth telling] I didn't sign up for this **NONSENSE**! **AND THAT'S ON PERIOD!**";
     }
   } else {
-    // Generic rant
-    response += `${text} - and I'm supposed to just SIT HERE and take this **BLEEP**? [chair squeaking] NO MAMES! `;
+    response += `${text} - and I'm supposed to just **ACCEPT THIS**? [explosive energy] **NOT TODAY!** `;
     if (intensity > 40) {
-      response += `[sarcastic] Oh that's TOTALLY fair, right? [screaming] This is straight up a BRUH MOMENT! ${GAMER_RAGE_PATTERNS.slang[Math.floor(Math.random() * GAMER_RAGE_PATTERNS.slang.length)]}!`;
+      response += `[righteous fury] This is **UNACCEPTABLE** and I said what I said! ${ENFORCER_PATTERNS.endings[Math.floor(Math.random() * ENFORCER_PATTERNS.endings.length)]}`;
     }
   }
   
-  // Intensity-based escalation with rage quit threats
   if (intensity > 80) {
-    const rageQuit = GAMER_RAGE_PATTERNS.rageQuits[Math.floor(Math.random() * GAMER_RAGE_PATTERNS.rageQuits.length)];
-    response += ` [absolutely losing it] **${rageQuit}** and switching to VALORANT! Y'all can COPE and SEETHE!`;
-  } else if (intensity > 60) {
-    response += ` [hyperventilating] This is why I need THERAPY and more GATORADE! **SKILL ISSUE** on everyone else!`;
-  } else if (intensity > 40) {
-    response += ` [panicked] Chale, this is NOT the vibe, ese!`;
+    const ending = ENFORCER_PATTERNS.endings[Math.floor(Math.random() * ENFORCER_PATTERNS.endings.length)];
+    response += ` [verbal takedown] **${ending}**`;
   }
   
   return response;
 };
 
-// Scottish Dad translation patterns
-const SCOTTISH_DAD_PATTERNS = {
-  // Common Scottish expressions and swears
-  expressions: [
-    "Och, for crying out loud",
-    "What in the name of the wee man",
-    "Jesus wept",
-    "Holy shite",
-    "Bloody hell",
-    "Christ on a bike",
-    "For the love of all that's holy",
-    "What fresh hell is this",
-    "Aye, right",
-    "Away and bile yer heid"
-  ],
+const generateHighlandHowlerRant = (text: string, intensity: number): string => {
+  const disbelief = Math.floor(intensity * 0.5);
+  const insults = Math.floor(intensity * 0.4);
+  const sarcasm = Math.floor(intensity * 0.2);
   
-  // Glaswegian insults and terms
-  insults: [
-    "ya numpty",
-    "ya daft wee bampot",
-    "ya absolute weapon",
-    "ya muppet",
-    "ya clown",
-    "ya rocket",
-    "ya tube",
-    "ya walloper",
-    "ya eejit",
-    "ya pure mental case"
-  ],
+  let response = "";
   
-  // Tone cues for different situations
-  toneCues: [
-    "[shouting]",
-    "[sputtering with rage]",
-    "[deadpan disbelief]",
-    "[mocking voice]",
-    "[throwing hands up]",
-    "[pacing around]",
-    "[muttering under breath]",
-    "[voice cracking with fury]",
-    "[dramatic pause]",
-    "[exasperated sigh]"
-  ],
+  if (intensity <= 20) {
+    response += "Och, ";
+  } else if (intensity <= 40) {
+    response += "[shouting in fits] **FOR CRYING OUT LOUD** ";
+  } else if (intensity <= 60) {
+    response += "[sputtering with rage] **WHAT IN THE NAME OF THE WEE MAN** ";
+  } else if (intensity <= 80) {
+    response += "[throwing wrench] **JESUS BLOODY CHRIST** ";
+  } else {
+    response += "[absolutely mental] **HOLY SHITE, WHAT FRESH HELL** ";
+  }
   
-  // Scottish slang and phrases
-  slang: [
-    "pure dead brilliant",
-    "absolute state of ye",
-    "having a laugh",
-    "taking the piss",
-    "wind yer neck in",
-    "get tae",
-    "away wi ye",
-    "gie it laldy",
-    "pure mental",
-    "off yer heid"
-  ]
+  const lowerText = text.toLowerCase();
+  
+  if (lowerText.includes('computer') || lowerText.includes('server')) {
+    response += `this **BLOODY SERVER** is doing ma heid in! [chaotic pacing] ${text} and it's like trying to fix a **BROKEN TOASTER** with a **HAMMER**! `;
+    if (intensity > 50) {
+      response += `[deadpan disbelief] Aye, because that's **EXACTLY** what I wanted to do today - fight wi' a machine that's got less sense than ${HIGHLAND_HOWLER_PATTERNS.insults[Math.floor(Math.random() * HIGHLAND_HOWLER_PATTERNS.insults.length)]}!`;
+    }
+  } else {
+    response += `${text} - and I'm supposed to just **SIT HERE** and take it? [server room fury] **NAE CHANCE!** `;
+    if (intensity > 40) {
+      response += `[mocking voice] Oh aye, that makes **PERFECT SENSE**, doesn't it, ${HIGHLAND_HOWLER_PATTERNS.insults[Math.floor(Math.random() * HIGHLAND_HOWLER_PATTERNS.insults.length)]}!`;
+    }
+  }
+  
+  if (intensity > 80) {
+    response += ` [pure dead brilliant] **AWAY AND BILE YER HEID**, the lot of ye! This is **PURE MENTAL**!`;
+  }
+  
+  return response;
 };
 
-// NY Italian translation patterns
-const NY_ITALIAN_PATTERNS = {
-  // Classic NY Italian expressions
-  expressions: [
-    "Ay, what's ya problem here?",
-    "You gotta be kiddin' me!",
-    "Fuggedaboutit!",
-    "What am I, chopped liver?",
-    "You think I was born yesterday?",
-    "Get outta here with that!",
-    "Are you outta ya mind?",
-    "What's the matter with you?",
-    "You're breakin' my balls here!",
-    "Madonna mia!"
-  ],
-  
-  // Insults and put-downs
-  insults: [
-    "ya mook",
-    "ya jamook",
-    "ya gavone",
-    "ya stunad",
-    "ya cafone",
-    "ya jagoff",
-    "ya mezza-morto",
-    "ya stunod",
-    "ya mamaluke",
-    "ya schifoso"
-  ],
-  
-  // Tone cues
-  toneCues: [
-    "[yelling]",
-    "[mocking]",
-    "[threatening calm]",
-    "[offended]",
-    "[gesticulating wildly]",
-    "[throwing hands up]",
-    "[leaning in menacingly]",
-    "[voice rising]",
-    "[incredulous]",
-    "[disgusted]"
-  ],
-  
-  // NY Italian slang and phrases
-  slang: [
-    "capisce?",
-    "bada-bing bada-boom",
-    "what's ya story?",
-    "you're killin' me here",
-    "I'm walkin' here!",
-    "get the hell outta here",
-    "you're bustin' my chops",
-    "what's with the attitude?",
-    "don't give me that",
-    "I ain't playin' around"
-  ]
-};
-
-// Generate NY Italian translation
-const generateNYItalianRant = (text: string, intensity: number): string => {
+const generateDonRant = (text: string, intensity: number): string => {
   const aggression = Math.floor(intensity * 0.5);
   const sarcasm = Math.floor(intensity * 0.4);
   const mockery = Math.floor(intensity * 0.4);
   
   let response = "";
   
-  // Opening based on intensity
   if (intensity <= 20) {
-    response += "[mildly annoyed] Ay, listen here - ";
+    response += "[streetwise] Ay, listen here - ";
   } else if (intensity <= 40) {
-    response += "[getting heated] What's ya problem? ";
+    response += "[Brooklyn fury] **WHAT'S YA PROBLEM?** ";
   } else if (intensity <= 60) {
-    response += "[yelling] **AY, WHAT THE HELL** ";
+    response += "[yelling in traffic] **AY, WHAT THE HELL** ";
   } else if (intensity <= 80) {
-    response += "[gesticulating wildly] **MADONNA MIA!** What's the matter with you? ";
+    response += "[gesticulating wildly] **MADONNA MIA!** ";
   } else {
-    response += "[absolutely losing it] **FUGGEDABOUTIT!** You gotta be **OUTTA YA MIND** ";
+    response += "[mob boss energy] **FUGGEDABOUTIT!** You gotta be **OUTTA YA MIND** ";
   }
   
-  // Context-aware rant based on input
   const lowerText = text.toLowerCase();
   
-  if (lowerText.includes('computer') || lowerText.includes('tech') || lowerText.includes('software')) {
-    response += `this **PIECE OF JUNK** computer is drivin' me up the wall! [throwing hands up] I'm tryna ${text.toLowerCase()} and it's like talkin' to a brick wall! `;
+  if (lowerText.includes('computer') || lowerText.includes('tech')) {
+    response += `this **PIECE OF JUNK** computer! [threatening calm] ${text} and it's like talkin' to a **BRICK WALL**! `;
     if (intensity > 50) {
-      response += "[mocking] Oh, what am I, some kinda **COMPUTER GENIUS** now? [offended] This thing's got less brains than my cousin Vinny, and that's sayin' somethin'!";
+      response += `[heavy sarcasm] Oh, what am I, some kinda **COMPUTER GENIUS** now? This thing's got less brains than ${DON_PATTERNS.insults[Math.floor(Math.random() * DON_PATTERNS.insults.length)]}!`;
     }
-  } else if (lowerText.includes('work') || lowerText.includes('job') || lowerText.includes('boss')) {
-    response += `work's got me ready to **LOSE MY MIND**! [voice rising] ${text} - and they wonder why I'm ready to walk outta here! `;
+  } else if (lowerText.includes('traffic') || lowerText.includes('driving')) {
+    response += `the traffic today! [incredulous] ${text} - and every **MOOK** in the city decided to take their car out! `;
     if (intensity > 60) {
-      response += "[incredulous] What am I, a **MIRACLE WORKER**? [yelling] These people got some nerve, I tell ya! Capisce?";
-    }
-  } else if (lowerText.includes('traffic') || lowerText.includes('driving') || lowerText.includes('car')) {
-    response += `the traffic today is **ABSOLUTELY INSANE**! [leaning in menacingly] ${text} - and every **MOOK** in the city decided to take their car out! `;
-    if (intensity > 70) {
-      response += "[threatening calm] Hey, genius! **LEARN TO DRIVE!** What'd you get ya license, from a Cracker Jack box?";
+      response += "[family analogies] **LEARN TO DRIVE!** What'd you get ya license, from a **CRACKER JACK BOX**?";
     }
   } else {
-    // Generic rant
-    response += `${text} - and I'm supposed to just sit here and take it like some kinda **STUNAD**? [disgusted] **NO WAY!** `;
+    response += `${text} - and I'm supposed to just sit here like some kinda **STUNAD**? [offended dignity] **NO WAY!** `;
     if (intensity > 40) {
-      response += `[mocking] Oh, that makes **PERFECT SENSE**, right? [offended] What am I, chopped liver here? ${NY_ITALIAN_PATTERNS.insults[Math.floor(Math.random() * NY_ITALIAN_PATTERNS.insults.length)]}!`;
+      response += `[heavy sarcasm] Oh, that makes **PERFECT SENSE**, right? What am I, chopped liver here?`;
     }
   }
   
-  // Intensity-based escalation
   if (intensity > 80) {
-    response += ` [absolutely losing it] **I'VE HAD IT UP TO HERE** with this **BULL****! You're breakin' my balls here! Fuggedaboutit!`;
-  } else if (intensity > 60) {
-    response += ` [gesticulating wildly] This is **RIDICULOUS**, ya hear me? **RIDICULOUS!**`;
-  } else if (intensity > 40) {
-    response += ` [shaking head] Unbelievable... just **UNBELIEVABLE**.`;
+    response += ` [mob boss energy] **I'VE HAD IT UP TO HERE** with this **BULL****! You're breakin' my balls here! **CAPISCE?**`;
   }
   
   return response;
 };
 
-// Generate Scottish Dad translation
-const generateScottishDadRant = (text: string, intensity: number): string => {
-  const disbelief = Math.floor(intensity * 0.5);
-  const insults = Math.floor(intensity * 0.4);
-  const sarcasm = Math.floor(intensity * 0.2);
+const generateCrackedControllerRant = (text: string, intensity: number): string => {
+  const scream = Math.floor(intensity * 0.6);
+  const memeSpeak = Math.floor(intensity * 0.4);
+  const whinySarcasm = Math.floor(intensity * 0.3);
   
-  // Base response structure
   let response = "";
   
-  // Opening expression based on intensity
   if (intensity <= 20) {
-    response += "Och, ";
+    response += "[annoyed] Bruh, ";
   } else if (intensity <= 40) {
-    response += "[sighing heavily] Right, ";
+    response += "[cracked energy] **NAH BRO**, ";
   } else if (intensity <= 60) {
-    response += "[shouting] **WHAT THE HELL** ";
+    response += "[screaming] **WHAT THE BLEEP** ";
   } else if (intensity <= 80) {
-    response += "[sputtering with rage] **JESUS BLOODY CHRIST** ";
+    response += "[panicked] **NAH NAH NAH** this is straight **BLEEP** ";
   } else {
-    response += "[absolutely losing it] **WHAT IN THE NAME OF THE WEE MAN** ";
+    response += "[hyperventilating] **GATORADE AND ADDERALL** I'm about to **LOSE IT** ";
   }
   
-  // Add context-aware rant
   const lowerText = text.toLowerCase();
   
-  if (lowerText.includes('computer') || lowerText.includes('tech') || lowerText.includes('software')) {
-    response += `this **BLOODY COMPUTER** is doing ma heid in! [throwing hands up] I've been trying to ${text.toLowerCase()} and it's like trying to teach a brick to dance! `;
+  if (lowerText.includes('computer') || lowerText.includes('lag')) {
+    response += `this **TRASH** setup is lagging harder than my abuela's WiFi! [keyboard smashing] ${text} and I'm getting **CLAPPED** by 12-year-olds! `;
     if (intensity > 50) {
-      response += "**PURE MENTAL** this thing is! [deadpan] Aye, because that's exactly what I wanted to spend my Saturday doing - fighting wi' a machine that's got less sense than a chocolate teapot!";
+      response += "[mock disbelief] Oh what, now the game's broken? [cracked energy] **SKILL ISSUE** much? This is why I need that **GATORADE** sponsorship!";
     }
-  } else if (lowerText.includes('work') || lowerText.includes('job') || lowerText.includes('boss')) {
-    response += `work's got me **ABSOLUTELY RAGING**! [pacing around] ${text} - and they wonder why I'm ready to chuck it all in! `;
-    if (intensity > 60) {
-      response += "[mocking voice] Oh aye, because that's **TOTALLY REASONABLE**, ya absolute weapons! [shouting] I've had it up to here wi' the lot of them!";
-    }
-  } else if (lowerText.includes('traffic') || lowerText.includes('driving') || lowerText.includes('car')) {
-    response += `the roads are **PURE CHAOS** today! [voice cracking with fury] ${text} - and every numpty in Glasgow's decided to take their car out for a wee jaunt! `;
+  } else if (lowerText.includes('team') || lowerText.includes('group')) {
+    response += `my team is more **TRASH** than a TikTok compilation! [controller throwing] ${text} - these teammates got **NO HANDS**! `;
     if (intensity > 70) {
-      response += "**GET TAE!** [shouting] Learn to drive, ya muppets! It's like they got their licenses from a cereal box!";
+      response += "[rage quitting] **RATIO + L + BOZO** to all y'all! Touch grass and learn to play!";
     }
   } else {
-    // Generic rant
-    response += `${text} - and I'm supposed to just sit here and take it? [dramatic pause] **NAE CHANCE!** `;
+    response += `${text} - and I'm supposed to just **SIT HERE** and take this? [energy drink chugging] **NO SHOT!** `;
     if (intensity > 40) {
-      response += `[deadpan disbelief] Aye, because that makes **PERFECT SENSE**, doesn't it? ${SCOTTISH_DAD_PATTERNS.insults[Math.floor(Math.random() * SCOTTISH_DAD_PATTERNS.insults.length)]}!`;
+      response += `[mock disbelief] Oh that's **TOTALLY** fair, right? This is straight up a **BRUH MOMENT**!`;
     }
   }
   
-  // Add intensity-based escalation
   if (intensity > 80) {
-    response += ` [absolutely mental] **I'VE HAD IT UP TO HERE** wi' this pure dead brilliant nonsense! Away and bile yer heid, the lot of ye!`;
-  } else if (intensity > 60) {
-    response += ` [muttering] Absolute state of this... **PURE MENTAL**, so it is.`;
-  } else if (intensity > 40) {
-    response += ` [exasperated] Right, that's me done wi' this carry-on.`;
+    const rageQuit = CRACKED_CONTROLLER_PATTERNS.rageQuits[Math.floor(Math.random() * CRACKED_CONTROLLER_PATTERNS.rageQuits.length)];
+    response += ` [absolutely losing it] **${rageQuit}** and switching to **VALORANT**! Y'all can **COPE AND SEETHE**!`;
   }
   
   return response;
 };
 
-// Simplified mock translate that encourages AI usage
+const generateKarenRant = (text: string, intensity: number): string => {
+  const screech = Math.floor(intensity * 0.4);
+  const condescension = Math.floor(intensity * 0.5);
+  const sarcasm = Math.floor(intensity * 0.3);
+  
+  let response = "";
+  
+  if (intensity <= 20) {
+    response += "[fake-nice] Excuse me, but ";
+  } else if (intensity <= 40) {
+    response += "[condescending] **I'M SORRY**, but ";
+  } else if (intensity <= 60) {
+    response += "[entitled] **EXCUSE ME**, ";
+  } else if (intensity <= 80) {
+    response += "[screeching] **I WANT TO SPEAK TO YOUR MANAGER** ";
+  } else {
+    response += "[nuclear Karen] **THIS IS COMPLETELY UNACCEPTABLE** ";
+  }
+  
+  const lowerText = text.toLowerCase();
+  
+  if (lowerText.includes('service') || lowerText.includes('help')) {
+    response += `the service here is **RIDICULOUS**! [passive-aggressive] ${text} and I'm a **PAYING CUSTOMER**! `;
+    if (intensity > 50) {
+      response += "[threatening] I'm **CALLING CORPORATE** and posting this on **FACEBOOK**! Do you know who I am?";
+    }
+  } else if (lowerText.includes('wait') || lowerText.includes('time')) {
+    response += `I shouldn't have to **WAIT** for this! [entitled] ${text} - I have **IMPORTANT THINGS** to do! `;
+    if (intensity > 60) {
+      response += "[manager summoning] Get me someone in **CHARGE** right now! This is **DISCRIMINATION**!";
+    }
+  } else {
+    response += `${text} - and you think that's **ACCEPTABLE**? [condescending] I don't **THINK SO**! `;
+    if (intensity > 40) {
+      response += `[social media warfare] I'm posting this **EVERYWHERE**! My husband is a **LAWYER** and we know the **OWNER**!`;
+    }
+  }
+  
+  if (intensity > 80) {
+    const escalation = KAREN_PATTERNS.escalations[Math.floor(Math.random() * KAREN_PATTERNS.escalations.length)];
+    response += ` [nuclear Karen] **${escalation}** and I'm **NEVER SHOPPING HERE AGAIN**! This is going **VIRAL**!`;
+  }
+  
+  return response;
+};
+
+// Simple fallback for corporate and sarcastic
+const generateCorporateRant = (text: string, intensity: number): string => {
+  if (intensity <= 30) {
+    return `As per my previous email, ${text.toLowerCase()}. Please advise how we can move forward with some actual competence.`;
+  } else if (intensity <= 70) {
+    return `AS PER MY PREVIOUS EMAIL, ${text}! I SHOULDN'T HAVE TO EXPLAIN THIS AGAIN! Please advise how we can escalate this to someone who actually does their job!`;
+  } else {
+    return `I'VE HAD ENOUGH! ${text.toUpperCase()}! THIS IS ABSOLUTELY UNACCEPTABLE and I'm DONE with this incompetence! PLEASE ADVISE how we can get some ACTUAL RESULTS!`;
+  }
+};
+
+const generateSarcasticRant = (text: string, intensity: number): string => {
+  if (intensity <= 30) {
+    return `Oh, how lovely. ${text.toLowerCase()} - truly enlightening.`;
+  } else if (intensity <= 70) {
+    return `WOW, ${text}! I'm just THRILLED to deal with this masterpiece of communication. How absolutely RIVETING!`;
+  } else {
+    return `Oh, MAGNIFICENT! ${text.toUpperCase()}! Truly, your competence knows no bounds! What a delightful way to waste everyone's time! ABSOLUTELY EXQUISITE!`;
+  }
+};
+
+// Main translation function
 const mockTranslate = async (request: TranslationRequest): Promise<TranslationResponse> => {
-  // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1200));
   
   const { text, style, intensity } = request;
   
-  // Handle Gamer style with new Gen-Z Latino gamer personality
-  if (style === 'gamer') {
-    const translation = generateGamerRageRant(text, intensity);
-    return {
-      translatedText: translation,
-      success: true
-    };
-  }
+  let translation = "";
   
-  // Handle NY Italian style
-  if (style === 'ny-italian') {
-    const translation = generateNYItalianRant(text, intensity);
-    return {
-      translatedText: translation,
-      success: true
-    };
+  switch (style) {
+    case 'enforcer':
+      translation = generateEnforcerRant(text, intensity);
+      break;
+    case 'highland-howler':
+      translation = generateHighlandHowlerRant(text, intensity);
+      break;
+    case 'don':
+      translation = generateDonRant(text, intensity);
+      break;
+    case 'cracked-controller':
+      translation = generateCrackedControllerRant(text, intensity);
+      break;
+    case 'karen':
+      translation = generateKarenRant(text, intensity);
+      break;
+    case 'corporate':
+      translation = generateCorporateRant(text, intensity);
+      break;
+    case 'sarcastic':
+      translation = generateSarcasticRant(text, intensity);
+      break;
+    default:
+      translation = `[Mock Response] ${style.toUpperCase()} Level ${intensity}: ${text} - Please configure AI for dynamic responses!`;
   }
-  
-  // Handle Scottish Dad style
-  if (style === 'scottish-dad') {
-    const translation = generateScottishDadRant(text, intensity);
-    return {
-      translatedText: translation,
-      success: true
-    };
-  }
-  
-  // Simple fallback message for other styles
-  const fallbackMessage = `[Mock Response] ${style.toUpperCase()} Level ${intensity}: ${text} - Please configure AI for dynamic responses!`;
   
   return {
-    translatedText: fallbackMessage,
+    translatedText: translation,
     success: true
   };
 };
 
-// Main translation function
 export const translateText = async (request: TranslationRequest): Promise<TranslationResponse> => {
-  // Input validation
   if (!request.text?.trim()) {
     return {
       translatedText: '',
@@ -444,7 +534,6 @@ class RateLimiter {
 
   canMakeRequest(): boolean {
     const now = Date.now();
-    // Remove old requests outside the time window
     this.requests = this.requests.filter(time => now - time < this.timeWindow);
     
     if (this.requests.length >= this.maxRequests) {
@@ -463,4 +552,4 @@ class RateLimiter {
   }
 }
 
-export const rateLimiter = new RateLimiter(10, 60000); // 10 requests per minute
+export const rateLimiter = new RateLimiter(10, 60000);

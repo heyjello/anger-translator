@@ -116,7 +116,7 @@ class EnhancedTranslationService {
         console.log('🤖 Using AI translation for dynamic response generation');
         const translatedText = await openRouterService.translateText(
           request.text,
-          request.style,
+          request.style as 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad' | 'ny-italian',
           request.intensity
         );
 

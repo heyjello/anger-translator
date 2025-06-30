@@ -106,7 +106,7 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     }
   },
   'highland-howler': {
-    voice_id: "QweS0d0FetCxpq95g9bA", // Arnold - Scottish accent
+    voice_id: "JwYlCv3C5tfM0wHM3xjl", // Arnold - Scottish accent
     name: "Highland Howler",
     description: "Fierce Scottish Highland warrior voice for battle rage",
     voice_settings: {

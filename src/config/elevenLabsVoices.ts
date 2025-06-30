@@ -26,17 +26,17 @@ export interface VoiceStyleMap {
 // Define the comprehensive RageStyle type
 export type RageStyle = 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad' | 'ny-italian' | 'enforcer' | 'highland-howler' | 'don' | 'cracked-controller';
 
-// Pre-made ElevenLabs voices optimized for each style
+// Pre-made ElevenLabs voices with AUTHENTIC characteristics preserved
 export const VOICE_CONFIGS: VoiceStyleMap = {
   corporate: {
     voice_id: "pNInz6obpgDQGcFmaJgB", // Adam
     name: "Adam",
     description: "Professional, authoritative voice for corporate rage",
     voice_settings: {
-      stability: 0.75,
-      similarity_boost: 0.75,
-      style: 0.3,
-      use_speaker_boost: true
+      stability: 0.95, // High stability to preserve natural tone
+      similarity_boost: 0.95, // Maximum similarity to original voice
+      style: 0.1, // Minimal style to avoid accent changes
+      use_speaker_boost: false // Disabled to preserve natural characteristics
     }
   },
   gamer: {
@@ -44,10 +44,10 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     name: "Antoni",
     description: "Energetic, youthful voice for cracked Gen-Z Latino gamer rage",
     voice_settings: {
-      stability: 0.3, // Lower stability for more erratic, cracked energy
-      similarity_boost: 0.6,
-      style: 0.9, // Higher style for more expressive delivery
-      use_speaker_boost: true
+      stability: 0.9, // High stability to preserve Latino accent
+      similarity_boost: 0.95, // Maximum similarity to preserve accent
+      style: 0.2, // Minimal style to keep natural expressiveness
+      use_speaker_boost: false // Disabled to preserve authentic voice
     }
   },
   sarcastic: {
@@ -55,10 +55,10 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     name: "Daniel",
     description: "Sophisticated British accent for sarcastic roasts",
     voice_settings: {
-      stability: 0.9,
-      similarity_boost: 0.8,
-      style: 0.5,
-      use_speaker_boost: true
+      stability: 0.95, // High stability to preserve British accent
+      similarity_boost: 0.95, // Maximum similarity to maintain accent
+      style: 0.1, // Minimal style to preserve natural sophistication
+      use_speaker_boost: false // Disabled to keep authentic British tone
     }
   },
   karen: {
@@ -66,10 +66,10 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     name: "Karen",
     description: "Entitled suburban mom voice for Karen rants",
     voice_settings: {
-      stability: 0.6,
-      similarity_boost: 0.7,
-      style: 0.7,
-      use_speaker_boost: true
+      stability: 0.9, // High stability to preserve natural Karen tone
+      similarity_boost: 0.95, // Maximum similarity to original voice
+      style: 0.15, // Minimal style to keep natural entitlement
+      use_speaker_boost: false // Disabled to preserve authentic characteristics
     }
   },
   'scottish-dad': {
@@ -77,10 +77,10 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     name: "Arnold",
     description: "Gruff Scottish dad voice for parental disappointment",
     voice_settings: {
-      stability: 0.7,
-      similarity_boost: 0.8,
-      style: 0.6,
-      use_speaker_boost: true
+      stability: 0.95, // High stability to preserve Scottish accent
+      similarity_boost: 0.95, // Maximum similarity to maintain accent
+      style: 0.1, // Minimal style to preserve natural gruffness
+      use_speaker_boost: false // Disabled to keep authentic Scottish tone
     }
   },
   'ny-italian': {
@@ -88,21 +88,21 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     name: "Vinny",
     description: "Fast-talking NY Italian-American voice for Brooklyn fury",
     voice_settings: {
-      stability: 0.5,
-      similarity_boost: 0.7,
-      style: 0.8,
-      use_speaker_boost: true
+      stability: 0.9, // High stability to preserve NY accent
+      similarity_boost: 0.95, // Maximum similarity to maintain accent
+      style: 0.15, // Minimal style to keep natural fast-talking
+      use_speaker_boost: false // Disabled to preserve authentic NY tone
     }
   },
   enforcer: {
-    voice_id: "ujTRvH905hCgW1uUwWye", // Enforcer voice (removed extra space)
+    voice_id: "ujTRvH905hCgW1uUwWye", // Enforcer voice
     name: "Enforcer",
     description: "Deep, intimidating voice for law enforcement rage",
     voice_settings: {
-      stability: 0.9, // Higher stability for consistent deep tone
-      similarity_boost: 0.9, // Higher similarity to maintain voice characteristics
-      style: 0.2, // Lower style to prevent pitch changes
-      use_speaker_boost: false // Disable speaker boost to prevent pitch alteration
+      stability: 0.95, // Maximum stability to preserve deep tone
+      similarity_boost: 0.95, // Maximum similarity to maintain voice characteristics
+      style: 0.05, // Minimal style to prevent any pitch/tone changes
+      use_speaker_boost: false // Disabled to prevent any artificial enhancement
     }
   },
   'highland-howler': {
@@ -110,10 +110,10 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     name: "Highland Howler",
     description: "Fierce Scottish Highland warrior voice for battle rage",
     voice_settings: {
-      stability: 0.4,
-      similarity_boost: 0.7,
-      style: 0.8,
-      use_speaker_boost: true
+      stability: 0.9, // High stability to preserve Scottish accent
+      similarity_boost: 0.95, // Maximum similarity to maintain accent
+      style: 0.2, // Minimal style to keep natural fierceness
+      use_speaker_boost: false // Disabled to preserve authentic Scottish characteristics
     }
   },
   don: {
@@ -121,10 +121,10 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     name: "Don",
     description: "Sophisticated, menacing voice for mafia don rage",
     voice_settings: {
-      stability: 0.8,
-      similarity_boost: 0.8,
-      style: 0.5,
-      use_speaker_boost: true
+      stability: 0.95, // High stability to preserve sophisticated tone
+      similarity_boost: 0.95, // Maximum similarity to original voice
+      style: 0.1, // Minimal style to preserve natural menace
+      use_speaker_boost: false // Disabled to keep authentic characteristics
     }
   },
   'cracked-controller': {
@@ -132,10 +132,10 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     name: "Cracked Controller",
     description: "Hyper-energetic, erratic voice for gaming controller rage",
     voice_settings: {
-      stability: 0.2, // Very low stability for maximum chaos
-      similarity_boost: 0.5,
-      style: 1.0, // Maximum style for extreme expressiveness
-      use_speaker_boost: true
+      stability: 0.85, // Slightly lower for natural erratic energy
+      similarity_boost: 0.95, // Maximum similarity to preserve voice
+      style: 0.25, // Minimal style for natural expressiveness
+      use_speaker_boost: false // Disabled to preserve authentic characteristics
     }
   }
 };
@@ -159,62 +159,57 @@ export const getVoiceForStyle = (style: RageStyle): VoiceConfig => {
   return VOICE_CONFIGS[style];
 };
 
-// Adjust voice settings based on rage intensity (modified for Enforcer)
+// CONSERVATIVE intensity adjustments that preserve voice characteristics
 export const adjustVoiceForIntensity = (
   baseSettings: VoiceConfig['voice_settings'], 
   intensity: number
 ): VoiceConfig['voice_settings'] => {
-  // Higher intensity = less stability, more style/emotion
+  // MINIMAL adjustments to preserve authentic voice characteristics
   const intensityFactor = intensity / 10;
   
-  // Special handling for Enforcer to maintain deep voice characteristics
-  if (baseSettings.style !== undefined && baseSettings.style <= 0.2) {
-    // This is likely the Enforcer voice - be more conservative with adjustments
-    return {
-      ...baseSettings,
-      stability: Math.max(0.7, baseSettings.stability - (intensityFactor * 0.1)), // Minimal stability reduction
-      style: Math.min(0.4, (baseSettings.style || 0.2) + (intensityFactor * 0.1)) // Minimal style increase
-    };
-  }
-  
+  // For ALL voices, make very conservative adjustments
   return {
     ...baseSettings,
-    stability: Math.max(0.2, baseSettings.stability - (intensityFactor * 0.3)),
-    style: Math.min(1.0, (baseSettings.style || 0.5) + (intensityFactor * 0.3))
+    // Only reduce stability slightly at very high intensities
+    stability: Math.max(0.8, baseSettings.stability - (intensityFactor * 0.1)),
+    // Keep similarity_boost high to preserve accent/characteristics
+    similarity_boost: Math.max(0.9, baseSettings.similarity_boost),
+    // Minimal style increases to preserve natural voice
+    style: Math.min(0.3, (baseSettings.style || 0.1) + (intensityFactor * 0.05))
   };
 };
 
-// Enhanced voice configuration with emotional presets
+// Enhanced voice configuration with emotional presets (CONSERVATIVE)
 export const EMOTIONAL_PRESETS = {
   calm: {
-    stability: 0.9,
-    similarity_boost: 0.8,
-    style: 0.2,
+    stability: 0.95,
+    similarity_boost: 0.95,
+    style: 0.05,
     use_speaker_boost: false
   },
   annoyed: {
-    stability: 0.7,
-    similarity_boost: 0.7,
-    style: 0.4,
-    use_speaker_boost: true
+    stability: 0.9,
+    similarity_boost: 0.95,
+    style: 0.1,
+    use_speaker_boost: false
   },
   angry: {
-    stability: 0.5,
-    similarity_boost: 0.6,
-    style: 0.7,
-    use_speaker_boost: true
+    stability: 0.85,
+    similarity_boost: 0.95,
+    style: 0.15,
+    use_speaker_boost: false
   },
   furious: {
-    stability: 0.3,
-    similarity_boost: 0.5,
-    style: 0.9,
-    use_speaker_boost: true
+    stability: 0.8,
+    similarity_boost: 0.95,
+    style: 0.2,
+    use_speaker_boost: false
   },
   nuclear: {
-    stability: 0.2,
-    similarity_boost: 0.4,
-    style: 1.0,
-    use_speaker_boost: true
+    stability: 0.8,
+    similarity_boost: 0.95,
+    style: 0.25,
+    use_speaker_boost: false
   }
 } as const;
 
@@ -227,56 +222,28 @@ export const getEmotionalPreset = (rageLevel: number): keyof typeof EMOTIONAL_PR
   return 'nuclear';
 };
 
-// Advanced voice configuration with style-specific adjustments (modified for Enforcer)
+// CONSERVATIVE voice configuration that preserves ALL authentic characteristics
 export const getAdvancedVoiceConfig = (
   style: RageStyle,
   intensity: number
 ): VoiceConfig => {
   const baseConfig = getVoiceForStyle(style);
-  const emotionalPreset = EMOTIONAL_PRESETS[getEmotionalPreset(intensity)];
   
-  // Special handling for Enforcer to maintain deep voice characteristics
-  if (style === 'enforcer') {
-    const conservativeSettings = {
-      stability: Math.max(0.7, baseConfig.voice_settings.stability - (intensity / 100)), // Very minimal reduction
-      similarity_boost: Math.max(0.8, baseConfig.voice_settings.similarity_boost), // Keep high similarity
-      style: Math.min(0.4, (baseConfig.voice_settings.style || 0.2) + (intensity / 50)), // Gentle style increase
-      use_speaker_boost: false // Keep disabled to prevent pitch changes
-    };
-    
-    return {
-      ...baseConfig,
-      voice_settings: conservativeSettings
-    };
-  }
-  
-  // Special handling for gamer and cracked-controller styles - more erratic at higher intensities
-  if (style === 'gamer' || style === 'cracked-controller') {
-    const crackedFactor = intensity / 10;
-    const blendedSettings = {
-      stability: Math.max(0.1, baseConfig.voice_settings.stability - (crackedFactor * 0.4)), // More unstable
-      similarity_boost: (baseConfig.voice_settings.similarity_boost + emotionalPreset.similarity_boost) / 2,
-      style: Math.min(1.0, baseConfig.voice_settings.style || 0.5 + (crackedFactor * 0.5)), // More expressive
-      use_speaker_boost: true // Always boost for gamer energy
-    };
-    
-    return {
-      ...baseConfig,
-      voice_settings: blendedSettings
-    };
-  }
-  
-  // Blend base settings with emotional preset for other styles
-  const blendedSettings = {
-    stability: (baseConfig.voice_settings.stability + emotionalPreset.stability) / 2,
-    similarity_boost: (baseConfig.voice_settings.similarity_boost + emotionalPreset.similarity_boost) / 2,
-    style: Math.max(baseConfig.voice_settings.style || 0.5, emotionalPreset.style),
-    use_speaker_boost: emotionalPreset.use_speaker_boost
+  // For ALL voices, use MINIMAL adjustments to preserve authenticity
+  const conservativeSettings = {
+    // Keep stability high to preserve natural voice characteristics
+    stability: Math.max(0.8, baseConfig.voice_settings.stability - (intensity / 100)),
+    // Always keep similarity_boost at maximum to preserve accents
+    similarity_boost: 0.95,
+    // Minimal style adjustments to preserve natural delivery
+    style: Math.min(0.3, (baseConfig.voice_settings.style || 0.1) + (intensity / 50)),
+    // Never use speaker boost to avoid artificial enhancement
+    use_speaker_boost: false
   };
-
+  
   return {
     ...baseConfig,
-    voice_settings: blendedSettings
+    voice_settings: conservativeSettings
   };
 };
 
@@ -320,7 +287,7 @@ export const cleanTextForTTS = (text: string): string => {
   return cleanedText;
 };
 
-// Text preprocessing for better speech synthesis (now with tone cue removal and Enforcer optimization)
+// MINIMAL text preprocessing to preserve natural voice delivery
 export const preprocessTextForStyle = (
   text: string, 
   style: RageStyle,
@@ -329,85 +296,57 @@ export const preprocessTextForStyle = (
   // First, clean the text by removing tone cues
   let processedText = cleanTextForTTS(text);
 
-  // Common preprocessing for speech
-  processedText = processedText.replace(/\.\.\./g, '... <break time="0.5s"/>');
-  processedText = processedText.replace(/!!!/g, '!!! <break time="0.3s"/>');
+  // MINIMAL preprocessing to preserve natural voice characteristics
+  // Only add basic pauses for natural speech flow
+  processedText = processedText.replace(/\.\.\./g, '... <break time="0.3s"/>');
+  processedText = processedText.replace(/!!!/g, '!!! <break time="0.2s"/>');
   
-  // Style-specific preprocessing (without tone cues)
+  // Style-specific preprocessing - MINIMAL to preserve accents
   switch (style) {
     case 'corporate':
-      // Add professional pauses and emphasis
-      processedText = processedText.replace(/AS PER MY PREVIOUS EMAIL/g, '<emphasis level="strong">AS PER MY PREVIOUS EMAIL</emphasis>');
-      processedText = processedText.replace(/PLEASE ADVISE/g, '<emphasis level="moderate">PLEASE ADVISE</emphasis>');
-      processedText = processedText.replace(/,/g, ', <break time="0.2s"/>');
+      // Only emphasize key corporate terms
+      processedText = processedText.replace(/AS PER MY PREVIOUS EMAIL/g, '<emphasis level="moderate">AS PER MY PREVIOUS EMAIL</emphasis>');
       break;
       
     case 'gamer':
     case 'cracked-controller':
-      // Emphasize gamer terms and add cracked energy
-      processedText = processedText.replace(/(NAH BRO|BRUH MOMENT|THAT'S CAP|NO SHOT|SKILL ISSUE|GATORADE|ADDERALL)/g, '<emphasis level="strong">$1</emphasis>');
-      processedText = processedText.replace(/\*\*BLEEP\*\*/g, '<emphasis level="strong">BLEEP</emphasis>');
-      processedText = processedText.replace(/!!!/g, '!!! <break time="0.1s"/>'); // Faster for cracked energy
-      
-      if (intensity >= 7) {
-        processedText = `<prosody rate="1.3" pitch="+20%">${processedText}</prosody>`; // Faster, higher pitch for cracked energy
-      }
+      // Only emphasize key gamer terms
+      processedText = processedText.replace(/(NAH BRO|BRUH MOMENT|SKILL ISSUE)/g, '<emphasis level="moderate">$1</emphasis>');
       break;
       
     case 'sarcastic':
-      // Add sarcastic tone with strategic pauses
-      processedText = processedText.replace(/(WOW|RIVETING|MAGNIFICENT|DELIGHTFUL)/g, '<emphasis level="moderate">$1</emphasis>');
-      processedText = processedText.replace(/\"/g, '"<break time="0.3s"/>');
-      processedText = `<prosody rate="0.9">${processedText}</prosody>`;
+      // Minimal emphasis to preserve British sophistication
+      processedText = processedText.replace(/(WOW|RIVETING|MAGNIFICENT)/g, '<emphasis level="moderate">$1</emphasis>');
       break;
       
     case 'karen':
-      // Add Karen-specific emphasis and dramatic pauses
-      processedText = processedText.replace(/(EXCUSE ME|MANAGER|UNACCEPTABLE|RIDICULOUS)/g, '<emphasis level="strong">$1</emphasis>');
-      processedText = processedText.replace(/\*\*([^*]+)\*\*/g, '<emphasis level="strong">$1</emphasis>'); // Convert **text** to emphasis
-      if (intensity >= 6) {
-        processedText = `<prosody rate="1.1" pitch="+10%">${processedText}</prosody>`;
-      }
+      // Only emphasize key Karen terms
+      processedText = processedText.replace(/(EXCUSE ME|MANAGER|UNACCEPTABLE)/g, '<emphasis level="moderate">$1</emphasis>');
       break;
 
     case 'scottish-dad':
     case 'highland-howler':
-      // Add Scottish dad-specific emphasis and disappointed pauses
-      processedText = processedText.replace(/(LADDIE|LASSIE|BLOODY HELL|FOR CRYING OUT LOUD)/g, '<emphasis level="strong">$1</emphasis>');
-      if (intensity >= 6) {
-        processedText = `<prosody rate="0.95" pitch="-5%">${processedText}</prosody>`;
-      }
+      // Only emphasize key Scottish terms
+      processedText = processedText.replace(/(BLOODY HELL|FOR CRYING OUT LOUD)/g, '<emphasis level="moderate">$1</emphasis>');
       break;
 
     case 'ny-italian':
-      // Add NY Italian-specific emphasis and fast-talking energy
-      processedText = processedText.replace(/(AY|FUGGEDABOUTIT|CAPISCE|MADONNA MIA)/g, '<emphasis level="strong">$1</emphasis>');
-      processedText = processedText.replace(/\*\*([^*]+)\*\*/g, '<emphasis level="strong">$1</emphasis>'); // Convert **text** to emphasis
-      if (intensity >= 6) {
-        processedText = `<prosody rate="1.3" pitch="+8%">${processedText}</prosody>`; // Fast-talking NY style
-      }
+    case 'don':
+      // Only emphasize key NY Italian terms
+      processedText = processedText.replace(/(FUGGEDABOUTIT|CAPISCE|MADONNA MIA)/g, '<emphasis level="moderate">$1</emphasis>');
       break;
 
     case 'enforcer':
-      // Add law enforcement emphasis and authoritative pauses - NO PITCH CHANGES
-      processedText = processedText.replace(/(STOP|FREEZE|HANDS UP|COMPLY|VIOLATION|OH HELL NAH|ARE YOU SERIOUS)/g, '<emphasis level="strong">$1</emphasis>');
-      processedText = processedText.replace(/,/g, ', <break time="0.3s"/>');
+      // Only emphasize key enforcement terms - NO PITCH CHANGES
+      processedText = processedText.replace(/(OH HELL NAH|ARE YOU SERIOUS|STOP)/g, '<emphasis level="moderate">$1</emphasis>');
       // NO prosody changes to maintain deep voice characteristics
-      break;
-
-    case 'don':
-      // Add mafia don emphasis and menacing pauses
-      processedText = processedText.replace(/(CAPISCE|FAMIGLIA|RESPECT|BUSINESS)/g, '<emphasis level="strong">$1</emphasis>');
-      processedText = processedText.replace(/\.\.\./g, '... <break time="0.8s"/>'); // Longer pauses for menacing effect
-      if (intensity >= 6) {
-        processedText = `<prosody rate="0.8" pitch="-5%">${processedText}</prosody>`;
-      }
       break;
   }
 
-  // Intensity-based adjustments (skip for Enforcer to maintain voice characteristics)
-  if (intensity >= 8 && style !== 'enforcer') {
-    processedText = processedText.replace(/([A-Z]{3,})/g, '<emphasis level="strong">$1</emphasis>');
+  // NO intensity-based prosody changes to preserve authentic voice characteristics
+  // Only add emphasis for very high intensity without changing pitch/rate
+  if (intensity >= 9) {
+    processedText = processedText.replace(/([A-Z]{4,})/g, '<emphasis level="moderate">$1</emphasis>');
   }
 
   return processedText;
@@ -456,15 +395,15 @@ export const VOICE_CHARACTERISTICS = {
   },
   [ALL_VOICE_IDS.antoni]: {
     gender: 'Male', 
-    accent: 'American',
+    accent: 'American Latino',
     age: 'Young Adult',
-    tone: 'Energetic, Cracked, Expressive' // Updated for gamer style
+    tone: 'Energetic, Expressive, Latino Accent'
   },
   [ALL_VOICE_IDS.daniel]: {
     gender: 'Male',
     accent: 'British',
     age: 'Middle-aged',
-    tone: 'Sophisticated, Authoritative'
+    tone: 'Sophisticated, Authoritative, British Accent'
   },
   [ALL_VOICE_IDS.bella]: {
     gender: 'Female',
@@ -476,30 +415,30 @@ export const VOICE_CHARACTERISTICS = {
     gender: 'Female',
     accent: 'British',
     age: 'Middle-aged',
-    tone: 'Elegant, Refined'
+    tone: 'Elegant, Refined, British Accent'
   },
   [ALL_VOICE_IDS.karen]: {
     gender: 'Female',
     accent: 'American',
     age: 'Middle-aged',
-    tone: 'Entitled, Demanding'
+    tone: 'Entitled, Demanding, Suburban Accent'
   },
   [ALL_VOICE_IDS.arnold]: {
     gender: 'Male',
     accent: 'Scottish',
     age: 'Middle-aged',
-    tone: 'Gruff, Disappointed'
+    tone: 'Gruff, Disappointed, Scottish Accent'
   },
   [ALL_VOICE_IDS.enforcer]: {
     gender: 'Male',
-    accent: 'American',
+    accent: 'American Urban',
     age: 'Adult',
-    tone: 'Deep, Intimidating, Authoritative'
+    tone: 'Deep, Intimidating, Authoritative, Urban Accent'
   },
   [ALL_VOICE_IDS.vinny]: {
     gender: 'Male',
-    accent: 'New York',
+    accent: 'New York Italian',
     age: 'Middle-aged',
-    tone: 'Fast-talking, Animated'
+    tone: 'Fast-talking, Animated, Brooklyn Accent'
   }
 } as const;

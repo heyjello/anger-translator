@@ -1,7 +1,7 @@
 /**
  * NavigationHeader Component
  * 
- * Updated header for voice editor theme with sleek design and Bolt logo.
+ * Updated header for voice editor theme with sleek design and local Bolt logo.
  */
 
 import React from 'react';
@@ -34,7 +34,7 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
           title="Built with Bolt"
         >
           <img 
-            src="/bolt-logo-black-circle.svg" 
+            src="/assets/logos/bolt-logo-black-circle.png" 
             alt="Built with Bolt" 
             className="w-full h-full object-contain filter drop-shadow-lg hover:drop-shadow-xl transition-all duration-300"
           />

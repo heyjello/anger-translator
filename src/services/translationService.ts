@@ -115,23 +115,62 @@ const addDynamicAudioTags = (text: string, style: string, intensity: number): st
   return `${openingTag}${processedText}${closingTag}`.replace(/\s+/g, ' ').trim();
 };
 
+/**
+ * Analyze input text to understand the context and generate appropriate rage response
+ */
+const analyzeInputContext = (text: string): { 
+  isRequest: boolean; 
+  isComplaint: boolean; 
+  isTest: boolean;
+  isGreeting: boolean;
+  isQuestion: boolean;
+  subject: string;
+} => {
+  const lowerText = text.toLowerCase();
+  
+  return {
+    isRequest: /\b(please|can you|could you|would you|help|need)\b/.test(lowerText),
+    isComplaint: /\b(problem|issue|wrong|broken|bad|terrible|awful)\b/.test(lowerText),
+    isTest: /\b(test|testing|check)\b/.test(lowerText),
+    isGreeting: /\b(hello|hi|hey|good morning|good afternoon)\b/.test(lowerText),
+    isQuestion: text.includes('?'),
+    subject: text.length > 20 ? 'this situation' : 'this'
+  };
+};
+
 // The Enforcer - Luther-style righteous fury
 const generateEnforcerRant = (text: string, intensity: number): string => {
+  const context = analyzeInputContext(text);
   let response = "";
   
   if (intensity <= 30) {
-    response += "Listen here, ";
-    response += `${text.toLowerCase()} and I'm supposed to just accept this? `;
-    response += "Oh, that's real nice. Real professional.";
+    if (context.isTest) {
+      response = "Listen here, you wanna test something? Test my patience and see what happens!";
+    } else if (context.isRequest) {
+      response = "Oh, so now you need something from me? That's real convenient.";
+    } else if (context.isGreeting) {
+      response = "Don't you 'hello' me like everything's all good when it ain't!";
+    } else {
+      response = "I see what's happening here and I'm not having it. Not today.";
+    }
   } else if (intensity <= 60) {
-    response += "OH HELL NAH! ";
-    response += `${text} and you think that's gonna fly? `;
-    response += "I wish you would try that again! This some bullshit right here!";
+    if (context.isTest) {
+      response = "OH HELL NAH! You wanna test something? I wish you would! This some bullshit right here!";
+    } else if (context.isRequest) {
+      response = "Are you SERIOUS right now? You think I'm just gonna drop everything for this?";
+    } else if (context.isComplaint) {
+      response = "Problems? You don't even KNOW what problems are yet!";
+    } else {
+      response = "I've had it UP TO HERE with this nonsense! What is WRONG with people?";
+    }
   } else {
-    response += "Boy if you don't... ";
-    response += `${text.toUpperCase()} ARE YOU SERIOUS RIGHT NOW?! `;
-    response += "I'm bout to LOSE IT over here! ";
-    response += "AND THAT'S ON PERIOD! Case CLOSED!";
+    if (context.isTest) {
+      response = "Boy if you don't... TEST THIS! You bout to get a REAL test of my patience! AND THAT'S ON PERIOD!";
+    } else if (context.isRequest) {
+      response = "ARE YOU OUT OF YOUR DAMN MIND?! I'm bout to LOSE IT over here! Case CLOSED!";
+    } else {
+      response = "I'M DONE! ABSOLUTELY DONE! This is the LAST TIME I deal with this garbage!";
+    }
   }
   
   return addDynamicAudioTags(response, 'enforcer', intensity);
@@ -139,21 +178,33 @@ const generateEnforcerRant = (text: string, intensity: number): string => {
 
 // The Highland Howler - Explosive Scottish Dad
 const generateHighlandHowlerRant = (text: string, intensity: number): string => {
+  const context = analyzeInputContext(text);
   let response = "";
   
   if (intensity <= 30) {
-    response += "Och, ";
-    response += `${text.toLowerCase()} and I'm supposed to just sit here like some numpty? `;
-    response += "Aye, that's brilliant, that is.";
+    if (context.isTest) {
+      response = "Och, testing are we? Aye, that's brilliant, that is.";
+    } else if (context.isRequest) {
+      response = "So you need something from me now? What am I, your personal servant?";
+    } else {
+      response = "Right, so this is what we're doing now? Fantastic.";
+    }
   } else if (intensity <= 60) {
-    response += "For crying out LOUD! ";
-    response += `${text} - what in the name of the wee man is this? `;
-    response += "Ya absolute weapon! This is pure mental!";
+    if (context.isTest) {
+      response = "For crying out LOUD! Testing? What in the name of the wee man is this about?";
+    } else if (context.isRequest) {
+      response = "Ya absolute weapon! You think I've got nothing better to do?";
+    } else {
+      response = "This is pure mental! What kind of nonsense is this supposed to be?";
+    }
   } else {
-    response += "What in the name of... ";
-    response += `BLOODY HELL! ${text.toUpperCase()} ya daft wee BAMPOT! `;
-    response += "I'll do it maSELF before I deal with this nonsense! ";
-    response += "Away and bile yer HEID, the lot of ye!";
+    if (context.isTest) {
+      response = "BLOODY HELL! Test THIS ya daft wee BAMPOT! Away and bile yer HEID!";
+    } else if (context.isRequest) {
+      response = "What in the name of... I'll do it maSELF before I deal with this garbage!";
+    } else {
+      response = "RIGHT! That's IT! I've had enough of this absolute NONSENSE!";
+    }
   }
   
   return addDynamicAudioTags(response, 'highland-howler', intensity);
@@ -161,21 +212,33 @@ const generateHighlandHowlerRant = (text: string, intensity: number): string => 
 
 // The Don - NY Italian-American
 const generateDonRant = (text: string, intensity: number): string => {
+  const context = analyzeInputContext(text);
   let response = "";
   
   if (intensity <= 30) {
-    response += "Ay, listen here - ";
-    response += `${text.toLowerCase()} and you think that's acceptable? `;
-    response += "What am I, chopped liver here?";
+    if (context.isTest) {
+      response = "Ay, you wanna test something? Test my patience, see what happens.";
+    } else if (context.isRequest) {
+      response = "So now you come to me with this? What am I, chopped liver?";
+    } else {
+      response = "Listen here, this ain't how we do things, capisce?";
+    }
   } else if (intensity <= 60) {
-    response += "What's ya PROBLEM here? ";
-    response += `${text} - you gotta be kiddin' me! `;
-    response += "Ya mook! This is ridiculous!";
+    if (context.isTest) {
+      response = "What's ya PROBLEM? You think this is some kind of game?";
+    } else if (context.isRequest) {
+      response = "Ya mook! You got some nerve coming to me with this!";
+    } else {
+      response = "This is ridiculous! What kind of operation you think I'm running here?";
+    }
   } else {
-    response += "You come to me... ";
-    response += `FUGGEDABOUTIT! ${text.toUpperCase()} ya GAVONE! `;
-    response += "You're breakin' my BALLS here! ";
-    response += "Don't make me come down there, capisce?";
+    if (context.isTest) {
+      response = "FUGGEDABOUTIT! You wanna test? I'll give you a test ya GAVONE!";
+    } else if (context.isRequest) {
+      response = "You're breakin' my BALLS here! Don't make me come down there!";
+    } else {
+      response = "That's IT! I'm DONE with this disrespect! CAPISCE?";
+    }
   }
   
   return addDynamicAudioTags(response, 'don', intensity);
@@ -183,21 +246,33 @@ const generateDonRant = (text: string, intensity: number): string => {
 
 // The Cracked Controller - Gen-Z Latino Gamer
 const generateCrackedControllerRant = (text: string, intensity: number): string => {
+  const context = analyzeInputContext(text);
   let response = "";
   
   if (intensity <= 30) {
-    response += "Bruh, ";
-    response += `${text.toLowerCase()} and I'm supposed to just deal with this? `;
-    response += "That's cap, no shot.";
+    if (context.isTest) {
+      response = "Bruh, testing? That's kinda sus, not gonna lie.";
+    } else if (context.isRequest) {
+      response = "Yo, you really asking me to do this right now? That's cap.";
+    } else {
+      response = "Nah bro, this ain't it. This is straight mid.";
+    }
   } else if (intensity <= 60) {
-    response += "NAH BRO! ";
-    response += `${text} - this is straight TRASH! `;
-    response += "Skill ISSUE much? ¡No mames!";
+    if (context.isTest) {
+      response = "NAH BRO! Testing? This is straight TRASH! Skill ISSUE much?";
+    } else if (context.isRequest) {
+      response = "Are you KIDDING me right now? This is absolutely CRACKED!";
+    } else {
+      response = "¡No mames! This is getting me TILTED! What is this garbage?";
+    }
   } else {
-    response += "Brooooo... ";
-    response += `WHAT THE SHIT! ${text.toUpperCase()} and I'm getting CLAPPED! `;
-    response += "I'm about to UNINSTALL this whole thing! ";
-    response += "RATIO + L + BOZO! Touching GRASS after this!";
+    if (context.isTest) {
+      response = "WHAT THE SHIT! Testing? I'm about to UNINSTALL everything! RATIO + L + BOZO!";
+    } else if (context.isRequest) {
+      response = "Brooooo I'm getting CLAPPED by this nonsense! Touching GRASS after this!";
+    } else {
+      response = "I'M DONE! This whole thing is BROKEN! Time to rage quit!";
+    }
   }
   
   return addDynamicAudioTags(response, 'cracked-controller', intensity);
@@ -205,21 +280,33 @@ const generateCrackedControllerRant = (text: string, intensity: number): string 
 
 // Karen - Suburban Entitlement
 const generateKarenRant = (text: string, intensity: number): string => {
+  const context = analyzeInputContext(text);
   let response = "";
   
   if (intensity <= 30) {
-    response += "Excuse me, but ";
-    response += `${text.toLowerCase()} and that's simply unacceptable. `;
-    response += "I'm a paying customer here.";
+    if (context.isTest) {
+      response = "Excuse me, but testing? I'm a paying customer and this is unacceptable.";
+    } else if (context.isRequest) {
+      response = "I shouldn't have to ask twice. This is poor customer service.";
+    } else {
+      response = "This is simply not acceptable. I expect better than this.";
+    }
   } else if (intensity <= 60) {
-    response += "I'm SORRY, but ";
-    response += `${text} - this is RIDICULOUS! `;
-    response += "I want to speak to your MANAGER! Do you know who I AM?";
+    if (context.isTest) {
+      response = "I'm SORRY, but testing? This is RIDICULOUS! I want to speak to your MANAGER!";
+    } else if (context.isRequest) {
+      response = "This is absolutely UNACCEPTABLE! Do you know who I AM?";
+    } else {
+      response = "I am a PAYING CUSTOMER and I will NOT be treated this way!";
+    }
   } else {
-    response += "This is completely... ";
-    response += `UNACCEPTABLE! ${text.toUpperCase()} and I'm CALLING CORPORATE! `;
-    response += "My husband is a LAWYER and I'm posting this on FACEBOOK! ";
-    response += "I will be leaving a DAMN REVIEW!";
+    if (context.isTest) {
+      response = "This is completely UNACCEPTABLE! I'm CALLING CORPORATE! My husband is a LAWYER!";
+    } else if (context.isRequest) {
+      response = "I will be leaving a DAMN REVIEW! This is going on FACEBOOK!";
+    } else {
+      response = "GET ME YOUR MANAGER RIGHT NOW! This is absolutely OUTRAGEOUS!";
+    }
   }
   
   return addDynamicAudioTags(response, 'karen', intensity);
@@ -227,21 +314,33 @@ const generateKarenRant = (text: string, intensity: number): string => {
 
 // Corporate - Professional passive-aggressive meltdown
 const generateCorporateRant = (text: string, intensity: number): string => {
+  const context = analyzeInputContext(text);
   let response = "";
   
   if (intensity <= 30) {
-    response += "As per my previous email, ";
-    response += `${text.toLowerCase()} and I need clarification on this matter. `;
-    response += "Please advise how we can move forward.";
+    if (context.isTest) {
+      response = "As per my previous email, testing procedures should follow proper protocols.";
+    } else if (context.isRequest) {
+      response = "I need clarification on this request. Please advise on next steps.";
+    } else {
+      response = "This doesn't align with our established processes. Let's circle back on this.";
+    }
   } else if (intensity <= 60) {
-    response += "I SHOULDN'T have to explain this again! ";
-    response += `${text} - this is the THIRD TIME I've addressed this! `;
-    response += "Please advise how we can get some ACTUAL RESULTS!";
+    if (context.isTest) {
+      response = "I SHOULDN'T have to explain testing procedures again! This is the THIRD TIME!";
+    } else if (context.isRequest) {
+      response = "This request lacks proper documentation! Please advise how we can get ACTUAL RESULTS!";
+    } else {
+      response = "This is completely outside our SLA! We need to escalate this immediately!";
+    }
   } else {
-    response += "I've had ENOUGH. ";
-    response += `${text.toUpperCase()} and this is ABSOLUTELY UNACCEPTABLE! `;
-    response += "I'm DONE with this incompetence! ";
-    response += "Please advise how we can escalate this to someone who ACTUALLY DOES THEIR JOB!";
+    if (context.isTest) {
+      response = "I've had ENOUGH! Testing without proper approval is ABSOLUTELY UNACCEPTABLE!";
+    } else if (context.isRequest) {
+      response = "I'm DONE with this incompetence! Please advise how we can escalate to someone who ACTUALLY DOES THEIR JOB!";
+    } else {
+      response = "This is a COMPLETE FAILURE of our processes! I'm escalating this to senior management!";
+    }
   }
   
   return addDynamicAudioTags(response, 'corporate', intensity);
@@ -249,21 +348,33 @@ const generateCorporateRant = (text: string, intensity: number): string => {
 
 // Sarcastic - Intellectual destruction
 const generateSarcasticRant = (text: string, intensity: number): string => {
+  const context = analyzeInputContext(text);
   let response = "";
   
   if (intensity <= 30) {
-    response += "Oh, how lovely. ";
-    response += `${text.toLowerCase()} - truly enlightening. `;
-    response += "What a delightful experience.";
+    if (context.isTest) {
+      response = "Oh, how lovely. Testing. Truly enlightening.";
+    } else if (context.isRequest) {
+      response = "What a delightful request. How absolutely charming.";
+    } else {
+      response = "How wonderfully predictable. What a masterpiece of communication.";
+    }
   } else if (intensity <= 60) {
-    response += "WOW, ";
-    response += `${text} - I'm just THRILLED to deal with this! `;
-    response += "How absolutely RIVETING! What a masterpiece of communication!";
+    if (context.isTest) {
+      response = "WOW, testing! I'm just THRILLED to witness this groundbreaking innovation!";
+    } else if (context.isRequest) {
+      response = "How absolutely RIVETING! What a masterpiece of professional communication!";
+    } else {
+      response = "Oh, MAGNIFICENT! Truly, your brilliance knows no bounds!";
+    }
   } else {
-    response += "Oh, MAGNIFICENT. ";
-    response += `${text.toUpperCase()} - truly, your competence knows NO BOUNDS! `;
-    response += "What a DELIGHTFUL way to waste everyone's time! ";
-    response += "Absolutely EXQUISITE work here!";
+    if (context.isTest) {
+      response = "Oh, MAGNIFICENT! Testing! Truly, your competence knows NO BOUNDS! Absolutely EXQUISITE work!";
+    } else if (context.isRequest) {
+      response = "What a DELIGHTFUL way to waste everyone's time! Simply BREATHTAKING incompetence!";
+    } else {
+      response = "BRAVO! What an absolutely STUNNING display of professional excellence! Simply DIVINE!";
+    }
   }
   
   return addDynamicAudioTags(response, 'sarcastic', intensity);
@@ -300,7 +411,7 @@ const mockTranslate = async (request: TranslationRequest): Promise<TranslationRe
       translation = generateSarcasticRant(text, intensity);
       break;
     default:
-      translation = `${style.toUpperCase()} Level ${intensity}: ${text} - Please configure AI for dynamic responses!`;
+      translation = `${style.toUpperCase()} Level ${intensity}: Please configure AI for dynamic responses!`;
   }
   
   return {

@@ -26,7 +26,7 @@ export interface VoiceStyleMap {
 // Define the comprehensive RageStyle type
 export type RageStyle = 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad' | 'ny-italian' | 'enforcer' | 'highland-howler' | 'don' | 'cracked-controller';
 
-// Updated with commonly available ElevenLabs voice IDs
+// Updated with your custom Highland Howler voice ID
 export const VOICE_CONFIGS: VoiceStyleMap = {
   corporate: {
     voice_id: "pNInz6obpgDQGcFmaJgB", // Adam - Professional male voice
@@ -106,9 +106,9 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     }
   },
   'highland-howler': {
-    voice_id: "JwYlCv3C5tfM0wHM3xjl", // Highland Howler - Authentic thick Scottish accent
+    voice_id: "cTMt3eRoD8RF6F0MIt0q", // YOUR CUSTOM Highland Howler voice
     name: "Highland Howler",
-    description: "Fierce Scottish Highland warrior voice with authentic thick accent",
+    description: "Authentic thick Scottish Highland accent with fierce warrior energy",
     voice_settings: {
       stability: 0.95,
       similarity_boost: 0.95,
@@ -370,7 +370,7 @@ export const createTestPhrase = (style: RageStyle): string => {
   return testPhrases[style];
 };
 
-// Export all voice IDs for easy reference - updated with Highland Howler
+// Export all voice IDs for easy reference - updated with your Highland Howler
 export const ALL_VOICE_IDS = {
   adam: "pNInz6obpgDQGcFmaJgB",
   antoni: "ErXwobaYiN019PkySvjV", 
@@ -380,7 +380,7 @@ export const ALL_VOICE_IDS = {
   clyde: "2EiwWnXFnvU5JabPnv8n",
   bella: "EXAVITQu4vr4xnSDxMaL",
   dorothy: "ThT5KcBeYPX3keUQqHPh",
-  highlandHowler: "JwYlCv3C5tfM0wHM3xjl"
+  highlandHowler: "cTMt3eRoD8RF6F0MIt0q" // YOUR CUSTOM VOICE
 } as const;
 
 // Voice characteristics for UI display
@@ -435,8 +435,8 @@ export const VOICE_CHARACTERISTICS = {
   },
   [ALL_VOICE_IDS.highlandHowler]: {
     gender: 'Male',
-    accent: 'Scottish',
+    accent: 'Scottish Highland',
     age: 'Middle-aged',
-    tone: 'Thick Scottish Accent, Gruff, Authentic Highland Voice'
+    tone: 'Authentic Thick Scottish Accent, Fierce Highland Warrior Voice'
   }
 } as const;

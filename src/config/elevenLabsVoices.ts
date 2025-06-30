@@ -66,7 +66,7 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   'ny-italian': {
-    voice_id: "2EiwWnXFnvU5JabPnv8n", // Clyde
+    voice_id: "CaYmcrR5WjNfLsVo7ReL", // Clyde
     name: "Clyde",
     description: "American male voice for NY Italian",
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }

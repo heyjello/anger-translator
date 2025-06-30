@@ -102,11 +102,6 @@ export const OutputSection: React.FC<OutputSectionProps> = ({
               {/* Display cleaned text without audio tags */}
               {outputText}
             </div>
-            {rawText && rawText !== outputText && (
-              <div className="mt-2 text-xs text-gray-500 italic">
-                Audio enhanced version available for text-to-speech
-              </div>
-            )}
           </div>
         ) : (
           <div className="text-gray-500 italic text-lg flex items-center justify-center h-28">

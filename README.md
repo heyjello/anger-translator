@@ -1,31 +1,35 @@
 # Anger Translator 🔥
 
-A modern React-based web application that transforms polite messages into comedic rage responses using AI-powered translation. Features multiple rage styles, real-time AI integration via OpenRouter, text-to-speech with ElevenLabs, and a comprehensive user experience.
+A modern React-based web application that transforms polite messages into comedic rage responses using AI-powered translation. Features multiple rage personas, real-time AI integration via OpenRouter, text-to-speech with ElevenLabs, and a comprehensive user experience.
 
 ## 🚀 Features
 
 ### Core Translation
 - **AI-Powered Translation**: Real AI integration via OpenRouter with fallback to mock service
-- **Mixtral-8x7b-instruct Optimized**: Specifically optimized for Mixtral's instruction-following capabilities
+- **DeepSeek v3 Optimized**: Specifically optimized for DeepSeek's instruction-following capabilities
 - **Multiple AI Models**: Support for GPT-4, Claude, Llama, and other models
-- **Three Rage Styles**:
+- **Seven Rage Personas**:
+  - 🔥 **The Enforcer**: Luther-style righteous fury with urban slang
+  - 🧨 **The Highland Howler**: Explosive Scottish Dad with chaotic energy
+  - 🍝 **The Don**: NY Italian-American Roastmaster with streetwise threats
+  - 🎮 **The Cracked Controller**: Gen-Z gamer meltdown with panic bursts
+  - 👩‍🦱 **Karen**: Suburban entitlement rage with polite-to-nuclear escalation
   - 💼 **Corporate Meltdown**: Professional passive-aggressive responses
-  - 🎮 **Epic Gamer Rage**: Over-the-top gaming terminology with CAPS LOCK
   - 😏 **Sarcastic Roast**: Witty, intellectually superior responses
-- **Dynamic Intensity Control**: 10-level rage slider with visual feedback
+- **Dynamic Intensity Control**: 100-level rage slider (1-100) with visual feedback
 
 ### Text-to-Speech Integration
 - **ElevenLabs TTS**: High-quality voice synthesis for translated text
-- **Style-Matched Voices**: Different voices for each rage style
+- **Persona-Matched Voices**: Different voices for each rage persona
 - **Rage-Adjusted Settings**: Voice parameters adjust based on intensity level
-- **Smart Text Processing**: Optimized for dramatic speech delivery
+- **Smart Text Processing**: Optimized for dramatic speech delivery with bleep censoring
 
 ### AI Integration
 - **OpenRouter Service**: Access to multiple AI models through unified API
 - **Seamless Fallback**: Automatic fallback to mock service if AI unavailable
 - **Model Selection**: Choose from various AI models based on cost and performance
 - **Real-time Status**: Live AI service status indicator and configuration
-- **Mixtral Optimization**: Special prompts and parameters optimized for Mixtral-8x7b-instruct
+- **DeepSeek v3 Optimization**: Special prompts and parameters optimized for DeepSeek Chat v3
 
 ### User Experience
 - **Interactive Emoji Mascot**: Changes expression based on rage level
@@ -34,13 +38,14 @@ A modern React-based web application that transforms polite messages into comedi
 - **Usage Statistics**: Analytics dashboard showing patterns and preferences
 - **Responsive Design**: Mobile-first approach with cross-device compatibility
 - **Dark Cyberpunk Theme**: Modern developer tool aesthetic
+- **Circular Rage Meter**: Professional voice editor interface
 
 ## 🛠️ Technology Stack
 
 - **Frontend**: React 18.3.1 with TypeScript
 - **Styling**: Tailwind CSS with custom animations
 - **UI Components**: Shadcn/ui library
-- **AI Service**: OpenRouter API integration (optimized for Mixtral)
+- **AI Service**: OpenRouter API integration (optimized for DeepSeek v3)
 - **Text-to-Speech**: ElevenLabs API integration
 - **Build Tool**: Vite
 - **Icons**: Lucide React
@@ -95,7 +100,7 @@ A modern React-based web application that transforms polite messages into comedi
 2. **Configure in App**
    - Click the AI status indicator in the app
    - Enter your API key
-   - Select "Mixtral 8x7B Instruct" (recommended and pre-optimized)
+   - Select "DeepSeek Chat v3" (recommended and pre-optimized)
    - Test the connection
 
 #### ElevenLabs (Text-to-Speech)
@@ -112,21 +117,21 @@ A modern React-based web application that transforms polite messages into comedi
 
 ### Basic Translation
 1. Enter your polite message (5-500 characters)
-2. Choose a rage style (Corporate, Gamer, or Sarcastic)
-3. Adjust the rage level (1-10)
+2. Choose a rage persona (Enforcer, Highland Howler, Don, etc.)
+3. Adjust the rage level (1-100)
 4. Click "TRANSLATE MY RAGE"
 5. Copy, share, listen to, or reuse your translation
 
 ### Text-to-Speech Features
 - **Listen Button**: Click the speaker icon to hear your translation
-- **Style-Matched Voices**: Each rage style uses an appropriate voice
+- **Persona-Matched Voices**: Each rage persona uses an appropriate voice
 - **Intensity Adjustment**: Higher rage levels affect speech delivery
-- **Smart Processing**: Text is optimized for dramatic speech synthesis
+- **Smart Processing**: Text is optimized for dramatic speech synthesis with profanity bleeping
 
 ### AI Features
 - **AI Toggle**: Switch between AI and mock translation
 - **Model Selection**: Choose from various AI models
-- **Mixtral Optimization**: Enjoy enhanced performance with Mixtral-8x7b-instruct
+- **DeepSeek v3 Optimization**: Enjoy enhanced performance with DeepSeek Chat v3
 - **Status Monitoring**: Real-time service status
 
 ### History & Stats
@@ -140,19 +145,23 @@ A modern React-based web application that transforms polite messages into comedi
 
 | Model | Description | Cost/1k tokens | Speed | Recommended |
 |-------|-------------|----------------|-------|-------------|
-| **Mixtral 8x7B Instruct** | High-quality instruction-following | $0.00024 | ⚡⚡ | ⭐ **Your Choice** |
+| **DeepSeek Chat v3 (Free)** | High-quality reasoning model | Free | ⚡⚡ | ⭐ **Top Choice** |
+| Mixtral 8x7B Instruct | High-quality instruction-following | $0.00024 | ⚡⚡ | ⭐ |
 | Claude 3 Haiku | Fast and cost-effective | $0.00025 | ⚡⚡⚡ | ⭐ |
 | GPT-4o Mini | OpenAI efficient | $0.00015 | ⚡⚡⚡ | ⭐ |
-| GPT-4o | Most capable | $0.005 | ⚡ | |
-| Llama 3.1 8B | Free open-source | Free | ⚡⚡ | ⭐ |
+| Llama 3.1 8B (Free) | Free open-source | Free | ⚡⚡ | ⭐ |
 
 ### Voice Configurations
 
-| Style | Voice | Description | Characteristics |
-|-------|-------|-------------|----------------|
-| Corporate | Bella | Professional female | Stable, clear, authoritative |
-| Gamer | Adam | Energetic male | Dynamic, expressive, intense |
-| Sarcastic | Dorothy | Sophisticated female | Refined, witty, controlled |
+| Persona | Voice | Description | Characteristics |
+|---------|-------|-------------|----------------|
+| Enforcer | Adam | Strong male voice | Authoritative, righteous fury |
+| Highland Howler | Arnold | Deep Scottish voice | Explosive, chaotic energy |
+| Don | Clyde | NY Italian voice | Threatening calm, streetwise |
+| Cracked Controller | Antoni | Energetic gamer voice | Panicked, hyperactive |
+| Karen | Bella | Entitled female voice | Fake-sweet to nuclear |
+| Corporate | Adam | Professional male | Passive-aggressive authority |
+| Sarcastic | Daniel | British male | Witty, intellectual superiority |
 
 ### Rate Limiting
 - **Mock Service**: 10 requests per minute
@@ -178,27 +187,46 @@ src/
 │   ├── elevenLabsService.ts       # ElevenLabs TTS integration
 │   └── enhancedTranslationService.ts # Combined service
 ├── types/              # TypeScript definitions
+├── config/             # Configuration files
 └── App.tsx            # Main application
 ```
 
-## 🎨 Customization
+## 🎨 Rage Personas
 
-### Adding New Rage Styles
-1. Update `RageStyle` type in `src/types/translation.ts`
-2. Add style configuration in translation services
-3. Update `StyleSelector` component
-4. Add style-specific prompts for AI
-5. Configure voice in `elevenLabsService.ts`
+### The Enforcer 🔥
+**Style**: Luther-style righteous fury  
+**Characteristics**: Urban slang, preacher cadence, moral authority  
+**Examples**: "OH HELL NAH!", "I wish you would", "AND THAT'S ON PERIOD!"
 
-### Custom AI Models
-1. Add model to `AVAILABLE_MODELS` in `openRouterService.ts`
-2. Update model selection UI
-3. Configure model-specific parameters
+### The Highland Howler 🧨
+**Style**: Explosive Scottish Dad  
+**Characteristics**: Chaotic pacing, wrench-wielding energy  
+**Examples**: "What in the name of the wee man!", "Ya absolute weapon!", "Away and bile yer heid!"
 
-### Custom Voices
-1. Add voice configuration to `VOICE_CONFIGS` in `elevenLabsService.ts`
-2. Update voice selection logic
-3. Test voice settings for different rage levels
+### The Don 🍝
+**Style**: NY Italian-American Roastmaster  
+**Characteristics**: Streetwise threats, traffic fury, threatening calm  
+**Examples**: "Fuggedaboutit!", "Ya mook!", "Don't make me come down there, capisce?"
+
+### The Cracked Controller 🎮
+**Style**: Gen-Z gamer meltdown  
+**Characteristics**: Panic bursts, rage-quit threats, hyperactive energy  
+**Examples**: "¡No mames!", "RATIO + L + BOZO!", "This is straight trash!"
+
+### Karen 👩‍🦱
+**Style**: Suburban entitlement rage  
+**Characteristics**: Polite-to-nuclear escalation, manager threats  
+**Examples**: "I want to speak to your manager!", "I'm a paying customer!", "This is unacceptable!"
+
+### Corporate Meltdown 💼
+**Style**: Professional fury  
+**Characteristics**: Passive-aggressive excellence, corporate buzzwords  
+**Examples**: "As per my previous email", "Please advise", "This is the third time"
+
+### Sarcastic Roast 😏
+**Style**: Witty destruction  
+**Characteristics**: Intellectual superiority, cutting wit  
+**Examples**: "How absolutely riveting!", "Truly enlightening", "What a masterpiece"
 
 ## 🔒 Security & Privacy
 
@@ -215,7 +243,7 @@ src/
 - **AI Response Time**: 1-3 seconds (varies by model)
 - **TTS Generation**: 2-5 seconds (varies by text length)
 - **Mock Response Time**: 0.8-2s (simulated)
-- **Mixtral Performance**: Optimized for fast, high-quality responses
+- **DeepSeek v3 Performance**: Optimized for fast, high-quality responses
 
 ## 🤝 Contributing
 
@@ -240,11 +268,12 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🙏 Acknowledgments
 
 - **OpenRouter**: For providing unified AI model access
-- **Mixtral**: For excellent instruction-following capabilities
+- **DeepSeek**: For excellent instruction-following capabilities
 - **ElevenLabs**: For high-quality text-to-speech synthesis
 - **Shadcn/ui**: For beautiful, accessible UI components
 - **Tailwind CSS**: For utility-first styling
 - **Lucide React**: For consistent iconography
+- **Bolt**: For the amazing development platform
 
 ## 📞 Support
 
@@ -256,7 +285,7 @@ For issues, feature requests, or questions:
 ## 🔮 Roadmap
 
 ### v1.1.0 (Next Release)
-- [ ] Enhanced Mixtral prompt optimization
+- [ ] Enhanced DeepSeek v3 prompt optimization
 - [ ] Voice customization options
 - [ ] Usage analytics and cost tracking
 - [ ] Improved error handling
@@ -265,7 +294,7 @@ For issues, feature requests, or questions:
 ### v1.2.0 (Future)
 - [ ] User authentication
 - [ ] Cloud storage for history
-- [ ] Custom rage style creation
+- [ ] Custom rage persona creation
 - [ ] Voice cloning integration
 - [ ] Multi-language TTS support
 
@@ -279,6 +308,7 @@ For issues, feature requests, or questions:
 ---
 
 **Built with ❤️ and a lot of rage** 🔥  
-**Powered by Mixtral-8x7b-instruct & ElevenLabs** 🤖🎤
+**Powered by DeepSeek v3 & ElevenLabs** 🤖🎤  
+**Made with Bolt** ⚡
 
 *Transform your politeness into comedic fury and hear it come to life!*

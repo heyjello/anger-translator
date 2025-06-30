@@ -9,23 +9,29 @@
       "type": "major",
       "changes": [
         "Initial release with core translation functionality",
-        "Three rage styles: Corporate, Gamer, Sarcastic",
-        "Dynamic rage level slider with emoji mascot",
+        "Seven rage personas: Enforcer, Highland Howler, Don, Cracked Controller, Karen, Corporate, Sarcastic",
+        "Dynamic rage level slider (1-100) with emoji mascot",
         "Translation history and statistics tracking",
         "Particle effects and enhanced animations",
         "Responsive design with mobile support",
         "Accessibility features and ARIA support",
-        "Comprehensive component architecture"
+        "Comprehensive component architecture",
+        "Circular rage meter interface",
+        "Text-to-speech with ElevenLabs integration",
+        "AI integration with OpenRouter and DeepSeek v3"
       ],
       "features": [
-        "AI-powered text translation (mock implementation)",
-        "Real-time input validation",
+        "AI-powered text translation with DeepSeek v3 optimization",
+        "Real-time input validation with 1-100 rage scale",
         "Rate limiting protection",
         "Copy to clipboard functionality",
         "Share modal with social media integration",
         "Session-based history storage",
         "Usage statistics dashboard",
-        "Custom CSS animations and effects"
+        "Custom CSS animations and effects",
+        "Text-to-speech with persona-matched voices",
+        "Profanity bleeping system",
+        "Professional voice editor interface"
       ],
       "technical": [
         "React 18.3.1 with TypeScript",
@@ -34,7 +40,10 @@
         "Shadcn/ui component library",
         "Modular component architecture",
         "Custom hooks for state management",
-        "Performance optimized animations"
+        "Performance optimized animations",
+        "OpenRouter AI service integration",
+        "ElevenLabs TTS service integration",
+        "Enhanced translation service with fallback"
       ]
     }
   },
@@ -43,10 +52,10 @@
       "plannedDate": "2025-02-15",
       "type": "minor",
       "plannedFeatures": [
-        "Real OpenAI API integration",
-        "User authentication system",
-        "Cloud storage for history",
-        "Enhanced sharing capabilities",
+        "Enhanced DeepSeek v3 prompt optimization",
+        "Voice customization options",
+        "Usage analytics and cost tracking",
+        "Improved error handling",
         "Performance optimizations"
       ]
     },
@@ -54,11 +63,11 @@
       "plannedDate": "2025-03-15",
       "type": "minor",
       "plannedFeatures": [
-        "Voice input/output support",
-        "Multi-language translation",
-        "Custom style creation",
-        "Advanced statistics",
-        "Mobile app companion"
+        "User authentication system",
+        "Cloud storage for history",
+        "Custom rage persona creation",
+        "Voice cloning integration",
+        "Multi-language TTS support"
       ]
     },
     "2.0.0": {
@@ -67,7 +76,7 @@
       "plannedFeatures": [
         "Complete UI redesign",
         "Real-time collaboration",
-        "AI model selection",
+        "AI model selection interface",
         "Enterprise features",
         "API for third-party integration"
       ]

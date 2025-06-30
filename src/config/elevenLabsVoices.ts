@@ -95,7 +95,7 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     }
   },
   enforcer: {
-    voice_id: "VR6AewLTigWG4xSOukaG", // Arnold - deep, authoritative
+    voice_id: "ujTRvH905hCgW1uUwWye", // Arnold - deep, authoritative
     name: "Enforcer",
     description: "Deep, intimidating voice for law enforcement rage",
     voice_settings: {

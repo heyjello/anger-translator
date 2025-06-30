@@ -1,54 +1,51 @@
 import { RageStyle } from '../config/elevenLabsVoices';
 
-// Convert stage directions to ElevenLabs audio tags
+// Convert stage directions to audio tags WITHOUT reading them
 function convertStageDirectionsToTags(text: string): string {
   let processedText = text;
   
-  // Extract and convert parenthetical stage directions
+  // Extract parenthetical stage directions and REMOVE them
   const stageDirectionRegex = /\(([^)]+)\)/g;
   const matches = Array.from(text.matchAll(stageDirectionRegex));
   
+  let audioTags = [];
+  
   matches.forEach(match => {
     const direction = match[1].toLowerCase();
-    let tags = '';
     
-    // Convert common stage directions to audio tags
-    if (direction.includes('aggressive')) tags += '[aggressive] ';
-    if (direction.includes('controlled')) tags += '[measured] ';
-    if (direction.includes('disgusted')) tags += '[disgusted] ';
-    if (direction.includes('screaming')) tags += '[shouting] ';
-    if (direction.includes('sarcastic')) tags += '[sarcastic] ';
-    if (direction.includes('pause')) tags += '[pause] ';
-    if (direction.includes('slow')) tags += '[slow] ';
-    if (direction.includes('fast')) tags += '[fast] ';
-    if (direction.includes('whisper')) tags += '[whispers] ';
-    if (direction.includes('laugh')) tags += '[laughs] ';
-    if (direction.includes('sigh')) tags += '[sighs] ';
-    if (direction.includes('calm')) tags += '[calm] ';
-    if (direction.includes('threatening')) tags += '[threatening] ';
-    if (direction.includes('explosive')) tags += '[explosive] ';
-    if (direction.includes('building')) tags += '[building intensity] ';
-    if (direction.includes('fury')) tags += '[furious] ';
-    if (direction.includes('rage')) tags += '[rage] ';
+    // Convert to audio tags but DON'T include in speech
+    if (direction.includes('aggressive')) audioTags.push('[aggressive]');
+    if (direction.includes('controlled')) audioTags.push('[measured]');
+    if (direction.includes('disgusted')) audioTags.push('[disgusted]');
+    if (direction.includes('screaming')) audioTags.push('[shouting]');
+    if (direction.includes('face flushing')) audioTags.push('[angry]');
+    if (direction.includes('fists clenching')) audioTags.push('[tense]');
+    if (direction.includes('voice rising')) audioTags.push('[escalating]');
+    if (direction.includes('calm')) audioTags.push('[calm]');
+    if (direction.includes('threatening')) audioTags.push('[threatening]');
+    if (direction.includes('explosive')) audioTags.push('[explosive]');
+    if (direction.includes('building')) audioTags.push('[building intensity]');
+    if (direction.includes('fury')) audioTags.push('[furious]');
+    if (direction.includes('rage')) audioTags.push('[rage]');
     
-    // Replace the parenthetical with tags at the beginning of the sentence
-    if (tags) {
-      processedText = processedText.replace(match[0], '').trim();
-      // Find the start of the sentence and add tags
-      const sentenceStart = processedText.lastIndexOf('. ', processedText.indexOf(match[0])) + 2;
-      processedText = processedText.slice(0, sentenceStart) + tags + processedText.slice(sentenceStart);
-    } else {
-      // If no specific tags found, just remove the parenthetical
-      processedText = processedText.replace(match[0], '').trim();
-    }
+    // Remove the parenthetical completely
+    processedText = processedText.replace(match[0], '');
   });
   
-  return processedText;
+  // Add collected tags at the beginning
+  if (audioTags.length > 0) {
+    processedText = audioTags.join(' ') + ' ' + processedText;
+  }
+  
+  return processedText.trim();
 }
 
 export function addAudioTags(text: string, angerLevel: number, style: RageStyle): string {
-  // First, convert any stage directions to tags
-  let taggedText = convertStageDirectionsToTags(text);
+  // Remove markdown bold markers first
+  let cleanedText = text.replace(/\*\*/g, '');
+  
+  // Convert and remove stage directions
+  let taggedText = convertStageDirectionsToTags(cleanedText);
   
   // Character-specific opening tags
   const characterTags: Record<string, string> = {
@@ -68,53 +65,31 @@ export function addAudioTags(text: string, angerLevel: number, style: RageStyle)
   
   // Add natural pauses and emphasis
   taggedText = taggedText
-    // Add pauses after questions
     .replace(/\? /g, '? [pause] ')
-    // Add pauses for ellipses
     .replace(/\.\.\./g, '... [pause]')
-    // Add emphasis for all caps words
     .replace(/\b[A-Z]{3,}\b/g, match => `[emphasis] ${match}`)
-    // Add pause before final exclamation
-    .replace(/([.!?])(\s+)([^.!?]+!)\s*$/g, '$1$2[pause] $3')
-    // Fix profanity to be inline
-    .replace(/\*([^*]+)\*/g, '*BLEEP*');
+    .replace(/!+/g, '! [pause] ')
+    // Fix profanity - keep asterisks for bleeping
+    .replace(/\b(\w)\*+(\w+)\b/g, '$1*$2'); // sh*te stays as sh*te
   
-  // Add intensity-based reactions
-  if (angerLevel >= 7) {
-    const rageTags: Record<string, string> = {
-      corporate: '[barely contained rage]',
-      gamer: '[keyboard smashing]',
-      sarcastic: '[laughs mockingly]',
-      karen: '[shrill screaming]',
-      'scottish-dad': '[incomprehensible scottish]',
-      'ny-italian': '[hand gestures intensify]',
-      enforcer: '[cracking knuckles]',
-      'highland-howler': '[war cry]',
-      don: '[deadly quiet]',
-      'cracked-controller': '[controller throwing sounds]'
-    };
-    
-    // Add rage tags after strong punctuation
-    taggedText = taggedText.replace(/!+\s*/g, `! ${rageTags[style]} `);
-  }
-  
-  return taggedText;
+  return taggedText.trim();
 }
 
 export function cleanTextForDisplay(text: string): string {
-  // Remove all audio tags and ALL parenthetical content (including nested)
+  // Remove ALL formatting: parentheses, brackets, and markdown
   let cleaned = text
+    .replace(/\*\*/g, '') // Remove markdown bold
     .replace(/\[[^\]]+\]/g, '') // Remove [audio tags]
     .replace(/\([^)]*\)/g, ''); // Remove (stage directions)
   
-  // Keep removing parentheses until they're all gone (for nested cases)
+  // Keep removing parentheses until they're all gone
   while (cleaned.includes('(') && cleaned.includes(')')) {
     cleaned = cleaned.replace(/\([^)]*\)/g, '');
   }
   
-  // Clean up extra spaces
+  // Clean up extra spaces and punctuation
   return cleaned
     .replace(/\s+/g, ' ')
-    .replace(/\s+([.,!?])/g, '$1') // Fix spacing around punctuation
+    .replace(/\s+([.,!?])/g, '$1')
     .trim();
 }

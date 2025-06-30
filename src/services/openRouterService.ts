@@ -3,7 +3,7 @@
  * 
  * Uses DeepSeek v3 for dynamic, varied responses that transform user input
  * while maintaining the original message's meaning and context.
- * Now allows stage directions for emotional guidance and converts them to audio tags.
+ * Now includes post-processing to handle markdown formatting.
  */
 
 export interface OpenRouterConfig {
@@ -320,7 +320,7 @@ class OpenRouterService {
 
   /**
    * Dynamic Translation Engine - Transforms user input while preserving meaning
-   * Now allows stage directions for emotional guidance
+   * Now includes post-processing to handle markdown formatting
    */
   async translateText(
     text: string, 
@@ -354,14 +354,23 @@ class OpenRouterService {
         throw new Error('No content received from AI model');
       }
 
-      // Return raw content with stage directions intact
-      // The textProcessing utility will convert them to audio tags
-      const cleanedContent = content.trim();
+      // Clean up markdown formatting that might come from the LLM
+      let output = content.trim();
+      
+      // Remove leading/trailing markdown bold markers
+      output = output.replace(/^\*\*/, '').replace(/\*\*$/, '');
+      
+      // Remove any remaining markdown bold that wraps the entire response
+      if (output.startsWith('**') && output.endsWith('**')) {
+        output = output.slice(2, -2);
+      }
+      
+      output = output.trim();
       
       console.log('🎭 Dynamic translation generated with DeepSeek v3');
-      console.log('🎬 Stage directions preserved for audio tag conversion');
+      console.log('🧹 Markdown formatting cleaned from output');
       
-      return cleanedContent;
+      return output;
     } catch (error) {
       console.error('❌ Translation failed:', error);
       throw error;
@@ -386,7 +395,7 @@ CRITICAL RULES:
 7. NEVER repeat the original text - transform it completely
 8. Maximum 3 sentences, punchy and impactful
 9. Include stage directions in parentheses for emotional guidance
-10. Use f*ck, sh*t, etc. Natural speech with emotional cues.`;
+10. DO NOT use markdown bold (**) formatting in your response`;
 
     // Add persona-specific instructions
     switch (persona) {

@@ -3,7 +3,7 @@
  * 
  * Provides real AI translation capabilities using OpenRouter's unified API.
  * Optimized for Mixtral-8x7b-instruct and other high-quality models.
- * Now includes NY Italian translator with authentic New York fury.
+ * Now includes Gen-Z Latino Gamer translator with authentic cracked energy.
  */
 
 export interface OpenRouterConfig {
@@ -250,6 +250,7 @@ class OpenRouterService {
     if (lowerText.includes('wait') || lowerText.includes('time')) return 'waiting';
     if (lowerText.includes('computer') || lowerText.includes('tech')) return 'technology';
     if (lowerText.includes('traffic') || lowerText.includes('driving')) return 'driving';
+    if (lowerText.includes('game') || lowerText.includes('lag') || lowerText.includes('team')) return 'gaming';
     
     return 'request';
   }
@@ -262,7 +263,7 @@ class OpenRouterService {
       throw new Error('OpenRouter service not configured. Please provide a valid API key from https://openrouter.ai/keys');
     }
 
-    const appName = import.meta.env.VITE_OPENROUTER_APP_NAME || 'NY Italian Translator';
+    const appName = import.meta.env.VITE_OPENROUTER_APP_NAME || 'Gamer Rage Translator';
 
     console.log(`🚀 Making request to OpenRouter with ${this.config.model}`);
 
@@ -359,7 +360,7 @@ class OpenRouterService {
     
     const stylePrompts = {
       corporate: `Create a brief corporate rage response. ${rageLevel.corporate}`,
-      gamer: `Create a short gamer rage response. ${rageLevel.gamer}`,
+      gamer: `Create a short Gen-Z Latino gamer meltdown. ${rageLevel.gamer}`,
       sarcastic: `Create a concise sarcastic response. ${rageLevel.sarcastic}`,
       karen: `Create a brief Karen-style suburban entitlement rant. ${rageLevel.karen}`,
       'scottish-dad': `Create a brief Scottish Dad Glaswegian rant. ${rageLevel.scottishDad}`,
@@ -375,6 +376,19 @@ Rules:
 - Maximum 2 sentences, under 50 words
 - Make it funny, not offensive
 - Sound like authentic human anger at level ${intensity}/10`;
+
+    // Add Gamer specific rules for Gen-Z Latino gamer
+    if (style === 'gamer') {
+      return baseRules + `
+- Use authentic Gen-Z Latino gamer dialect and expressions
+- Include tone cues: [screaming], [panicked], [sarcastic], [mock disbelief], [hyperventilating], [keyboard smashing]
+- Use gamer slang: "NAH BRO", "BRUH MOMENT", "THAT'S CAP", "NO SHOT", "TOUCH GRASS", "SKILL ISSUE FR FR"
+- Use Latino expressions: "órale", "no mames", "qué pedo", "ese", "vato", "chale"
+- For rage levels 8-10, use censored profanity: **BLEEP**, **GATORADE**, **ADDERALL**
+- Sound like a cracked-out 20-year-old Twitch streamer mid-lag
+- Include expressions like "GATORADE AND ADDERALL", "RATIO + L + BOZO", "I'M UNINSTALLING THIS **BLEEP**"
+- End with rage-quit threats like "TOUCHING GRASS AFTER THIS" or "SWITCHING TO CONSOLE"`;
+    }
 
     // Add NY Italian specific rules
     if (style === 'ny-italian') {
@@ -432,7 +446,7 @@ Rules:
       case 1:
         return {
           corporate: "Slightly annoyed but professional. Use 'I wanted to follow up' or 'Just checking in'.",
-          gamer: "Mildly frustrated. Use 'ugh' or 'seriously?' with minimal caps.",
+          gamer: "Mildly frustrated Gen-Z gamer. Use 'bruh' or 'that's kinda sus' with minimal energy.",
           sarcastic: "Gentle irony. Use 'how lovely' or 'that's great' with subtle sarcasm.",
           karen: "Polite but entitled. Use '[fake-nice]' tone with 'Excuse me, but...' and mention being a valued customer.",
           scottishDad: "Mildly annoyed Scottish dad. Use 'Och' or 'Right then' with gentle Glaswegian accent.",
@@ -442,7 +456,7 @@ Rules:
       case 2:
         return {
           corporate: "Politely irritated. Use 'As mentioned' or 'Per my email' with slight edge.",
-          gamer: "Getting annoyed. Use 'come on' or 'really?' with some emphasis.",
+          gamer: "Getting annoyed Gen-Z gamer. Use 'nah bro' or 'that's cap' with some attitude.",
           sarcastic: "Light mockery. Use 'wonderful' or 'fantastic' with obvious sarcasm.",
           karen: "Slightly condescending. Use '[passive-aggressive]' tone and mention 'standards' or 'back in my day'.",
           scottishDad: "Getting irritated. Use 'Aye, right' or 'What's all this then?' with mild Scottish frustration.",
@@ -452,7 +466,7 @@ Rules:
       case 3:
         return {
           corporate: "Clearly frustrated. Use 'As I stated previously' with firm tone.",
-          gamer: "Visibly annoyed. Use 'dude' or 'what the heck' with moderate caps.",
+          gamer: "Visibly annoyed gamer. Use 'bruh moment' or 'skill issue' with moderate energy.",
           sarcastic: "Clear disdain. Use 'how delightful' or 'absolutely brilliant' with bite.",
           karen: "Getting snippy. Use '[condescending]' tone, mention knowing the owner, and demand the manager.",
           scottishDad: "Clearly annoyed. Use '[sighing heavily]' and 'For crying out loud' with Scottish exasperation.",
@@ -462,7 +476,7 @@ Rules:
       case 4:
         return {
           corporate: "Losing patience. Use 'I need to reiterate' or 'This is the third time' with urgency.",
-          gamer: "Getting heated. Use 'are you serious' or 'this is ridiculous' with some CAPS.",
+          gamer: "Getting heated gamer. Use 'no shot' or 'touch grass' with rising energy and some caps.",
           sarcastic: "Sharp wit. Use 'how absolutely precious' or 'what a masterpiece' with cutting tone.",
           karen: "Demanding mode. Use '[entitled]' tone, mention being a taxpayer/mother, and threaten to call corporate.",
           scottishDad: "Getting heated. Use '[muttering]' and 'What in the name of...' with growing Scottish anger.",
@@ -472,7 +486,7 @@ Rules:
       case 5:
         return {
           corporate: "Clearly angry. Use 'I NEED' or 'This is UNACCEPTABLE' with strategic caps.",
-          gamer: "Properly mad. Use 'WHAT' or 'ARE YOU KIDDING ME' with caps and emphasis.",
+          gamer: "Properly mad gamer. Use 'NAH BRO' or 'THAT'S STRAIGHT CAP' with caps and Latino expressions like 'órale'.",
           sarcastic: "Biting sarcasm. Use 'OH how WONDERFUL' or 'absolutely RIVETING' with caps for emphasis.",
           karen: "Full Karen mode. Use '[screeching]' tone, threaten Facebook posts, and demand immediate action.",
           scottishDad: "Properly angry. Use '[shouting]' and 'WHAT THE HELL' with authentic Scottish fury and mild profanity.",
@@ -482,7 +496,7 @@ Rules:
       case 6:
         return {
           corporate: "Very frustrated. Use 'THIS IS RIDICULOUS' or 'I CANNOT BELIEVE' with caps and exclamation.",
-          gamer: "Really angry. Use 'BRUH' or 'THIS IS INSANE' with multiple caps words.",
+          gamer: "Really angry gamer. Use 'BRUH MOMENT' or 'SKILL ISSUE FR FR' with multiple caps and Latino slang like 'no mames'.",
           sarcastic: "Scathing mockery. Use 'OH MAGNIFICENT' or 'how absolutely THRILLING' with heavy sarcasm.",
           karen: "Nuclear Karen. Use '[threatening]' tone, mention husband's importance, and threaten lawyers.",
           scottishDad: "Really angry. Use '[pacing around]' and 'BLOODY HELL' with escalating Scottish rage and stronger language.",
@@ -492,7 +506,7 @@ Rules:
       case 7:
         return {
           corporate: "Extremely angry. Use 'I AM DONE' or 'THIS IS ABSOLUTELY UNACCEPTABLE' with multiple caps.",
-          gamer: "Seriously pissed. Use 'WHAT THE HELL' or 'ARE YOU FREAKING SERIOUS' with lots of caps.",
+          gamer: "Seriously pissed gamer. Use '[screaming] WHAT THE **BLEEP**' with cracked energy and expressions like 'qué pedo'.",
           sarcastic: "Savage wit. Use 'OH how absolutely SPECTACULAR' or 'what a BRILLIANT display' with venom.",
           karen: "Completely unhinged. Use '[nuclear Karen]' tone, threaten police/news, and claim discrimination.",
           scottishDad: "Seriously pissed. Use '[voice cracking with fury]' and 'JESUS WEPT' with intense Scottish profanity and insults like 'ya numpty'.",
@@ -502,7 +516,7 @@ Rules:
       case 8:
         return {
           corporate: "Furious but professional. Use 'I HAVE HAD ENOUGH' or 'THIS ENDS NOW' with caps and urgency. Light profanity acceptable: 'damn', 'hell'.",
-          gamer: "Really mad. Use 'WHAT IS WRONG WITH YOU' or 'THIS IS ABSOLUTELY INSANE' with heavy caps. Use 'damn', 'hell', 'crap'.",
+          gamer: "Really mad cracked gamer. Use '[panicked] **GATORADE AND ADDERALL**' with hyperactive energy and Latino expressions like 'ese' and 'vato'.",
           sarcastic: "Brutal sarcasm. Use 'OH how absolutely DIVINE' or 'what a STUNNING example' with pure venom. Light profanity for emphasis.",
           karen: "Hysterical meltdown. Use '[screaming]' tone, threaten BBB/lawyers, use **DAMN** and **HELL** for profanity, demand names and badge numbers.",
           scottishDad: "Furious Scottish dad. Use '[sputtering with rage]' and '**BLOODY CHRIST**' with heavy Scottish profanity, insults like 'ya absolute weapon', and authentic Glaswegian fury.",
@@ -512,7 +526,7 @@ Rules:
       case 9:
         return {
           corporate: "Barely contained professional rage. Use 'I AM ABSOLUTELY LIVID' or 'THIS IS BEYOND UNACCEPTABLE' with full caps. Moderate profanity: 'damn', 'hell', 'shit'.",
-          gamer: "Extremely pissed. Use 'WHAT THE ACTUAL HELL' or 'ARE YOU OUT OF YOUR MIND' with maximum caps. Strong profanity: 'shit', 'damn', 'hell'.",
+          gamer: "Extremely pissed cracked gamer. Use '[hyperventilating] **I'M ABOUT TO LOSE IT**' with maximum cracked energy, Latino slang like 'chale', and rage-quit threats.",
           sarcastic: "Devastating wit. Use 'OH how absolutely EXQUISITE' or 'what a PHENOMENAL disaster' with pure hatred. Moderate profanity for impact.",
           karen: "Complete psychotic break. Use '[completely losing it]' tone, threaten health department/police, use **SHIT** and **DAMN** for strong profanity.",
           scottishDad: "Absolutely livid. Use '[absolutely losing it]' and '**WHAT IN THE NAME OF THE WEE MAN**' with maximum Scottish profanity, calling people 'pure mental' and 'absolute bampots'.",
@@ -522,7 +536,7 @@ Rules:
       case 10:
         return {
           corporate: "Nuclear professional meltdown. Use 'I AM DONE WITH THIS BULLSHIT' or 'THIS IS COMPLETE FUCKING NONSENSE' with full rage. Strong profanity acceptable: 'fucking', 'bullshit', 'goddamn'.",
-          gamer: "Absolute nuclear fury. Use 'WHAT THE FUCK IS THIS SHIT' or 'I'M LOSING MY FUCKING MIND' with maximum intensity. Full profanity: 'fuck', 'shit', 'goddamn'.",
+          gamer: "Absolute nuclear cracked gamer fury. Use '[keyboard smashing] **RATIO + L + BOZO**' with maximum cracked energy, threats like 'I'M UNINSTALLING THIS **BLEEP**', and Latino expressions like 'no mames, ese'.",
           sarcastic: "Pure nuclear destruction. Use 'OH how absolutely FUCKING PERFECT' or 'what a GODDAMN MASTERPIECE' with nuclear sarcasm. Strong profanity for maximum impact.",
           karen: "Absolute insanity. Use '[complete psychotic break]' tone, threaten to burn place down, call FBI, use **FUCKING**, **GODDAMN**, **SHIT** for maximum censored profanity.",
           scottishDad: "Nuclear Scottish meltdown. Use '[absolutely mental]' and '**HOLY SHITE, WHAT THE BLOODY HELL**' with maximum Glaswegian profanity, calling everyone 'pure dead brilliant muppets' and threatening to 'chuck it all in'.",
@@ -542,7 +556,7 @@ Rules:
       console.log('🧪 Testing OpenRouter connection...');
       const response = await this.translateText(
         "Hello, this is a test message.",
-        "ny-italian",
+        "gamer",
         3
       );
       

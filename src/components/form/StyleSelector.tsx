@@ -34,9 +34,9 @@ const STYLE_OPTIONS: StyleOption[] = [
   },
   {
     id: 'gamer',
-    name: 'Epic Gamer Rage',
+    name: 'Gamer Rage Translator',
     emoji: '🎮',
-    description: 'CAPS LOCK FURY',
+    description: 'Gen-Z Latino gamer meltdown',
     color: 'green',
     glowColor: 'rgba(34, 197, 94, 0.3)'
   },

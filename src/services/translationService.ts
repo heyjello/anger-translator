@@ -10,6 +10,125 @@ export interface TranslationResponse {
   error?: string;
 }
 
+// Gen-Z Latino Gamer translation patterns
+const GAMER_RAGE_PATTERNS = {
+  // Cracked-out gamer expressions
+  expressions: [
+    "NAH BRO",
+    "WHAT THE **BLEEP**",
+    "ARE YOU KIDDING ME RIGHT NOW",
+    "THIS IS STRAIGHT **BLEEP**",
+    "I'M ABOUT TO LOSE IT",
+    "GATORADE AND ADDERALL",
+    "BRUH MOMENT",
+    "THAT'S CAP",
+    "NO SHOT",
+    "TOUCH GRASS",
+    "RATIO + L + BOZO",
+    "SKILL ISSUE FR FR"
+  ],
+  
+  // Tone cues for different rage states
+  toneCues: [
+    "[screaming]",
+    "[panicked]",
+    "[sarcastic]",
+    "[mock disbelief]",
+    "[hyperventilating]",
+    "[keyboard smashing]",
+    "[chair squeaking]",
+    "[energy drink chugging]",
+    "[controller throwing]",
+    "[rage quitting]"
+  ],
+  
+  // Latino gamer slang and expressions
+  slang: [
+    "órale",
+    "no mames",
+    "qué pedo",
+    "pinche",
+    "cabrón",
+    "ese",
+    "vato",
+    "chale",
+    "simón",
+    "ándale"
+  ],
+  
+  // Rage quit threats and insults
+  rageQuits: [
+    "I'M UNINSTALLING THIS **BLEEP**",
+    "DELETING MY ACCOUNT RN",
+    "TOUCHING GRASS AFTER THIS",
+    "GOING BACK TO MINECRAFT",
+    "REPORTING EVERYONE",
+    "SWITCHING TO CONSOLE",
+    "CALLING MY MOM TO PICK ME UP",
+    "BREAKING MY SETUP"
+  ]
+};
+
+// Generate Gen-Z Latino Gamer translation
+const generateGamerRageRant = (text: string, intensity: number): string => {
+  const scream = Math.floor(intensity * 0.6);
+  const memeSpeak = Math.floor(intensity * 0.4);
+  const whinySarcasm = Math.floor(intensity * 0.3);
+  
+  let response = "";
+  
+  // Opening based on intensity with tone cues
+  if (intensity <= 20) {
+    response += "[annoyed] Bruh, ";
+  } else if (intensity <= 40) {
+    response += "[getting heated] NAH BRO, ";
+  } else if (intensity <= 60) {
+    response += "[screaming] **WHAT THE BLEEP** ";
+  } else if (intensity <= 80) {
+    response += "[panicked] **NAH NAH NAH** this is straight **BLEEP** ";
+  } else {
+    response += "[hyperventilating] **GATORADE AND ADDERALL** I'M ABOUT TO **LOSE IT** ";
+  }
+  
+  // Context-aware rant based on input
+  const lowerText = text.toLowerCase();
+  
+  if (lowerText.includes('computer') || lowerText.includes('tech') || lowerText.includes('lag')) {
+    response += `this **TRASH** setup is lagging harder than my abuela's WiFi! [keyboard smashing] ${text} and I'm getting CLAPPED by 12-year-olds! `;
+    if (intensity > 50) {
+      response += "[mock disbelief] Oh what, now the game's broken? [sarcastic] SKILL ISSUE much? This is why I need that GATORADE sponsorship, órale!";
+    }
+  } else if (lowerText.includes('work') || lowerText.includes('school') || lowerText.includes('homework')) {
+    response += `${text} - and they expect me to do this while I'm GRINDING ranked? [panicked] NO SHOT! `;
+    if (intensity > 60) {
+      response += "[screaming] I got PRIORITIES, vato! [energy drink chugging] This homework can wait, I'm about to hit DIAMOND!";
+    }
+  } else if (lowerText.includes('team') || lowerText.includes('group') || lowerText.includes('friends')) {
+    response += `my team is more TRASH than a TikTok compilation! [controller throwing] ${text} - these **BLEEP** teammates got NO HANDS! `;
+    if (intensity > 70) {
+      response += "[rage quitting] RATIO + L + BOZO to all y'all! [mock disbelief] Touch grass and learn to play, cabrón!";
+    }
+  } else {
+    // Generic rant
+    response += `${text} - and I'm supposed to just SIT HERE and take this **BLEEP**? [chair squeaking] NO MAMES! `;
+    if (intensity > 40) {
+      response += `[sarcastic] Oh that's TOTALLY fair, right? [screaming] This is straight up a BRUH MOMENT! ${GAMER_RAGE_PATTERNS.slang[Math.floor(Math.random() * GAMER_RAGE_PATTERNS.slang.length)]}!`;
+    }
+  }
+  
+  // Intensity-based escalation with rage quit threats
+  if (intensity > 80) {
+    const rageQuit = GAMER_RAGE_PATTERNS.rageQuits[Math.floor(Math.random() * GAMER_RAGE_PATTERNS.rageQuits.length)];
+    response += ` [absolutely losing it] **${rageQuit}** and switching to VALORANT! Y'all can COPE and SEETHE!`;
+  } else if (intensity > 60) {
+    response += ` [hyperventilating] This is why I need THERAPY and more GATORADE! **SKILL ISSUE** on everyone else!`;
+  } else if (intensity > 40) {
+    response += ` [panicked] Chale, this is NOT the vibe, ese!`;
+  }
+  
+  return response;
+};
+
 // Scottish Dad translation patterns
 const SCOTTISH_DAD_PATTERNS = {
   // Common Scottish expressions and swears
@@ -253,6 +372,15 @@ const mockTranslate = async (request: TranslationRequest): Promise<TranslationRe
   await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1200));
   
   const { text, style, intensity } = request;
+  
+  // Handle Gamer style with new Gen-Z Latino gamer personality
+  if (style === 'gamer') {
+    const translation = generateGamerRageRant(text, intensity);
+    return {
+      translatedText: translation,
+      success: true
+    };
+  }
   
   // Handle NY Italian style
   if (style === 'ny-italian') {

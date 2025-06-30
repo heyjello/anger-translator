@@ -35,11 +35,11 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
   gamer: {
     voice_id: "ErXwobaYiN019PkySvjV", // Antoni
     name: "Antoni",
-    description: "Energetic, youthful voice for gamer rage",
+    description: "Energetic, youthful voice for cracked Gen-Z Latino gamer rage",
     voice_settings: {
-      stability: 0.4,
+      stability: 0.3, // Lower stability for more erratic, cracked energy
       similarity_boost: 0.6,
-      style: 0.8,
+      style: 0.9, // Higher style for more expressive delivery
       use_speaker_boost: true
     }
   },
@@ -92,7 +92,7 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
 // Alternative voices for variety
 export const ALTERNATIVE_VOICES = {
   corporate: ["VR6AewLTigWG4xSOukaG"], // Arnold
-  gamer: ["21m00Tcm4TlvDq8ikWAM"], // Rachel
+  gamer: ["21m00Tcm4TlvDq8ikWAM"], // Rachel - for variety in gamer voice
   sarcastic: ["2EiwWnXFnvU5JabPnv8n"], // Clyde
   karen: ["ThT5KcBeYPX3keUQqHPh"], // Dorothy
   'scottish-dad': ["2EiwWnXFnvU5JabPnv8n"], // Clyde
@@ -170,7 +170,23 @@ export const getAdvancedVoiceConfig = (
   const baseConfig = getVoiceForStyle(style);
   const emotionalPreset = EMOTIONAL_PRESETS[getEmotionalPreset(intensity)];
   
-  // Blend base settings with emotional preset
+  // Special handling for gamer style - more erratic at higher intensities
+  if (style === 'gamer') {
+    const crackedFactor = intensity / 10;
+    const blendedSettings = {
+      stability: Math.max(0.1, baseConfig.voice_settings.stability - (crackedFactor * 0.4)), // More unstable
+      similarity_boost: (baseConfig.voice_settings.similarity_boost + emotionalPreset.similarity_boost) / 2,
+      style: Math.min(1.0, baseConfig.voice_settings.style || 0.5 + (crackedFactor * 0.5)), // More expressive
+      use_speaker_boost: true // Always boost for gamer energy
+    };
+    
+    return {
+      ...baseConfig,
+      voice_settings: blendedSettings
+    };
+  }
+  
+  // Blend base settings with emotional preset for other styles
   const blendedSettings = {
     stability: (baseConfig.voice_settings.stability + emotionalPreset.stability) / 2,
     similarity_boost: (baseConfig.voice_settings.similarity_boost + emotionalPreset.similarity_boost) / 2,
@@ -228,11 +244,16 @@ export const preprocessTextForStyle = (
       break;
       
     case 'gamer':
-      // Emphasize gaming terms and add energy
-      processedText = processedText.replace(/(BRUH|NOOB|GET REKT|ARE YOU KIDDING ME)/g, '<emphasis level="strong">$1</emphasis>');
-      processedText = processedText.replace(/!!!/g, '!!! <break time="0.2s"/>');
+      // Emphasize gamer terms and add cracked energy
+      processedText = processedText.replace(/(NAH BRO|BRUH MOMENT|THAT'S CAP|NO SHOT|SKILL ISSUE|GATORADE|ADDERALL)/g, '<emphasis level="strong">$1</emphasis>');
+      processedText = processedText.replace(/\*\*BLEEP\*\*/g, '<emphasis level="strong">BLEEP</emphasis>');
+      processedText = processedText.replace(/!!!/g, '!!! <break time="0.1s"/>'); // Faster for cracked energy
+      
+      // Add Latino expressions with emphasis
+      processedText = processedText.replace(/(órale|no mames|qué pedo|ese|vato|chale)/g, '<emphasis level="moderate">$1</emphasis>');
+      
       if (intensity >= 7) {
-        processedText = `<prosody rate="1.2" pitch="+15%">${processedText}</prosody>`;
+        processedText = `<prosody rate="1.3" pitch="+20%">${processedText}</prosody>`; // Faster, higher pitch for cracked energy
       }
       break;
       
@@ -286,7 +307,7 @@ export const preprocessTextForStyle = (
 export const createTestPhrase = (style: 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad' | 'ny-italian'): string => {
   const testPhrases = {
     corporate: "As per my previous email, I need you to review this document immediately. Please advise how we can move forward with some actual competence!",
-    gamer: "BRUH! Are you kidding me right now?! This is absolutely unreal! Get rekt and learn to play, noob!",
+    gamer: "[screaming] NAH BRO! This is straight **BLEEP**! SKILL ISSUE FR FR, órale! I'm about to UNINSTALL this trash!",
     sarcastic: "Oh, how absolutely riveting! I'm just thrilled to deal with this masterpiece of communication. Truly, your eloquence knows no bounds!",
     karen: "Excuse me, I want to speak to your manager RIGHT NOW! This is completely unacceptable and I'm calling corporate!",
     'scottish-dad': "Och, for crying out loud! What in the bloody hell were ye thinking, laddie? I'm not angry, just... deeply disappointed in ye!",
@@ -322,7 +343,7 @@ export const VOICE_CHARACTERISTICS = {
     gender: 'Male', 
     accent: 'American',
     age: 'Young Adult',
-    tone: 'Energetic, Expressive'
+    tone: 'Energetic, Cracked, Expressive' // Updated for gamer style
   },
   [ALL_VOICE_IDS.daniel]: {
     gender: 'Male',

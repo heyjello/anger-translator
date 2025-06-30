@@ -141,10 +141,10 @@ export const VOICE_MODELS = {
 } as const;
 
 /**
- * Clean text for TTS by removing tone cues but preserving audio tags and profanity markers
- * - Removes [tone cues] completely
+ * Clean text for TTS - removes tone cues, preserves audio tags and profanity markers
+ * - Removes [tone cues] completely (not needed for TTS)
  * - Preserves <audio>tags</audio> for ElevenLabs processing
- * - Preserves **profanity** markers for bleeping
+ * - Preserves **profanity** markers for bleeping system
  */
 export const cleanTextForTTS = (text: string): string => {
   let cleanedText = text;
@@ -162,10 +162,10 @@ export const cleanTextForTTS = (text: string): string => {
 };
 
 /**
- * Clean text for user display by removing audio tags but preserving profanity markers
- * - Removes <audio>tags</audio> (user doesn't need to see these)
- * - Removes [tone cues] 
- * - Preserves **profanity** markers for visual indication
+ * Clean text for user display - removes tone cues and audio tags, preserves profanity markers
+ * - Removes [tone cues] (user doesn't need to see these)
+ * - Removes <audio>tags</audio> but keeps the content (user doesn't need to see markup)
+ * - Preserves **profanity** markers for visual indication of bleeping
  */
 export const cleanTextForUser = (text: string): string => {
   let cleanedText = text;

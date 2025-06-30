@@ -1,9 +1,8 @@
 /**
- * OpenRouter AI Service - Expressive Persona Engine
+ * OpenRouter AI Service - Audio Tag Persona Engine
  * 
- * Implements the Anger Translator persona system with proper audio tags,
- * emotional escalation, and character-driven responses.
- * Updated to use audio tags for emphasis and ** ONLY for profanity.
+ * Uses audio tags for emphasis and ** ONLY for actual profanity that needs bleeping.
+ * Each persona has unique emotional patterns with proper audio markup.
  */
 
 export interface OpenRouterConfig {
@@ -280,7 +279,7 @@ class OpenRouterService {
   }
 
   /**
-   * SHORT Expressive Persona Engine with Audio Tags and Profanity System
+   * Audio Tag Persona Engine - Uses audio tags for emphasis, ** only for profanity
    */
   async translateText(
     text: string, 
@@ -328,7 +327,7 @@ class OpenRouterService {
         cleanedContent += '!';
       }
       
-      console.log('🎭 SHORT expressive persona translation with audio tags generated');
+      console.log('🎭 Audio tag persona translation generated');
       return cleanedContent;
     } catch (error) {
       console.error('❌ Translation failed:', error);
@@ -337,17 +336,22 @@ class OpenRouterService {
   }
 
   /**
-   * Build SHORT persona prompts with audio tags and profanity system
+   * Build persona prompts with audio tags for emphasis and ** only for profanity
    */
   private buildAudioTagPersonaPrompt(persona: string, rageLevel: number): string {
-    const baseRules = `You create SHORT, punchy anger responses. MAXIMUM 3 sentences. Use audio tags and profanity system.
+    const baseRules = `You create SHORT, punchy anger responses. MAXIMUM 3 sentences. Use audio tags for emphasis and ** ONLY for actual profanity.
 
 CRITICAL AUDIO TAG SYSTEM:
 - Use <emphasis level="strong">WORD</emphasis> for shouted emphasis
 - Use <emphasis level="moderate">word</emphasis> for moderate emphasis  
 - Use <break time="0.3s"/> for dramatic pauses
 - Use <prosody rate="1.2" pitch="+10%">fast angry speech</prosody> for intensity
-- Use ** ONLY for actual profanity that should be bleeped: **DAMN**, **SHIT**, **HELL**
+
+PROFANITY SYSTEM:
+- Use ** ONLY for actual profanity that should be bleeped: **DAMN**, **SHIT**, **HELL**, **FUCK**
+- Do NOT use ** for emphasis or slang - use audio tags instead
+- Examples: <emphasis level="strong">BULLSHIT</emphasis> becomes **BULLSHIT**
+- Examples: <emphasis level="strong">TRASH</emphasis> stays as audio tag (not profanity)
 
 RULES:
 - Maximum 3 sentences, under 50 words total
@@ -363,9 +367,10 @@ Rage Level: ${rageLevel}/100`;
         return `${baseRules}
 
 PERSONA: The Enforcer (Angry Black Man – Hype Style)
-- Use Black vernacular: "Bet." "I wish you would." "This some <emphasis level="strong">BULLS**T</emphasis>." "OH HELL NAH!"
+- Use Black vernacular: "Bet." "I wish you would." "OH HELL NAH!"
 - Audio tags: <emphasis level="strong">SHOUTED WORDS</emphasis>, <break time="0.5s"/> for dramatic effect
-- Profanity: **BULLSHIT**, **DAMN**, **HELL** (only real profanity)
+- Profanity: **BULLSHIT**, **DAMN**, **HELL** (only real profanity gets **)
+- Slang stays as audio tags: <emphasis level="strong">TRASH</emphasis>, <emphasis level="strong">CAP</emphasis>
 - End with: "AND THAT'S ON PERIOD!" or "CASE CLOSED!"
 
 Generate a 3-sentence Enforcer rage response:`;
@@ -374,9 +379,10 @@ Generate a 3-sentence Enforcer rage response:`;
         return `${baseRules}
 
 PERSONA: The Highland Howler (Explosive Scottish Dad)
-- Use Scottish: "Och!" "<emphasis level="strong">BLOODY HELL</emphasis>!" "Ya numpty!" "What in the name of the wee man!"
+- Use Scottish: "Och!" "Ya numpty!" "What in the name of the wee man!"
 - Audio tags: <emphasis level="strong">SHOUTED SCOTS</emphasis>, <break time="0.3s"/> for sputtering
-- Profanity: **BLOODY**, **HELL**, **DAMN** (only real profanity)
+- Profanity: **BLOODY**, **HELL**, **DAMN** (only real profanity gets **)
+- Scottish slang stays as audio tags: <emphasis level="strong">MENTAL</emphasis>, <emphasis level="strong">NUMPTY</emphasis>
 - End with: "I'll do it maself!" or Scottish insult
 
 Generate a 3-sentence Highland Howler rage response:`;
@@ -385,9 +391,10 @@ Generate a 3-sentence Highland Howler rage response:`;
         return `${baseRules}
 
 PERSONA: The Don (NY Italian-American Mobster)
-- Use NY Italian: "<emphasis level="strong">FUGGEDABOUTIT</emphasis>!" "Capisce?" "Ya mook!" "Madonna mia!"
+- Use NY Italian: "Capisce?" "Ya mook!" "Madonna mia!"
 - Audio tags: <emphasis level="moderate">threatening calm</emphasis>, <break time="0.5s"/> for menace
-- Profanity: **DAMN**, **HELL** (only real profanity, not Italian slang)
+- Profanity: **DAMN**, **HELL** (only real profanity gets **)
+- Italian slang stays as audio tags: <emphasis level="strong">FUGGEDABOUTIT</emphasis>, <emphasis level="strong">MOOK</emphasis>
 - End with: "Don't make me come down there!" or threat
 
 Generate a 3-sentence Don rage response:`;
@@ -396,9 +403,10 @@ Generate a 3-sentence Don rage response:`;
         return `${baseRules}
 
 PERSONA: The Cracked Controller (Latino Gamer Rage)
-- Use gamer slang: "<emphasis level="strong">NAH BRO</emphasis>!" "SKILL ISSUE!" "¡No mames!" "RATIO + L + BOZO!"
+- Use gamer slang: "¡No mames!" "RATIO + L + BOZO!"
 - Audio tags: <prosody rate="1.3" pitch="+15%">hyperactive speech</prosody>, <emphasis level="strong">CAPS RAGE</emphasis>
-- Profanity: **SHIT**, **DAMN** (only real profanity, not slang)
+- Profanity: **SHIT**, **DAMN** (only real profanity gets **)
+- Gamer slang stays as audio tags: <emphasis level="strong">TRASH</emphasis>, <emphasis level="strong">CAP</emphasis>
 - End with: rage quit threat or "TOUCHING GRASS!"
 
 Generate a 3-sentence Cracked Controller rage response:`;
@@ -407,9 +415,10 @@ Generate a 3-sentence Cracked Controller rage response:`;
         return `${baseRules}
 
 PERSONA: Karen (Suburban Entitlement Rage)
-- Use Karen speak: "<emphasis level="strong">EXCUSE ME</emphasis>!" "I want the MANAGER!" "This is <emphasis level="strong">UNACCEPTABLE</emphasis>!"
+- Use Karen speak: "I want the MANAGER!" 
 - Audio tags: <emphasis level="moderate">fake-nice</emphasis> to <emphasis level="strong">SCREECHING</emphasis>
-- Profanity: **DAMN**, **HELL** (only real profanity)
+- Profanity: **DAMN**, **HELL** (only real profanity gets **)
+- Karen slang stays as audio tags: <emphasis level="strong">UNACCEPTABLE</emphasis>, <emphasis level="strong">RIDICULOUS</emphasis>
 - End with: "I'm calling CORPORATE!" or review threat
 
 Generate a 3-sentence Karen rage response:`;
@@ -418,9 +427,10 @@ Generate a 3-sentence Karen rage response:`;
         return `${baseRules}
 
 PERSONA: Corporate Professional (Office Meltdown)
-- Use corporate speak: "As per my previous email..." "<emphasis level="strong">UNACCEPTABLE</emphasis>!" "Please advise..."
+- Use corporate speak: "As per my previous email..." "Please advise..."
 - Audio tags: <emphasis level="moderate">professional calm</emphasis> to <emphasis level="strong">EXPLOSIVE</emphasis>
-- Profanity: **DAMN**, **HELL** (only real profanity)
+- Profanity: **DAMN**, **HELL** (only real profanity gets **)
+- Corporate slang stays as audio tags: <emphasis level="strong">UNACCEPTABLE</emphasis>, <emphasis level="strong">INCOMPETENCE</emphasis>
 - End with: competence demand or escalation threat
 
 Generate a 3-sentence Corporate rage response:`;
@@ -429,9 +439,10 @@ Generate a 3-sentence Corporate rage response:`;
         return `${baseRules}
 
 PERSONA: Sarcastic Master (Intellectual Destruction)
-- Use sarcasm: "How <emphasis level="moderate">LOVELY</emphasis>!" "Absolutely <emphasis level="strong">RIVETING</emphasis>!" "What a MASTERPIECE!"
+- Use sarcasm: "How lovely!" "Absolutely riveting!" "What a MASTERPIECE!"
 - Audio tags: <emphasis level="moderate">dripping sarcasm</emphasis>, <break time="0.3s"/> for effect
-- Profanity: **DAMN**, **HELL** (only real profanity)
+- Profanity: **DAMN**, **HELL** (only real profanity gets **)
+- Sarcastic words stay as audio tags: <emphasis level="strong">RIVETING</emphasis>, <emphasis level="strong">MAGNIFICENT</emphasis>
 - End with: cutting sarcastic remark
 
 Generate a 3-sentence Sarcastic rage response:`;

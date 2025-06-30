@@ -141,8 +141,10 @@ export const VOICE_MODELS = {
 } as const;
 
 /**
- * Clean text for TTS by removing tone cues AND single asterisks
- * Preserves double asterisks (**) for profanity bleeping
+ * Clean text for TTS by removing tone cues but preserving audio tags and profanity markers
+ * - Removes [tone cues] completely
+ * - Preserves <audio>tags</audio> for ElevenLabs processing
+ * - Preserves **profanity** markers for bleeping
  */
 export const cleanTextForTTS = (text: string): string => {
   let cleanedText = text;
@@ -150,15 +152,8 @@ export const cleanTextForTTS = (text: string): string => {
   // Remove tone cues like [explosive energy], [screaming], etc.
   cleanedText = cleanedText.replace(/\[([^\]]+)\]/g, '');
   
-  // Remove single asterisks (emphasis) but preserve double asterisks (profanity)
-  // First, temporarily replace double asterisks with a placeholder
-  cleanedText = cleanedText.replace(/\*\*([^*]+)\*\*/g, '___PROFANITY_MARKER___$1___PROFANITY_MARKER___');
-  
-  // Now remove any remaining single asterisks
-  cleanedText = cleanedText.replace(/\*/g, '');
-  
-  // Restore double asterisks for profanity
-  cleanedText = cleanedText.replace(/___PROFANITY_MARKER___([^_]+)___PROFANITY_MARKER___/g, '**$1**');
+  // Keep audio tags like <emphasis>, <break>, <prosody> for ElevenLabs
+  // Keep **profanity** markers for bleeping system
   
   // Remove multiple spaces and clean up
   cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
@@ -166,13 +161,39 @@ export const cleanTextForTTS = (text: string): string => {
   return cleanedText;
 };
 
-// NO TEXT PREPROCESSING - Just clean tone cues and single asterisks
+/**
+ * Clean text for user display by removing audio tags but preserving profanity markers
+ * - Removes <audio>tags</audio> (user doesn't need to see these)
+ * - Removes [tone cues] 
+ * - Preserves **profanity** markers for visual indication
+ */
+export const cleanTextForUser = (text: string): string => {
+  let cleanedText = text;
+  
+  // Remove tone cues like [explosive energy], [screaming], etc.
+  cleanedText = cleanedText.replace(/\[([^\]]+)\]/g, '');
+  
+  // Remove audio tags but keep the content
+  cleanedText = cleanedText.replace(/<emphasis[^>]*>([^<]+)<\/emphasis>/g, '$1');
+  cleanedText = cleanedText.replace(/<break[^>]*>/g, '');
+  cleanedText = cleanedText.replace(/<prosody[^>]*>([^<]+)<\/prosody>/g, '$1');
+  cleanedText = cleanedText.replace(/<[^>]+>/g, ''); // Remove any remaining tags
+  
+  // Keep **profanity** markers for visual indication and bleeping
+  
+  // Remove multiple spaces and clean up
+  cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
+  
+  return cleanedText;
+};
+
+// NO TEXT PREPROCESSING - Just clean tone cues, preserve audio tags and profanity
 export const preprocessTextForStyle = (
   text: string, 
   style: RageStyle,
   intensity: number
 ): string => {
-  // Only remove tone cues and single asterisks, NO OTHER MODIFICATIONS
+  // Only remove tone cues, preserve audio tags and profanity markers
   return cleanTextForTTS(text);
 };
 

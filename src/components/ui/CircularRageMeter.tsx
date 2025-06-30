@@ -1,11 +1,12 @@
 /**
  * CircularRageMeter Component
  * 
- * Voice editor style circular rage meter with integrated translate button.
- * Updated for 1-100 rage scale as specified in the persona engine.
+ * Voice editor-inspired circular rage meter with integrated translate button.
+ * Features a sleek circular progress indicator with dynamic colors and animations.
  */
 
 import React from 'react';
+import { Play, Pause, Volume2 } from 'lucide-react';
 import { EmojiMascot } from './EmojiMascot';
 
 interface CircularRageMeterProps {
@@ -15,7 +16,7 @@ interface CircularRageMeterProps {
   onTranslate: () => void;
   isValid: boolean;
   isRateLimited: boolean;
-  timeUntilNext: number;
+  timeUntilNext?: number;
   validationMessage?: string;
   min?: number;
   max?: number;
@@ -28,138 +29,171 @@ export const CircularRageMeter: React.FC<CircularRageMeterProps> = ({
   onTranslate,
   isValid,
   isRateLimited,
-  timeUntilNext,
+  timeUntilNext = 0,
   validationMessage,
   min = 1,
-  max = 100
+  max = 10
 }) => {
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const radius = 120;
+  const strokeWidth = 12;
+  const normalizedRadius = radius - strokeWidth * 2;
+  const circumference = normalizedRadius * 2 * Math.PI;
+  const strokeDasharray = `${circumference} ${circumference}`;
+  const progress = ((value - min) / (max - min)) * 100;
+  const strokeDashoffset = circumference - (progress / 100) * circumference;
+
+  // Get color based on rage level
+  const getRageColor = (level: number) => {
+    if (level <= 2) return '#3b82f6'; // Blue
+    if (level <= 4) return '#22c55e'; // Green
+    if (level <= 6) return '#eab308'; // Yellow
+    if (level <= 8) return '#f97316'; // Orange
+    return '#ef4444'; // Red
+  };
+
+  const getRageDescription = (level: number) => {
+    switch (level) {
+      case 1: return 'Meh, Chillin';
+      case 2: return 'Slightly Annoyed';
+      case 3: return 'Getting Irritated';
+      case 4: return 'Clearly Frustrated';
+      case 5: return 'Pretty Angry';
+      case 6: return 'Really Mad';
+      case 7: return 'Seriously Pissed';
+      case 8: return 'Extremely Angry';
+      case 9: return 'Absolutely Furious';
+      case 10: return 'NUCLEAR RAGE';
+      default: return 'Pretty Angry';
+    }
+  };
+
+  const currentColor = getRageColor(value);
+
+  const handleSliderChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseInt(event.target.value);
     onChange(newValue);
   };
 
   const getButtonText = () => {
     if (isLoading) return 'TRANSLATING...';
-    if (isRateLimited) return `WAIT ${timeUntilNext}s`;
-    return 'TRANSLATE RAGE';
+    return 'TRANSLATE';
   };
-
-  const getRageDescription = (level: number) => {
-    if (level <= 10) return 'Calm';
-    if (level <= 20) return 'Annoyed';
-    if (level <= 30) return 'Frustrated';
-    if (level <= 40) return 'Angry';
-    if (level <= 50) return 'Mad';
-    if (level <= 60) return 'Furious';
-    if (level <= 70) return 'Livid';
-    if (level <= 80) return 'Explosive';
-    if (level <= 90) return 'Nuclear';
-    return 'APOCALYPTIC';
-  };
-
-  const getRageColor = (level: number) => {
-    if (level <= 20) return '#3b82f6'; // Blue
-    if (level <= 40) return '#22c55e'; // Green
-    if (level <= 60) return '#eab308'; // Yellow
-    if (level <= 80) return '#f97316'; // Orange
-    return '#ef4444'; // Red
-  };
-
-  // Convert 1-100 scale to emoji mascot's 1-10 scale
-  const getMascotLevel = (level: number) => {
-    return Math.ceil(level / 10);
-  };
-
-  // Calculate circle properties
-  const radius = 80;
-  const circumference = 2 * Math.PI * radius;
-  const strokeDasharray = circumference;
-  const strokeDashoffset = circumference - (value / max) * circumference;
 
   return (
     <div className="flex flex-col items-center space-y-6">
-      {/* Circular Meter */}
+      
+      {/* Circular Progress Ring */}
       <div className="relative">
-        <svg width="200" height="200" className="transform -rotate-90">
+        <svg
+          height={radius * 2}
+          width={radius * 2}
+          className="transform -rotate-90"
+        >
           {/* Background circle */}
           <circle
-            cx="100"
-            cy="100"
-            r={radius}
-            stroke="rgba(71, 85, 105, 0.3)"
-            strokeWidth="8"
-            fill="none"
+            stroke="#1e293b"
+            fill="transparent"
+            strokeWidth={strokeWidth}
+            r={normalizedRadius}
+            cx={radius}
+            cy={radius}
+            className="opacity-30"
           />
+          
           {/* Progress circle */}
           <circle
-            cx="100"
-            cy="100"
-            r={radius}
-            stroke={getRageColor(value)}
-            strokeWidth="8"
-            fill="none"
-            strokeLinecap="round"
+            stroke={currentColor}
+            fill="transparent"
+            strokeWidth={strokeWidth}
             strokeDasharray={strokeDasharray}
-            strokeDashoffset={strokeDashoffset}
-            className="transition-all duration-500 ease-out"
+            style={{ 
+              strokeDashoffset,
+              transition: 'stroke-dashoffset 0.3s ease-in-out, stroke 0.3s ease-in-out'
+            }}
+            strokeLinecap="round"
+            r={normalizedRadius}
+            cx={radius}
+            cy={radius}
+            className="drop-shadow-lg"
             style={{
-              filter: `drop-shadow(0 0 10px ${getRageColor(value)}40)`
+              ...{
+                strokeDashoffset,
+                transition: 'stroke-dashoffset 0.3s ease-in-out, stroke 0.3s ease-in-out'
+              },
+              filter: `drop-shadow(0 0 8px ${currentColor}40)`
             }}
           />
         </svg>
         
-        {/* Center content */}
+        {/* Center Content */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
+          
+          {/* Emoji Mascot */}
           <div className="mb-2">
-            <EmojiMascot rageLevel={getMascotLevel(value)} />
+            <EmojiMascot rageLevel={value} />
           </div>
-          <div className="text-3xl font-black text-white" style={{ color: getRageColor(value) }}>
-            {value}
+          
+          {/* Rage Level Display */}
+          <div className="text-center">
+            <div 
+              className="text-4xl font-black mb-1"
+              style={{ color: currentColor }}
+            >
+              {value}
+            </div>
+            <div 
+              className="text-sm font-semibold opacity-90"
+              style={{ color: currentColor }}
+            >
+              {getRageDescription(value)}
+            </div>
           </div>
-          <div className="text-sm font-medium text-gray-300">
-            {getRageDescription(value)}
-          </div>
+          
         </div>
       </div>
 
-      {/* Slider */}
+      {/* Rage Level Slider */}
       <div className="w-full max-w-xs">
         <input
           type="range"
           min={min}
           max={max}
           value={value}
-          onChange={handleChange}
+          onChange={handleSliderChange}
           disabled={isLoading}
           className="w-full h-2 bg-slate-700 rounded-lg appearance-none cursor-pointer slider-modern"
           style={{
             background: `linear-gradient(to right, #3b82f6 0%, #22c55e 25%, #eab308 50%, #f97316 75%, #ef4444 100%)`
           }}
+          aria-label={`Rage level: ${value} out of ${max}`}
         />
-        <div className="flex justify-between text-xs text-gray-400 mt-2">
-          <span>Calm</span>
+        
+        <div className="flex justify-between text-xs text-slate-400 mt-2">
+          <span>Chill</span>
           <span>NUCLEAR</span>
         </div>
       </div>
 
       {/* Translate Button */}
-      <button
+      <button 
         onClick={onTranslate}
-        disabled={!isValid || isLoading || isRateLimited}
-        className={`relative overflow-hidden font-black py-4 px-8 rounded-xl text-lg transition-all duration-300 transform ${
-          !isValid || isRateLimited
-            ? 'bg-gray-600/50 text-gray-400 cursor-not-allowed scale-95'
-            : `bg-gradient-to-r from-red-600 via-red-700 to-red-800 hover:from-red-700 hover:via-red-800 hover:to-red-900 text-white hover:scale-105 active:scale-95 ${
-                isLoading ? 'animate-pulse' : 'animate-button-pulse hover-fire'
+        disabled={!isValid}
+        className={`relative overflow-hidden font-bold py-4 px-8 rounded-2xl text-lg transition-all duration-300 transform flex items-center gap-3 ${
+          !isValid
+            ? 'bg-slate-600/50 text-slate-400 cursor-not-allowed scale-95'
+            : `text-white hover:scale-105 active:scale-95 shadow-lg ${
+                isLoading ? 'animate-pulse' : 'hover:shadow-xl'
               }`
         }`}
         style={{
-          boxShadow: isValid && !isRateLimited
-            ? '0 0 30px rgba(239, 68, 68, 0.4), 0 8px 20px rgba(220, 38, 38, 0.3)'
-            : '0 4px 12px rgba(0, 0, 0, 0.2)'
+          backgroundColor: isValid ? currentColor : undefined,
+          boxShadow: isValid 
+            ? `0 0 30px ${currentColor}40, 0 10px 25px rgba(0, 0, 0, 0.3)` 
+            : '0 5px 15px rgba(0, 0, 0, 0.2)'
         }}
+        aria-label={isLoading ? 'Translation in progress' : 'Start translation'}
       >
-        <div className="relative z-10 flex items-center justify-center gap-2">
+        <div className="relative z-10 flex items-center justify-center gap-3">
           {isLoading ? (
             <>
               <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
@@ -167,20 +201,36 @@ export const CircularRageMeter: React.FC<CircularRageMeterProps> = ({
             </>
           ) : (
             <>
-              <span role="img" aria-label="Fire" className="animate-bounce">🔥</span>
+              <Volume2 size={20} className="animate-pulse" />
               <span>{getButtonText()}</span>
-              <span role="img" aria-label="Fire" className="animate-bounce" style={{ animationDelay: '0.2s' }}>🔥</span>
+              <Play size={20} className="animate-pulse" />
             </>
           )}
         </div>
+        
+        {/* Animated background effects */}
+        {isValid && !isLoading && (
+          <div 
+            className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 animate-pulse"
+            style={{ animationDelay: '0.5s' }}
+          ></div>
+        )}
       </button>
 
       {/* Validation Message */}
-      {validationMessage && !isValid && (
-        <div className="text-sm text-gray-400 text-center">
+      {!isValid && !isLoading && validationMessage && (
+        <div className="text-sm text-slate-400 text-center max-w-xs">
           {validationMessage}
         </div>
       )}
+
+      {/* Rate Limit Message */}
+      {isRateLimited && (
+        <div className="text-sm text-orange-400 text-center max-w-xs">
+          Rate limited - wait {timeUntilNext}s
+        </div>
+      )}
+
     </div>
   );
 };

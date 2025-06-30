@@ -26,200 +26,99 @@ export interface VoiceStyleMap {
 // Define the comprehensive RageStyle type
 export type RageStyle = 'corporate' | 'gamer' | 'sarcastic' | 'karen' | 'scottish-dad' | 'ny-italian' | 'enforcer' | 'highland-howler' | 'don' | 'cracked-controller';
 
-// UNCHANGED ELEVENLABS VOICE SETTINGS - Use voices exactly as they come from ElevenLabs
+// ELEVENLABS DEFAULT SETTINGS - NO MODIFICATIONS WHATSOEVER
+const DEFAULT_VOICE_SETTINGS = {
+  stability: 0.5,
+  similarity_boost: 0.75,
+  style: 0,
+  use_speaker_boost: true
+};
+
 export const VOICE_CONFIGS: VoiceStyleMap = {
   corporate: {
-    voice_id: "pNInz6obpgDQGcFmaJgB", // Adam - Professional male voice
+    voice_id: "pNInz6obpgDQGcFmaJgB", // Adam
     name: "Adam",
-    description: "Professional, authoritative voice for corporate rage",
-    voice_settings: {
-      stability: 0.5,
-      similarity_boost: 0.5,
-      style: 0,
-      use_speaker_boost: true
-    }
+    description: "Professional male voice",
+    voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   gamer: {
-    voice_id: "ErXwobaYiN019PkySvjV", // Antoni - Energetic male voice
+    voice_id: "ErXwobaYiN019PkySvjV", // Antoni
     name: "Antoni",
-    description: "Energetic, youthful voice for cracked Gen-Z Latino gamer rage",
-    voice_settings: {
-      stability: 0.5,
-      similarity_boost: 0.5,
-      style: 0,
-      use_speaker_boost: true
-    }
+    description: "Energetic male voice",
+    voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   sarcastic: {
-    voice_id: "onwK4e9ZLuTAKqWW03F9", // Daniel - British accent
+    voice_id: "onwK4e9ZLuTAKqWW03F9", // Daniel
     name: "Daniel",
-    description: "Sophisticated British accent for sarcastic roasts",
-    voice_settings: {
-      stability: 0.5,
-      similarity_boost: 0.5,
-      style: 0,
-      use_speaker_boost: true
-    }
+    description: "British accent male voice",
+    voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   karen: {
-    voice_id: "ThT5KcBeYPX3keUQqHPh", // Dorothy - Female British voice
+    voice_id: "ThT5KcBeYPX3keUQqHPh", // Dorothy
     name: "Dorothy",
-    description: "Entitled suburban mom voice for Karen rants",
-    voice_settings: {
-      stability: 0.5,
-      similarity_boost: 0.5,
-      style: 0,
-      use_speaker_boost: true
-    }
+    description: "Female British voice",
+    voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   'scottish-dad': {
-    voice_id: "VR6AewLTigWG4xSOukaG", // Arnold - Deep male voice
+    voice_id: "VR6AewLTigWG4xSOukaG", // Arnold
     name: "Arnold",
-    description: "Gruff Scottish dad voice for parental disappointment",
-    voice_settings: {
-      stability: 0.5,
-      similarity_boost: 0.5,
-      style: 0,
-      use_speaker_boost: true
-    }
+    description: "Deep male voice",
+    voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   'ny-italian': {
-    voice_id: "CaYmcrR5WjNfLsVo7ReL", // Clyde - Mature male voice
+    voice_id: "2EiwWnXFnvU5JabPnv8n", // Clyde
     name: "Clyde",
-    description: "Fast-talking NY Italian-American voice for Brooklyn fury",
-    voice_settings: {
-      stability: 0.5,
-      similarity_boost: 0.5,
-      style: 0,
-      use_speaker_boost: true
-    }
+    description: "Mature male voice",
+    voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   enforcer: {
-    voice_id: "ujTRvH905hCgW1uUwWye", // Arnold - Deep, authoritative
-    name: "Arnold",
-    description: "Deep, intimidating voice for law enforcement rage",
-    voice_settings: {
-      stability: 0.5,
-      similarity_boost: 0.5,
-      style: 0,
-      use_speaker_boost: true
-    }
+    voice_id: "pNInz6obpgDQGcFmaJgB", // Adam
+    name: "Adam",
+    description: "Deep, authoritative voice",
+    voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   'highland-howler': {
-    voice_id: "cTMt3eRoD8RF6F0MIt0q", // YOUR CUSTOM Highland Howler voice - UNCHANGED
+    voice_id: "cTMt3eRoD8RF6F0MIt0q", // YOUR CUSTOM Highland Howler voice
     name: "Highland Howler",
-    description: "Authentic thick Scottish Highland accent with fierce warrior energy",
-    voice_settings: {
-      stability: 0.5,
-      similarity_boost: 0.5,
-      style: 0,
-      use_speaker_boost: true
-    }
+    description: "Custom Scottish Highland voice",
+    voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   don: {
-    voice_id: "2EiwWnXFnvU5JabPnv8n", // Clyde - sophisticated, menacing
+    voice_id: "2EiwWnXFnvU5JabPnv8n", // Clyde
     name: "Clyde",
-    description: "Sophisticated, menacing voice for mafia don rage",
-    voice_settings: {
-      stability: 0.5,
-      similarity_boost: 0.5,
-      style: 0,
-      use_speaker_boost: true
-    }
+    description: "Sophisticated male voice",
+    voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   'cracked-controller': {
-    voice_id: "ErXwobaYiN019PkySvjV", // Antoni - high energy, erratic
+    voice_id: "ErXwobaYiN019PkySvjV", // Antoni
     name: "Antoni",
-    description: "Hyper-energetic, erratic voice for gaming controller rage",
-    voice_settings: {
-      stability: 0.5,
-      similarity_boost: 0.5,
-      style: 0,
-      use_speaker_boost: true
-    }
+    description: "High energy male voice",
+    voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   }
 };
 
-// Alternative voices for variety - using commonly available voice IDs
-export const ALTERNATIVE_VOICES = {
-  corporate: ["VR6AewLTigWG4xSOukaG"], // Arnold
-  gamer: ["21m00Tcm4TlvDq8ikWAM"], // Rachel
-  sarcastic: ["2EiwWnXFnvU5JabPnv8n"], // Clyde
-  karen: ["EXAVITQu4vr4xnSDxMaL"], // Bella
-  'scottish-dad': ["2EiwWnXFnvU5JabPnv8n"], // Clyde
-  'ny-italian': ["pNInz6obpgDQGcFmaJgB"], // Adam
-  enforcer: ["2EiwWnXFnvU5JabPnv8n"], // Clyde
-  'highland-howler': ["VR6AewLTigWG4xSOukaG"], // Arnold as fallback
-  don: ["pNInz6obpgDQGcFmaJgB"], // Adam
-  'cracked-controller': ["21m00Tcm4TlvDq8ikWAM"] // Rachel
-};
-
-// Get voice configuration based on style - UNCHANGED SETTINGS
+// Get voice configuration - RETURNS EXACT SETTINGS
 export const getVoiceForStyle = (style: RageStyle): VoiceConfig => {
   return VOICE_CONFIGS[style];
 };
 
-// NO INTENSITY ADJUSTMENTS - Use voices exactly as configured
+// NO ADJUSTMENTS - Returns settings completely unchanged
 export const adjustVoiceForIntensity = (
   baseSettings: VoiceConfig['voice_settings'], 
   intensity: number
 ): VoiceConfig['voice_settings'] => {
-  // Return settings UNCHANGED - no modifications to preserve authentic voice
-  return baseSettings;
+  return baseSettings; // NO MODIFICATIONS
 };
 
-// Enhanced voice configuration - UNCHANGED SETTINGS
-export const EMOTIONAL_PRESETS = {
-  calm: {
-    stability: 0.5,
-    similarity_boost: 0.5,
-    style: 0,
-    use_speaker_boost: true
-  },
-  annoyed: {
-    stability: 0.5,
-    similarity_boost: 0.5,
-    style: 0,
-    use_speaker_boost: true
-  },
-  angry: {
-    stability: 0.5,
-    similarity_boost: 0.5,
-    style: 0,
-    use_speaker_boost: true
-  },
-  furious: {
-    stability: 0.5,
-    similarity_boost: 0.5,
-    style: 0,
-    use_speaker_boost: true
-  },
-  nuclear: {
-    stability: 0.5,
-    similarity_boost: 0.5,
-    style: 0,
-    use_speaker_boost: true
-  }
-} as const;
-
-// Get emotional preset based on rage level - ALL RETURN SAME SETTINGS
-export const getEmotionalPreset = (rageLevel: number): keyof typeof EMOTIONAL_PRESETS => {
-  // Always return the same preset to avoid voice modifications
-  return 'calm';
-};
-
-// UNCHANGED voice configuration that preserves ALL authentic characteristics
+// NO ADVANCED CONFIGURATION - Returns voice exactly as configured
 export const getAdvancedVoiceConfig = (
   style: RageStyle,
   intensity: number
 ): VoiceConfig => {
-  const baseConfig = getVoiceForStyle(style);
-  
-  // Return the voice configuration COMPLETELY UNCHANGED
-  return baseConfig;
+  return getVoiceForStyle(style); // NO MODIFICATIONS
 };
 
-// Voice model configurations for different quality levels
+// Voice model configurations
 export const VOICE_MODELS = {
   standard: {
     model_id: 'eleven_monolingual_v1',
@@ -242,7 +141,7 @@ export const VOICE_MODELS = {
 } as const;
 
 /**
- * Clean text for TTS by removing tone cues and formatting for speech
+ * Clean text for TTS by removing tone cues ONLY
  */
 export const cleanTextForTTS = (text: string): string => {
   let cleanedText = text;
@@ -253,45 +152,38 @@ export const cleanTextForTTS = (text: string): string => {
   // Remove multiple spaces and clean up
   cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
   
-  // Remove leading/trailing punctuation that might cause issues
-  cleanedText = cleanedText.replace(/^[,.\s]+|[,.\s]+$/g, '');
-  
   return cleanedText;
 };
 
-// MINIMAL text preprocessing - NO MODIFICATIONS to preserve natural voice delivery
+// NO TEXT PREPROCESSING - Just clean tone cues
 export const preprocessTextForStyle = (
   text: string, 
   style: RageStyle,
   intensity: number
 ): string => {
-  // First, clean the text by removing tone cues
-  let processedText = cleanTextForTTS(text);
-
-  // NO PREPROCESSING - Return text exactly as cleaned
-  // This preserves the authentic voice characteristics completely
-  return processedText;
+  // Only remove tone cues, NO OTHER MODIFICATIONS
+  return cleanTextForTTS(text);
 };
 
 // Voice testing utilities
 export const createTestPhrase = (style: RageStyle): string => {
   const testPhrases = {
-    corporate: "As per my previous email, I need you to review this document immediately. Please advise how we can move forward with some actual competence!",
-    gamer: "NAH BRO! This is straight **BLEEP**! SKILL ISSUE FR FR! I'm about to UNINSTALL this trash!",
-    sarcastic: "Oh, how absolutely riveting! I'm just thrilled to deal with this masterpiece of communication. Truly, your eloquence knows no bounds!",
-    karen: "Excuse me, I want to speak to your manager RIGHT NOW! This is completely unacceptable and I'm calling corporate!",
-    'scottish-dad': "Och, for crying out loud! What in the bloody hell were ye thinking, laddie? I'm not angry, just... deeply disappointed in ye!",
-    'ny-italian': "Ay, what's ya problem here? You gotta be kiddin' me with this! Fuggedaboutit - I'm done with this nonsense, capisce?",
-    enforcer: "OH HELL NAH! You must be joking if you think I'm gonna let this slide! ARE YOU SERIOUS RIGHT NOW?",
-    'highland-howler': "OCH! What in the name of the wee man is this nonsense?! Bloody hell, ye've got some nerve, laddie!",
-    don: "You come to me... on this day... with such disrespect? This is not how we do business in the famiglia, capisce?",
-    'cracked-controller': "YOOO THIS CONTROLLER IS STRAIGHT TRASH! I'M ABOUT TO THROW THIS THING THROUGH THE WALL! NO CAP!"
+    corporate: "As per my previous email, I need you to review this document immediately.",
+    gamer: "This is straight trash! I'm about to uninstall this whole thing!",
+    sarcastic: "Oh, how absolutely riveting! Truly, your eloquence knows no bounds!",
+    karen: "Excuse me, I want to speak to your manager RIGHT NOW!",
+    'scottish-dad': "What in the bloody hell were ye thinking, laddie?",
+    'ny-italian': "You gotta be kiddin' me with this! Fuggedaboutit!",
+    enforcer: "OH HELL NAH! You must be joking if you think I'm gonna let this slide!",
+    'highland-howler': "What in the name of the wee man is this nonsense?!",
+    don: "You come to me with such disrespect? This is not how we do business!",
+    'cracked-controller': "This controller is straight trash! I'm about to throw this thing!"
   };
   
   return testPhrases[style];
 };
 
-// Export all voice IDs for easy reference - updated with your Highland Howler
+// Export all voice IDs for reference
 export const ALL_VOICE_IDS = {
   adam: "pNInz6obpgDQGcFmaJgB",
   antoni: "ErXwobaYiN019PkySvjV", 
@@ -302,62 +194,4 @@ export const ALL_VOICE_IDS = {
   bella: "EXAVITQu4vr4xnSDxMaL",
   dorothy: "ThT5KcBeYPX3keUQqHPh",
   highlandHowler: "cTMt3eRoD8RF6F0MIt0q" // YOUR CUSTOM VOICE
-} as const;
-
-// Voice characteristics for UI display
-export const VOICE_CHARACTERISTICS = {
-  [ALL_VOICE_IDS.adam]: {
-    gender: 'Male',
-    accent: 'American',
-    age: 'Young Adult',
-    tone: 'Confident, Clear'
-  },
-  [ALL_VOICE_IDS.antoni]: {
-    gender: 'Male', 
-    accent: 'American Latino',
-    age: 'Young Adult',
-    tone: 'Energetic, Expressive, Latino Accent'
-  },
-  [ALL_VOICE_IDS.daniel]: {
-    gender: 'Male',
-    accent: 'British',
-    age: 'Middle-aged',
-    tone: 'Sophisticated, Authoritative, British Accent'
-  },
-  [ALL_VOICE_IDS.bella]: {
-    gender: 'Female',
-    accent: 'American',
-    age: 'Young Adult', 
-    tone: 'Professional, Warm'
-  },
-  [ALL_VOICE_IDS.dorothy]: {
-    gender: 'Female',
-    accent: 'British',
-    age: 'Middle-aged',
-    tone: 'Elegant, Refined, British Accent'
-  },
-  [ALL_VOICE_IDS.arnold]: {
-    gender: 'Male',
-    accent: 'American',
-    age: 'Middle-aged',
-    tone: 'Deep, Authoritative'
-  },
-  [ALL_VOICE_IDS.rachel]: {
-    gender: 'Female',
-    accent: 'American',
-    age: 'Young Adult',
-    tone: 'Energetic, Expressive'
-  },
-  [ALL_VOICE_IDS.clyde]: {
-    gender: 'Male',
-    accent: 'American',
-    age: 'Middle-aged',
-    tone: 'Mature, Sophisticated'
-  },
-  [ALL_VOICE_IDS.highlandHowler]: {
-    gender: 'Male',
-    accent: 'Scottish Highland',
-    age: 'Middle-aged',
-    tone: 'Authentic Thick Scottish Accent, Fierce Highland Warrior Voice'
-  }
 } as const;

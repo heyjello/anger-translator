@@ -1,7 +1,7 @@
 /**
  * NavigationHeader Component
  * 
- * Updated header for voice editor theme with sleek design.
+ * Updated header for voice editor theme with sleek design and Bolt logo.
  */
 
 import React from 'react';
@@ -23,7 +23,24 @@ export const NavigationHeader: React.FC<NavigationHeaderProps> = ({
   onToggleStats
 }) => {
   return (
-    <header className="text-center mb-8 animate-fade-in">
+    <header className="text-center mb-8 animate-fade-in relative">
+      {/* Bolt Logo - Top Right */}
+      <div className="absolute top-0 right-0 z-20">
+        <a 
+          href="https://bolt.new" 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="block w-12 h-12 hover:scale-110 transition-transform duration-300 hover:shadow-[0_0_20px_rgba(59,130,246,0.5)]"
+          title="Built with Bolt"
+        >
+          <img 
+            src="/bolt-logo-black-circle.svg" 
+            alt="Built with Bolt" 
+            className="w-full h-full object-contain filter drop-shadow-lg hover:drop-shadow-xl transition-all duration-300"
+          />
+        </a>
+      </div>
+
       <div className="flex items-center justify-center gap-3 mb-4">
         <Mic size={40} className="text-blue-400 animate-pulse" />
         <h1 className="text-4xl md:text-6xl font-black text-white drop-shadow-2xl">

@@ -227,8 +227,8 @@ function App() {
           onToggleStats={() => setShowStats(!showStats)}
         />
 
-        {/* AI Status Indicator */}
-        <div className="flex justify-center mb-6">
+        {/* AI Status Indicator - HIDDEN */}
+        <div className="flex justify-center mb-6 hidden">
           <AIStatusIndicator
             isAIAvailable={isAIAvailable}
             usedAI={usedAI}

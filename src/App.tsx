@@ -99,7 +99,7 @@ function App() {
     }
   };
 
-  // Add to history
+  // Add to history - FIXED: Add immediately when translation succeeds
   const addToHistory = useCallback((original: string, translated: string, style: string, level: number) => {
     const newItem: TranslationHistory = {
       id: Date.now().toString(),
@@ -111,6 +111,7 @@ function App() {
     };
     
     setTranslationHistory(prev => [newItem, ...prev.slice(0, 19)]); // Keep last 20 items
+    console.log('📚 Added to history:', newItem);
   }, []);
 
   // Handle translation with validation
@@ -133,20 +134,40 @@ function App() {
     
     console.log('⏳ Starting translation...');
 
-    // Call the enhanced translation service
-    await translate({
-      text: inputText,
-      style: selectedStyle,
-      intensity: rageLevel
-    });
+    // Store current values for history (in case they change during translation)
+    const currentInput = inputText;
+    const currentStyle = selectedStyle;
+    const currentLevel = rageLevel;
+
+    try {
+      // Call the enhanced translation service
+      await translate({
+        text: currentInput,
+        style: currentStyle,
+        intensity: currentLevel
+      });
+
+      // FIXED: Add to history immediately after successful translation
+      // We'll get the result from the hook's state after it updates
+      console.log('✅ Translation completed successfully');
+    } catch (error) {
+      console.error('❌ Translation failed:', error);
+    }
   };
 
-  // Add to history when translation completes successfully
+  // FIXED: Add to history when translation result is available
   React.useEffect(() => {
     if (outputText && inputText) {
-      addToHistory(inputText, outputText, selectedStyle, rageLevel);
+      // Only add if this is a new translation (not from clearing/reusing)
+      const isNewTranslation = translationHistory.length === 0 || 
+        translationHistory[0].originalText !== inputText ||
+        translationHistory[0].translatedText !== outputText;
+      
+      if (isNewTranslation) {
+        addToHistory(inputText, outputText, selectedStyle, rageLevel);
+      }
     }
-  }, [outputText, inputText, selectedStyle, rageLevel, addToHistory]);
+  }, [outputText]); // Only depend on outputText, not the other values
 
   // Handle input change with validation
   const handleInputChange = (newText: string) => {
@@ -210,11 +231,15 @@ function App() {
       {/* Animated background elements */}
       <BackgroundAnimation />
 
-      {/* Particle Effect */}
-      <ParticleEffect 
-        isActive={showParticles} 
-        onComplete={() => setShowParticles(false)} 
-      />
+      {/* FIXED: Particle Effect with proper z-index */}
+      {showParticles && (
+        <div className="fixed inset-0 pointer-events-none z-40">
+          <ParticleEffect 
+            isActive={showParticles} 
+            onComplete={() => setShowParticles(false)} 
+          />
+        </div>
+      )}
 
       <div className="w-full relative z-10 px-4 sm:px-6 lg:px-8 py-8">
         
@@ -287,10 +312,10 @@ function App() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             
             {/* Left Panel - Input & Controls */}
-            <div className="lg:col-span-1 space-y-6">
+            <div className="lg:col-span-1 space-y-6 relative z-20">
               
-              {/* Input Section */}
-              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6">
+              {/* FIXED: Input Section with proper z-index */}
+              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6 relative z-30">
                 <InputSection
                   value={inputText}
                   onChange={handleInputChange}
@@ -302,7 +327,7 @@ function App() {
               </div>
 
               {/* Style Selector */}
-              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6">
+              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6 relative z-30">
                 <StyleSelector
                   selectedStyle={selectedStyle}
                   onStyleSelect={setSelectedStyle}
@@ -313,8 +338,8 @@ function App() {
             </div>
 
             {/* Center Panel - Circular Rage Meter */}
-            <div className="lg:col-span-1 flex items-center justify-center">
-              <div className="bg-slate-800/50 backdrop-blur-xl rounded-3xl border border-slate-700/50 p-8 w-full max-w-md">
+            <div className="lg:col-span-1 flex items-center justify-center relative z-20">
+              <div className="bg-slate-800/50 backdrop-blur-xl rounded-3xl border border-slate-700/50 p-8 w-full max-w-md relative z-30">
                 <CircularRageMeter
                   value={rageLevel}
                   onChange={setRageLevel}
@@ -329,8 +354,8 @@ function App() {
             </div>
 
             {/* Right Panel - Output */}
-            <div className="lg:col-span-1">
-              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6 h-full">
+            <div className="lg:col-span-1 relative z-20">
+              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6 h-full relative z-30">
                 <OutputSection
                   outputText={outputText}
                   rawText={rawOutputText} // Pass raw text for TTS

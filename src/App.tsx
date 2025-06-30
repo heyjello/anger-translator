@@ -137,19 +137,23 @@ function App() {
     console.log('⏳ Starting translation...');
 
     // Call the enhanced translation service
-    await translate({
+    const result = await translate({
       text: inputText,
       style: selectedStyle,
       intensity: rageLevel * 10 // Convert 1-10 to 10-100 for internal processing
     });
-  };
 
-  // Add to history when translation completes successfully
-  React.useEffect(() => {
-    if (outputText && inputText) {
-      addToHistory(inputText, outputText, selectedStyle, rageLevel);
+    // Add to history only after successful translation and only when translate button is clicked
+    if (result !== false) { // Check if translation was successful
+      // We need to wait a bit for the translation to complete and outputText to be set
+      setTimeout(() => {
+        if (outputText && inputText) {
+          addToHistory(inputText, outputText, selectedStyle, rageLevel);
+          console.log('📝 Translation added to history');
+        }
+      }, 100);
     }
-  }, [outputText, inputText, selectedStyle, rageLevel, addToHistory]);
+  };
 
   // Handle input change with validation
   const handleInputChange = (newText: string) => {

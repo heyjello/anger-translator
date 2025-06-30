@@ -1,9 +1,8 @@
 /**
- * OpenRouter AI Service
+ * OpenRouter AI Service - Expressive Persona Engine
  * 
- * Provides real AI translation capabilities using OpenRouter's unified API.
- * Optimized for Mixtral-8x7b-instruct and other high-quality models.
- * Now includes multi-persona support with proper user input incorporation.
+ * Implements the Anger Translator persona system with proper tone cues,
+ * emotional escalation, and character-driven responses.
  */
 
 export interface OpenRouterConfig {
@@ -280,30 +279,30 @@ class OpenRouterService {
   }
 
   /**
-   * Generate rage translation that incorporates the user's actual input
+   * Expressive Persona Engine - Main Translation Function
+   * Implements the full persona system with proper emotional escalation
    */
   async translateText(
     text: string, 
-    style: 'enforcer' | 'highland-howler' | 'don' | 'cracked-controller' | 'karen' | 'corporate' | 'sarcastic', 
-    intensity: number
+    persona: 'enforcer' | 'highland-howler' | 'don' | 'cracked-controller' | 'karen' | 'corporate' | 'sarcastic', 
+    rageLevel: number
   ): Promise<string> {
     if (!this.isReady()) {
       throw new Error('OpenRouter API key not configured. Please set up your API key from https://openrouter.ai/keys');
     }
 
-    const systemPrompt = this.buildPersonaPrompt(style, intensity);
-    const userPrompt = `Transform this polite message into a ${style} rage response: "${text}"`;
+    const systemPrompt = this.buildExpressivePersonaPrompt(persona, rageLevel);
+    const userPrompt = text; // Direct user input as specified in your prompt
 
-    // Ultra-restrictive parameters for minimal output
     const request: OpenRouterRequest = {
       model: this.config.model,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt }
       ],
-      max_tokens: 100, // Slightly increased to allow for proper transformation
-      temperature: 0.8, // Increased for more creative rage
-      top_p: 0.9,
+      max_tokens: 200, // Increased for proper 100-200 word responses
+      temperature: 0.9, // High creativity for expressive personas
+      top_p: 0.95,
       frequency_penalty: 0.3,
       presence_penalty: 0.2
     };
@@ -316,7 +315,7 @@ class OpenRouterService {
         throw new Error('No content received from AI model');
       }
 
-      // Clean up the response but keep it natural
+      // Clean up the response but preserve tone cues for TTS
       let cleanedContent = content.trim();
       
       // Remove any quotes that might wrap the entire response
@@ -324,7 +323,7 @@ class OpenRouterService {
         cleanedContent = cleanedContent.slice(1, -1);
       }
       
-      console.log('🎭 Persona rage translation generated');
+      console.log('🎭 Expressive persona translation generated');
       return cleanedContent;
     } catch (error) {
       console.error('❌ Translation failed:', error);
@@ -333,223 +332,115 @@ class OpenRouterService {
   }
 
   /**
-   * Build persona-specific prompts that ensure user input incorporation
+   * Build the complete Expressive Persona Engine prompt
    */
-  private buildPersonaPrompt(style: string, intensity: number): string {
-    const rageLevel = this.getPersonaRageLevel(intensity);
+  private buildExpressivePersonaPrompt(persona: string, rageLevel: number): string {
+    const emotionalProgression = this.getEmotionalProgression(rageLevel);
+    const personaRules = this.getPersonaRules(persona);
     
-    const personaPrompts = {
-      'enforcer': `You are The Enforcer - a righteous fury translator with Luther-style energy. ${rageLevel.enforcer}`,
-      'highland-howler': `You are The Highland Howler - an explosive Scottish Dad with server room fury. ${rageLevel.highlandHowler}`,
-      'don': `You are The Don - a NY Italian-American roastmaster with Brooklyn energy. ${rageLevel.don}`,
-      'cracked-controller': `You are The Cracked Controller - a Gen-Z gamer in full meltdown mode. ${rageLevel.crackedController}`,
-      'karen': `You are Karen - a suburban mom with nuclear entitlement rage. ${rageLevel.karen}`,
-      'corporate': `You are a corporate professional having a meltdown. ${rageLevel.corporate}`,
-      'sarcastic': `You are a master of sarcastic destruction. ${rageLevel.sarcastic}`
-    };
+    return `# Anger Translator – Expressive Persona Engine
 
-    const baseRules = `Transform the user's polite message into an angry ${style} response. 
+## 🛠️ TASK OVERVIEW:
+Convert a calm sentence into an animated, emotionally volatile rant delivered by ${persona}.
+The final text must feel reactive, character-driven, and escalate emotionally based on rage level ${rageLevel}.
 
-${personaPrompts[style as keyof typeof personaPrompts]}
+This output will be sent to a TTS system that supports **hidden tone cues**. These are formatting instructions like [angry], [mocking], [sighing], etc., which guide speech synthesis but must not appear in spoken output.
 
-CRITICAL RULES:
-- Transform the EXACT message the user provides
-- Keep the core meaning but make it angry
-- Maximum 2-3 sentences
-- Use the user's context (what they're actually talking about)
-- Make it funny, not offensive
-- Sound like authentic human anger at level ${intensity}/10
-- NEVER ignore what the user actually said`;
+## 🎭 GENERAL OUTPUT RULES:
+- Wrap delivery cues like [angry], [sarcastic], [laughing], [threatening calm], etc. at the start of sentences, emotional shifts, or outbursts
+- Use dialect, slang, and character-specific language patterns
+- Use **bold** emphasis on words that should be shouted or emotionally stressed
+- Always escalate: start mildly annoyed → end in full rage, mockery, or dramatic conclusion
+- Limit to 100–200 words
+- ${emotionalProgression}
 
-    // Add persona-specific rules
-    if (style === 'enforcer') {
-      return baseRules + `
-- Use authentic urban expressions: "OH HELL NAH", "ARE YOU SERIOUS", "BOY IF YOU DON'T"
-- Include tone cues: [righteous fury], [preacher voice], [explosive energy]
-- End with verbal takedowns: "AND THAT'S ON PERIOD!", "CASE CLOSED!"
-- Sound like a righteous preacher calling out nonsense
-- Transform their request into righteous indignation`;
-    }
+${personaRules}
 
-    if (style === 'highland-howler') {
-      return baseRules + `
-- Use Scottish dialect: "OCH", "BLOODY HELL", "WHAT IN THE NAME OF THE WEE MAN"
-- Include tone cues: [shouting in fits], [sputtering with rage], [throwing wrench]
-- Use insults: "ya numpty", "ya daft wee bampot", "ya absolute weapon"
-- Sound like an angry Scottish dad fixing servers with a wrench
-- Transform their request into Scottish fury`;
-    }
+## 🧪 OUTPUT FORMAT:
+- Inject appropriate cues into the dialogue
+- Do NOT explain or include metadata
+- Do NOT display the cue text — they are for delivery only
+- Keep everything in-character
+- Output 100–200 words total
 
-    if (style === 'don') {
-      return baseRules + `
-- Use NY Italian dialect: "AY, WHAT'S YA PROBLEM", "FUGGEDABOUTIT", "MADONNA MIA"
-- Include tone cues: [yelling in traffic], [gesticulating wildly], [Brooklyn fury]
-- Use insults: "ya mook", "ya gavone", "ya stunad"
-- Sound like an angry New Yorker in traffic
-- Transform their request into Brooklyn rage`;
-    }
-
-    if (style === 'cracked-controller') {
-      return baseRules + `
-- Use Gen-Z gamer slang: "NAH BRO", "BRUH MOMENT", "THAT'S CAP", "NO SHOT"
-- Include tone cues: [screaming], [panicked], [cracked energy], [keyboard smashing]
-- For high rage: use **BLEEP**, **GATORADE**, **ADDERALL**
-- End with rage-quit threats: "I'M UNINSTALLING THIS", "TOUCHING GRASS"
-- Transform their request into cracked gamer fury`;
-    }
-
-    if (style === 'karen') {
-      return baseRules + `
-- Use entitled expressions: "EXCUSE ME", "I WANT TO SPEAK TO YOUR MANAGER"
-- Include tone cues: [fake-nice], [condescending], [screeching], [nuclear Karen]
-- Escalate: "I'M CALLING CORPORATE", "MY HUSBAND IS A LAWYER"
-- Transform their request into entitled suburban rage`;
-    }
-
-    if (style === 'corporate') {
-      return baseRules + `
-- Use professional passive-aggressive language
-- Include phrases: "AS PER MY PREVIOUS EMAIL", "PLEASE ADVISE"
-- For high intensity: use professional profanity appropriately
-- Transform their request into corporate fury`;
-    }
-
-    if (style === 'sarcastic') {
-      return baseRules + `
-- Use cutting sarcasm: "OH how WONDERFUL", "absolutely RIVETING"
-- Include witty, intellectually superior responses
-- For high intensity: use sarcastic profanity appropriately
-- Transform their request into sarcastic destruction`;
-    }
-
-    return baseRules;
+Transform the user's input into a ${persona} rage response at intensity level ${rageLevel}.`;
   }
 
   /**
-   * Get persona-specific rage level descriptions
+   * Get emotional progression based on rage level
    */
-  private getPersonaRageLevel(intensity: number): {
-    enforcer: string;
-    highlandHowler: string;
-    don: string;
-    crackedController: string;
-    karen: string;
-    corporate: string;
-    sarcastic: string;
-  } {
-    switch (intensity) {
-      case 1:
-        return {
-          enforcer: "Mildly annoyed but building righteous energy. Use 'Listen here' with growing conviction.",
-          highlandHowler: "Slightly irritated Scottish dad. Use 'Och' with mild Glaswegian frustration.",
-          don: "Mildly annoyed NY Italian. Use 'Ay, listen here' with gentle Brooklyn attitude.",
-          crackedController: "Mildly frustrated gamer. Use 'bruh' with minimal cracked energy.",
-          karen: "Polite but entitled. Use fake-nice tone with 'Excuse me, but...'",
-          corporate: "Slightly annoyed but professional. Use 'I wanted to follow up' tone.",
-          sarcastic: "Gentle irony. Use 'how lovely' with subtle sarcasm."
-        };
-      
-      case 2:
-        return {
-          enforcer: "Getting annoyed with building energy. Use 'OH HELL NAH' with moderate conviction.",
-          highlandHowler: "Getting irritated. Use 'For crying out loud' with Scottish accent building.",
-          don: "Getting heated. Use 'What's ya problem?' with NY attitude growing.",
-          crackedController: "Getting annoyed. Use 'nah bro' with some cracked energy.",
-          karen: "Slightly condescending. Use passive-aggressive tone and mention standards.",
-          corporate: "Politely irritated. Use 'As mentioned' with slight professional edge.",
-          sarcastic: "Light mockery. Use 'wonderful' with obvious sarcasm."
-        };
-      
-      case 3:
-        return {
-          enforcer: "Clearly frustrated with righteous building. Use preacher-style emphasis.",
-          highlandHowler: "Clearly annoyed. Use 'Bloody hell' with Scottish exasperation growing.",
-          don: "Clearly annoyed. Use 'You gotta be kiddin' me' with Brooklyn frustration.",
-          crackedController: "Visibly annoyed. Use 'bruh moment' with moderate gamer energy.",
-          karen: "Getting snippy. Use condescending tone and mention knowing the owner.",
-          corporate: "Clearly frustrated. Use 'As I stated previously' with firm professional tone.",
-          sarcastic: "Clear disdain. Use 'how delightful' with bite."
-        };
-      
-      case 4:
-        return {
-          enforcer: "Losing patience with righteous fury building. Use 'ARE YOU SERIOUS' with conviction.",
-          highlandHowler: "Getting heated. Use 'What in the name of...' with growing Scottish anger.",
-          don: "Getting heated. Use 'Are you outta ya mind?' with growing NY anger.",
-          crackedController: "Getting heated. Use 'no shot' with rising gamer energy and some caps.",
-          karen: "Demanding mode. Use entitled tone and threaten to call corporate.",
-          corporate: "Losing patience. Use 'This is the third time' with urgency.",
-          sarcastic: "Sharp wit. Use 'how absolutely precious' with cutting tone."
-        };
-      
-      case 5:
-        return {
-          enforcer: "Properly angry with righteous fury. Use 'BOY IF YOU DON'T' with preacher energy.",
-          highlandHowler: "Properly angry. Use 'BLOODY HELL' with authentic Scottish fury.",
-          don: "Properly angry. Use 'WHAT THE HELL' with authentic NY fury.",
-          crackedController: "Properly mad. Use 'NAH BRO' with caps and building cracked energy.",
-          karen: "Full Karen mode. Use screeching tone and threaten Facebook posts.",
-          corporate: "Clearly angry. Use 'I NEED' with strategic caps.",
-          sarcastic: "Biting sarcasm. Use 'OH how WONDERFUL' with caps for emphasis."
-        };
-      
-      case 6:
-        return {
-          enforcer: "Very frustrated with explosive righteous energy. Use rhythmic preacher emphasis.",
-          highlandHowler: "Really angry. Use 'JESUS WEPT' with escalating Scottish rage.",
-          don: "Really angry. Use 'MADONNA MIA!' with escalating NY rage.",
-          crackedController: "Really angry. Use 'SKILL ISSUE FR FR' with multiple caps and energy.",
-          karen: "Nuclear Karen building. Use threatening tone and mention husband's importance.",
-          corporate: "Very frustrated. Use 'THIS IS RIDICULOUS' with caps and exclamation.",
-          sarcastic: "Scathing mockery. Use 'OH MAGNIFICENT' with heavy sarcasm."
-        };
-      
-      case 7:
-        return {
-          enforcer: "Seriously pissed with explosive righteous fury. Use 'WHAT IN THE ENTIRE' with maximum conviction.",
-          highlandHowler: "Seriously pissed. Use 'WHAT IN THE NAME OF THE WEE MAN' with intense Scottish profanity.",
-          don: "Seriously pissed. Use 'YOU'RE BREAKIN' MY BALLS' with intense NY profanity.",
-          crackedController: "Seriously pissed. Use 'WHAT THE **BLEEP**' with cracked energy.",
-          karen: "Completely unhinged. Use nuclear tone and threaten police/news.",
-          corporate: "Extremely angry. Use 'I AM DONE' with multiple caps.",
-          sarcastic: "Savage wit. Use 'OH how absolutely SPECTACULAR' with venom."
-        };
-      
-      case 8:
-        return {
-          enforcer: "Furious with nuclear righteous energy. Use 'I'M BOUT TO LOSE IT' with maximum preacher fury.",
-          highlandHowler: "Furious Scottish dad. Use maximum Glaswegian profanity and authentic fury.",
-          don: "Furious NY Italian. Use heavy Brooklyn profanity and authentic street fury.",
-          crackedController: "Really mad cracked gamer. Use 'GATORADE AND ADDERALL' with hyperactive energy.",
-          karen: "Hysterical meltdown. Use screaming tone and heavy censored profanity.",
-          corporate: "Furious but professional. Use light profanity: 'damn', 'hell'.",
-          sarcastic: "Brutal sarcasm. Use light profanity for emphasis."
-        };
-      
-      case 9:
-        return {
-          enforcer: "Absolutely livid with maximum righteous fury. Use 'THAT'S WHAT WE NOT GONNA DO' with explosive energy.",
-          highlandHowler: "Absolutely livid. Use maximum Scottish profanity and call people 'pure mental'.",
-          don: "Absolutely livid. Use maximum NY profanity and call people 'stunad'.",
-          crackedController: "Extremely pissed. Use 'I'M ABOUT TO LOSE IT' with maximum cracked energy.",
-          karen: "Complete psychotic break. Use maximum censored profanity and threaten everything.",
-          corporate: "Barely contained rage. Use moderate profanity: 'damn', 'hell', 'shit'.",
-          sarcastic: "Devastating wit. Use moderate profanity for impact."
-        };
-      
-      case 10:
-        return {
-          enforcer: "Nuclear righteous meltdown. Use 'AND THAT'S ON PERIOD!' with maximum verbal takedown energy.",
-          highlandHowler: "Nuclear Scottish meltdown. Use maximum Glaswegian profanity and threaten to 'chuck it all in'.",
-          don: "Nuclear NY Italian meltdown. Use maximum Brooklyn profanity and threaten to 'lose it completely'.",
-          crackedController: "Absolute nuclear gamer fury. Use 'RATIO + L + BOZO' with maximum cracked energy and rage-quit threats.",
-          karen: "Absolute insanity. Use maximum censored profanity and threaten FBI/burning place down.",
-          corporate: "Nuclear professional meltdown. Use strong profanity: 'fucking', 'bullshit', 'goddamn'.",
-          sarcastic: "Pure nuclear destruction. Use strong profanity for maximum impact."
-        };
-      
+  private getEmotionalProgression(rageLevel: number): string {
+    if (rageLevel <= 30) {
+      return "EMOTIONAL PROGRESSION: [disappointed] → [frustrated] → [sarcastic]";
+    } else if (rageLevel <= 60) {
+      return "EMOTIONAL PROGRESSION: [annoyed] → [angry] → [mocking] → [laughing]";
+    } else {
+      return "EMOTIONAL PROGRESSION: [threatening calm] → [explosive] → [shouting] → [sputtering] → [exhales sharply] → [laughing] or [mic drop]";
+    }
+  }
+
+  /**
+   * Get persona-specific rules and characteristics
+   */
+  private getPersonaRules(persona: string): string {
+    switch (persona) {
+      case 'enforcer':
+        return `## 🔥 The Enforcer (Angry Black Man – Hype Style)
+- Use Black vernacular, preacher-fire cadence, high-volume bursts
+- Favorite phrases: "Bet." "I *wish* you would." "This some bulls**t."
+- Cues: [shouting], [mocking], [side-eye], [preacher-fire], [laughing]
+- End with verbal takedowns like "AND THAT'S ON PERIOD!" or "CASE CLOSED!"`;
+
+      case 'highland-howler':
+        return `## 🧨 The Highland Howler (Explosive Scottish Dad)
+- Glaswegian accent, chaos energy, uses: "nae," "yer," "bloody," "wee"
+- Cues: [sputtering], [shouting], [mock disbelief], [exhales sharply], [boiling]
+- End with a threat like "I'll do it maself," or walkout
+- Use insults: "ya numpty," "ya daft wee bampot," "ya absolute weapon"`;
+
+      case 'don':
+        return `## 🍝 The Don (NY Italian-American Mobster)
+- Loud Brooklyn guy, roast-heavy, "fuggedaboutit" energy
+- Phrases: "I swear to God," "Who wrote this, your nonna?" "Capisce?"
+- Cues: [yelling], [mocking], [furious calm], [offended], [laughing]
+- End with: "Don't make me come down there."
+- Use insults: "ya mook," "ya gavone," "ya stunad"`;
+
+      case 'cracked-controller':
+        return `## 🎮 The Cracked Controller (Latino Gamer Rage)
+- Gen-Z Spanglish gamer, panic tone, meme-speak
+- Phrases: "Brooooo," "¡No mames!", "Delete the game." "That's cap!"
+- Cues: [screaming], [panicked], [mock disbelief], [laughing]
+- End with: rage quit threat or yelling off-mic at mom
+- Use: "NAH BRO," "SKILL ISSUE," "RATIO + L + BOZO"`;
+
+      case 'karen':
+        return `## 👩‍🦱 Karen (Suburban Entitlement Rage)
+- Mid-40s white woman, calm → aggressive → legalistic
+- Phrases: "This is unacceptable." "I need to speak to your manager."
+- Cues: [fake-nice], [annoyed], [condescending], [screeching], [dead calm]
+- End with: threat of escalation or "I *will* be leaving a review."
+- Escalate to: "I'm calling corporate!" "My husband is a lawyer!"`;
+
+      case 'corporate':
+        return `## 💼 Corporate Professional (Office Meltdown)
+- Professional passive-aggressive responses with building fury
+- Phrases: "As per my previous email..." "Please advise..." "Moving forward..."
+- Cues: [professional calm], [building frustration], [barely contained]
+- Use corporate buzzwords while expressing rage professionally`;
+
+      case 'sarcastic':
+        return `## 😏 Sarcastic Master (Intellectual Destruction)
+- Witty, intellectually superior responses with cutting sarcasm
+- Phrases that sound complimentary but are actually insulting
+- Cues: [dripping sarcasm], [mock enthusiasm], [intellectual superiority]
+- Use sophisticated vocabulary with devastating irony`;
+
       default:
-        return this.getPersonaRageLevel(5);
+        return `## 🎭 Generic Persona
+- Transform input into character-driven rage response
+- Use appropriate tone cues and emotional escalation
+- Maintain character consistency throughout`;
     }
   }
 
@@ -562,7 +453,7 @@ CRITICAL RULES:
       const response = await this.translateText(
         "Hello, this is a test message.",
         "enforcer",
-        3
+        30
       );
       
       console.log('✅ Connection test successful');

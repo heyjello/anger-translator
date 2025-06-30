@@ -106,13 +106,13 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     }
   },
   'highland-howler': {
-    voice_id: "VR6AewLTigWG4xSOukaG", // Arnold - Scottish accent
-    name: "Arnold",
-    description: "Fierce Scottish Highland warrior voice for battle rage",
+    voice_id: "JwYlCv3C5tfM0wHM3xjl", // Highland Howler - Authentic thick Scottish accent
+    name: "Highland Howler",
+    description: "Fierce Scottish Highland warrior voice with authentic thick accent",
     voice_settings: {
-      stability: 0.9,
+      stability: 0.95,
       similarity_boost: 0.95,
-      style: 0.2,
+      style: 0.1,
       use_speaker_boost: false
     }
   },
@@ -149,7 +149,7 @@ export const ALTERNATIVE_VOICES = {
   'scottish-dad': ["2EiwWnXFnvU5JabPnv8n"], // Clyde
   'ny-italian': ["pNInz6obpgDQGcFmaJgB"], // Adam
   enforcer: ["2EiwWnXFnvU5JabPnv8n"], // Clyde
-  'highland-howler': ["2EiwWnXFnvU5JabPnv8n"], // Clyde
+  'highland-howler': ["VR6AewLTigWG4xSOukaG"], // Arnold as fallback
   don: ["pNInz6obpgDQGcFmaJgB"], // Adam
   'cracked-controller': ["21m00Tcm4TlvDq8ikWAM"] // Rachel
 };
@@ -326,8 +326,8 @@ export const preprocessTextForStyle = (
 
     case 'scottish-dad':
     case 'highland-howler':
-      // Only emphasize key Scottish terms
-      processedText = processedText.replace(/(BLOODY HELL|FOR CRYING OUT LOUD)/g, '<emphasis level="moderate">$1</emphasis>');
+      // Only emphasize key Scottish terms - MINIMAL to preserve authentic accent
+      processedText = processedText.replace(/(BLOODY HELL|FOR CRYING OUT LOUD|OCH)/g, '<emphasis level="moderate">$1</emphasis>');
       break;
 
     case 'ny-italian':
@@ -362,7 +362,7 @@ export const createTestPhrase = (style: RageStyle): string => {
     'scottish-dad': "Och, for crying out loud! What in the bloody hell were ye thinking, laddie? I'm not angry, just... deeply disappointed in ye!",
     'ny-italian': "Ay, what's ya problem here? You gotta be kiddin' me with this! Fuggedaboutit - I'm done with this nonsense, capisce?",
     enforcer: "OH HELL NAH! You must be joking if you think I'm gonna let this slide! ARE YOU SERIOUS RIGHT NOW?",
-    'highland-howler': "BY THE HIGHLANDS! What manner of foolishness is this?! Ye've dishonored the clan with yer incompetence!",
+    'highland-howler': "OCH! What in the name of the wee man is this nonsense?! Bloody hell, ye've got some nerve, laddie!",
     don: "You come to me... on this day... with such disrespect? This is not how we do business in the famiglia, capisce?",
     'cracked-controller': "YOOO THIS CONTROLLER IS STRAIGHT TRASH! I'M ABOUT TO THROW THIS THING THROUGH THE WALL! NO CAP!"
   };
@@ -370,7 +370,7 @@ export const createTestPhrase = (style: RageStyle): string => {
   return testPhrases[style];
 };
 
-// Export all voice IDs for easy reference - updated with commonly available voices
+// Export all voice IDs for easy reference - updated with Highland Howler
 export const ALL_VOICE_IDS = {
   adam: "pNInz6obpgDQGcFmaJgB",
   antoni: "ErXwobaYiN019PkySvjV", 
@@ -379,7 +379,8 @@ export const ALL_VOICE_IDS = {
   rachel: "21m00Tcm4TlvDq8ikWAM",
   clyde: "2EiwWnXFnvU5JabPnv8n",
   bella: "EXAVITQu4vr4xnSDxMaL",
-  dorothy: "ThT5KcBeYPX3keUQqHPh"
+  dorothy: "ThT5KcBeYPX3keUQqHPh",
+  highlandHowler: "JwYlCv3C5tfM0wHM3xjl"
 } as const;
 
 // Voice characteristics for UI display
@@ -431,5 +432,11 @@ export const VOICE_CHARACTERISTICS = {
     accent: 'American',
     age: 'Middle-aged',
     tone: 'Mature, Sophisticated'
+  },
+  [ALL_VOICE_IDS.highlandHowler]: {
+    gender: 'Male',
+    accent: 'Scottish',
+    age: 'Middle-aged',
+    tone: 'Thick Scottish Accent, Gruff, Authentic Highland Voice'
   }
 } as const;

@@ -259,8 +259,8 @@ function App() {
           </div>
         )}
 
-        {/* Main Content - Voice Editor Layout */}
-        <div className="max-w-6xl mx-auto">
+        {/* Main Content - Improved Responsive Layout */}
+        <div className="max-w-7xl mx-auto">
           
           {/* Rate Limit Warning */}
           {isRateLimited && (
@@ -283,14 +283,14 @@ function App() {
             </div>
           )}
 
-          {/* Voice Editor Interface */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Voice Editor Interface - Improved Responsive Grid */}
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
             
             {/* Left Panel - Input & Controls */}
-            <div className="lg:col-span-1 space-y-6">
+            <div className="xl:col-span-1 space-y-6">
               
               {/* Input Section */}
-              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6">
+              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 lg:p-6">
                 <InputSection
                   value={inputText}
                   onChange={handleInputChange}
@@ -302,7 +302,7 @@ function App() {
               </div>
 
               {/* Style Selector */}
-              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6">
+              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 lg:p-6">
                 <StyleSelector
                   selectedStyle={selectedStyle}
                   onStyleSelect={setSelectedStyle}
@@ -313,8 +313,8 @@ function App() {
             </div>
 
             {/* Center Panel - Circular Rage Meter */}
-            <div className="lg:col-span-1 flex items-center justify-center">
-              <div className="bg-slate-800/50 backdrop-blur-xl rounded-3xl border border-slate-700/50 p-8 w-full max-w-md">
+            <div className="xl:col-span-1 flex items-start justify-center">
+              <div className="bg-slate-800/50 backdrop-blur-xl rounded-3xl border border-slate-700/50 p-6 lg:p-8 w-full max-w-md mx-auto">
                 <CircularRageMeter
                   value={rageLevel}
                   onChange={setRageLevel}
@@ -329,8 +329,8 @@ function App() {
             </div>
 
             {/* Right Panel - Output */}
-            <div className="lg:col-span-1">
-              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6 h-full">
+            <div className="xl:col-span-1">
+              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 lg:p-6 h-full min-h-[400px]">
                 <OutputSection
                   outputText={outputText}
                   rawText={rawOutputText} // Pass raw text for TTS
@@ -345,6 +345,20 @@ function App() {
               </div>
             </div>
 
+          </div>
+
+          {/* Mobile-Only Translate Button (for screens smaller than xl) */}
+          <div className="xl:hidden mt-8 flex justify-center">
+            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6 w-full max-w-md">
+              <TranslateButton
+                onTranslate={handleTranslate}
+                isValid={isFormValid()}
+                isLoading={isLoading}
+                isRateLimited={isRateLimited}
+                timeUntilNext={timeUntilNextRequest}
+                validationMessage={getValidationMessage()}
+              />
+            </div>
           </div>
 
         </div>

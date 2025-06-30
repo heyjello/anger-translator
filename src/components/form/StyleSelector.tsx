@@ -3,6 +3,7 @@
  * 
  * Multi-persona anger translator selection with unique character voices.
  * Each persona has distinct emotional patterns and delivery styles.
+ * Updated with improved responsive grid layout.
  */
 
 import React from 'react';
@@ -102,13 +103,14 @@ export const StyleSelector: React.FC<StyleSelectorProps> = ({
         Choose your anger persona:
       </label>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+      {/* Improved responsive grid - better spacing for all screen sizes */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-2 2xl:grid-cols-3 gap-3 lg:gap-4">
         {PERSONA_OPTIONS.map((persona) => (
           <button 
             key={persona.id}
             onClick={() => onStyleSelect(persona.id)}
             disabled={isLoading}
-            className={`group relative py-6 px-4 rounded-xl font-bold text-sm transition-all duration-300 transform hover:scale-105 ${
+            className={`group relative py-4 px-3 lg:py-6 lg:px-4 rounded-xl font-bold text-xs lg:text-sm transition-all duration-300 transform hover:scale-105 ${
               selectedStyle === persona.id 
                 ? `cyber-button selected text-${persona.color}-400 border-${persona.color}-500/80` 
                 : 'cyber-button text-gray-300 hover:text-gray-100'
@@ -122,16 +124,16 @@ export const StyleSelector: React.FC<StyleSelectorProps> = ({
             aria-label={`Select ${persona.name} persona`}
           >
             <div className="flex flex-col items-center gap-2 text-center">
-              <span className="text-3xl filter drop-shadow-lg" role="img" aria-label={persona.name}>
+              <span className="text-2xl lg:text-3xl filter drop-shadow-lg" role="img" aria-label={persona.name}>
                 {persona.emoji}
               </span>
-              <span className={`text-base ${selectedStyle === persona.id ? `neon-${persona.color}` : ''}`}>
+              <span className={`text-sm lg:text-base ${selectedStyle === persona.id ? `neon-${persona.color}` : ''}`}>
                 {persona.name}
               </span>
               <span className="text-xs opacity-80 font-normal leading-tight">
                 {persona.description}
               </span>
-              <span className="text-xs opacity-60 font-normal italic leading-tight">
+              <span className="text-xs opacity-60 font-normal italic leading-tight hidden lg:block">
                 {persona.style}
               </span>
             </div>

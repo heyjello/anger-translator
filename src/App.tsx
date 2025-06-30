@@ -15,6 +15,8 @@ import {
 } from './components';
 import { ParticleEffect, EnhancedFooter, AIStatusIndicator } from './components/ui';
 import { CircularRageMeter } from './components/ui/CircularRageMeter';
+import { SecurityProvider } from './components/security/SecurityProvider';
+import { SecureConfigPanel } from './components/security/SecureConfigPanel';
 import { RageStyle } from './types/translation';
 import './App.css';
 
@@ -31,6 +33,7 @@ function App() {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showHistory, setShowHistory] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const [showSecurityConfig, setShowSecurityConfig] = useState(false);
   const [translationHistory, setTranslationHistory] = useState<TranslationHistory[]>([]);
   const [showParticles, setShowParticles] = useState(false);
 
@@ -206,157 +209,175 @@ function App() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-      {/* Animated background elements */}
-      <BackgroundAnimation />
+    <SecurityProvider>
+      <div className="w-full min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+        {/* Animated background elements */}
+        <BackgroundAnimation />
 
-      {/* Particle Effect */}
-      <ParticleEffect 
-        isActive={showParticles} 
-        onComplete={() => setShowParticles(false)} 
-      />
-
-      <div className="w-full relative z-10 px-4 sm:px-6 lg:px-8 py-8">
-        
-        {/* Header */}
-        <NavigationHeader
-          historyCount={translationHistory.length}
-          showHistory={showHistory}
-          showStats={showStats}
-          onToggleHistory={() => setShowHistory(!showHistory)}
-          onToggleStats={() => setShowStats(!showStats)}
+        {/* Particle Effect */}
+        <ParticleEffect 
+          isActive={showParticles} 
+          onComplete={() => setShowParticles(false)} 
         />
 
-        {/* AI Status Indicator - HIDDEN */}
-        <div className="flex justify-center mb-6 hidden">
-          <AIStatusIndicator
-            isAIAvailable={isAIAvailable}
-            usedAI={usedAI}
-            aiModel={aiModel}
-            serviceStatus={serviceStatus}
-            onRefreshStatus={refreshAIStatus}
-            onToggleAI={setUseAI}
+        <div className="w-full relative z-10 px-4 sm:px-6 lg:px-8 py-8">
+          
+          {/* Header */}
+          <NavigationHeader
+            historyCount={translationHistory.length}
+            showHistory={showHistory}
+            showStats={showStats}
+            onToggleHistory={() => setShowHistory(!showHistory)}
+            onToggleStats={() => setShowStats(!showStats)}
           />
-        </div>
 
-        {/* History Panel */}
-        {showHistory && (
-          <div className="mb-8 animate-fade-in">
-            <HistoryPanel
-              history={translationHistory}
-              onClear={() => setTranslationHistory([])}
-              onCopyTranslation={handleCopyToClipboard}
-              onShareTranslation={handleShareFromHistory}
-              onReuse={handleReuseHistoryItem}
+          {/* Security Configuration Button */}
+          <div className="flex justify-center mb-6">
+            <button
+              onClick={() => setShowSecurityConfig(true)}
+              className="flex items-center gap-2 px-4 py-2 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 rounded-lg font-medium transition-all duration-300 border border-blue-500/30 hover:border-blue-500/50"
+            >
+              🔒 Security Configuration
+            </button>
+          </div>
+
+          {/* AI Status Indicator - HIDDEN */}
+          <div className="flex justify-center mb-6 hidden">
+            <AIStatusIndicator
+              isAIAvailable={isAIAvailable}
+              usedAI={usedAI}
+              aiModel={aiModel}
+              serviceStatus={serviceStatus}
+              onRefreshStatus={refreshAIStatus}
+              onToggleAI={setUseAI}
             />
           </div>
-        )}
 
-        {/* Stats Panel */}
-        {showStats && (
-          <div className="mb-8 animate-fade-in">
-            <StatsPanel history={translationHistory} />
-          </div>
-        )}
-
-        {/* Main Content - Stacked Layout for All Screen Sizes */}
-        <div className="max-w-4xl mx-auto">
-          
-          {/* Rate Limit Warning */}
-          {isRateLimited && (
-            <div className="mb-6">
-              <ErrorDisplay
-                type="warning"
-                message={`Please wait ${timeUntilNextRequest} seconds before translating again.`}
+          {/* History Panel */}
+          {showHistory && (
+            <div className="mb-8 animate-fade-in">
+              <HistoryPanel
+                history={translationHistory}
+                onClear={() => setTranslationHistory([])}
+                onCopyTranslation={handleCopyToClipboard}
+                onShareTranslation={handleShareFromHistory}
+                onReuse={handleReuseHistoryItem}
               />
             </div>
           )}
 
-          {/* Translation Error */}
-          {translationError && !isRateLimited && (
-            <div className="mb-6">
-              <ErrorDisplay
-                type="error"
-                message={translationError}
-                onDismiss={clearError}
-              />
+          {/* Stats Panel */}
+          {showStats && (
+            <div className="mb-8 animate-fade-in">
+              <StatsPanel history={translationHistory} />
             </div>
           )}
 
-          {/* Stacked Interface - All Cards Vertically Aligned */}
-          <div className="space-y-6">
+          {/* Main Content - Stacked Layout for All Screen Sizes */}
+          <div className="max-w-4xl mx-auto">
             
-            {/* Input Section */}
-            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 lg:p-6">
-              <InputSection
-                value={inputText}
-                onChange={handleInputChange}
-                error={inputError}
-                maxChars={MAX_CHARACTERS}
-                minChars={MIN_CHARACTERS}
-                isLoading={isLoading}
-              />
-            </div>
+            {/* Rate Limit Warning */}
+            {isRateLimited && (
+              <div className="mb-6">
+                <ErrorDisplay
+                  type="warning"
+                  message={`Please wait ${timeUntilNextRequest} seconds before translating again.`}
+                />
+              </div>
+            )}
 
-            {/* Style Selector */}
-            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 lg:p-6">
-              <StyleSelector
-                selectedStyle={selectedStyle}
-                onStyleSelect={setSelectedStyle}
-                isLoading={isLoading}
-              />
-            </div>
+            {/* Translation Error */}
+            {translationError && !isRateLimited && (
+              <div className="mb-6">
+                <ErrorDisplay
+                  type="error"
+                  message={translationError}
+                  onDismiss={clearError}
+                />
+              </div>
+            )}
 
-            {/* Circular Rage Meter */}
-            <div className="bg-slate-800/50 backdrop-blur-xl rounded-3xl border border-slate-700/50 p-6 lg:p-8">
-              <CircularRageMeter
-                value={rageLevel}
-                onChange={setRageLevel}
-                isLoading={isLoading}
-                onTranslate={handleTranslate}
-                isValid={isFormValid()}
-                isRateLimited={isRateLimited}
-                timeUntilNext={timeUntilNextRequest}
-                validationMessage={getValidationMessage()}
-              />
-            </div>
+            {/* Stacked Interface - All Cards Vertically Aligned */}
+            <div className="space-y-6">
+              
+              {/* Input Section */}
+              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 lg:p-6">
+                <InputSection
+                  value={inputText}
+                  onChange={handleInputChange}
+                  error={inputError}
+                  maxChars={MAX_CHARACTERS}
+                  minChars={MIN_CHARACTERS}
+                  isLoading={isLoading}
+                />
+              </div>
 
-            {/* Output Section */}
-            <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 lg:p-6">
-              <OutputSection
-                outputText={outputText}
-                rawText={rawOutputText} // Pass raw text for TTS
-                onCopy={() => handleCopyToClipboard()}
-                onClear={handleClearOutput}
-                onShare={handleShare}
-                isCopied={isCopied}
-                isLoading={isLoading}
-                translationStyle={selectedStyle}
-                rageLevel={rageLevel}
-              />
+              {/* Style Selector */}
+              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 lg:p-6">
+                <StyleSelector
+                  selectedStyle={selectedStyle}
+                  onStyleSelect={setSelectedStyle}
+                  isLoading={isLoading}
+                />
+              </div>
+
+              {/* Circular Rage Meter */}
+              <div className="bg-slate-800/50 backdrop-blur-xl rounded-3xl border border-slate-700/50 p-6 lg:p-8">
+                <CircularRageMeter
+                  value={rageLevel}
+                  onChange={setRageLevel}
+                  isLoading={isLoading}
+                  onTranslate={handleTranslate}
+                  isValid={isFormValid()}
+                  isRateLimited={isRateLimited}
+                  timeUntilNext={timeUntilNextRequest}
+                  validationMessage={getValidationMessage()}
+                />
+              </div>
+
+              {/* Output Section */}
+              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 lg:p-6">
+                <OutputSection
+                  outputText={outputText}
+                  rawText={rawOutputText} // Pass raw text for TTS
+                  onCopy={() => handleCopyToClipboard()}
+                  onClear={handleClearOutput}
+                  onShare={handleShare}
+                  isCopied={isCopied}
+                  isLoading={isLoading}
+                  translationStyle={selectedStyle}
+                  rageLevel={rageLevel}
+                />
+              </div>
+
             </div>
 
           </div>
+
+          {/* Enhanced Footer */}
+          <EnhancedFooter />
 
         </div>
 
-        {/* Enhanced Footer */}
-        <EnhancedFooter />
+        {/* Share Modal */}
+        {showShareModal && outputText && (
+          <ShareModal
+            isOpen={showShareModal}
+            onClose={() => setShowShareModal(false)}
+            translatedText={outputText}
+            originalText={inputText}
+            style={selectedStyle}
+            rageLevel={rageLevel}
+          />
+        )}
 
-      </div>
-
-      {/* Share Modal */}
-      {showShareModal && outputText && (
-        <ShareModal
-          isOpen={showShareModal}
-          onClose={() => setShowShareModal(false)}
-          translatedText={outputText}
-          originalText={inputText}
-          style={selectedStyle}
-          rageLevel={rageLevel}
+        {/* Security Configuration Panel */}
+        <SecureConfigPanel
+          isOpen={showSecurityConfig}
+          onClose={() => setShowSecurityConfig(false)}
         />
-      )}
-    </div>
+      </div>
+    </SecurityProvider>
   );
 }
 

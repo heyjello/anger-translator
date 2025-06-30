@@ -1,8 +1,9 @@
 /**
  * RageSlider Component
  * 
- * Interactive rage level slider with visual indicators, descriptive labels,
+ * Interactive rage level slider (1-100) with visual indicators, descriptive labels,
  * emoji mascot integration, and number display inside the slider thumb.
+ * Updated for 1-100 scale as specified in the persona engine.
  */
 
 import React from 'react';
@@ -21,7 +22,7 @@ export const RageSlider: React.FC<RageSliderProps> = ({
   onChange,
   isLoading,
   min = 1,
-  max = 10
+  max = 100
 }) => {
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const newValue = parseInt(event.target.value);
@@ -29,43 +30,48 @@ export const RageSlider: React.FC<RageSliderProps> = ({
   };
 
   const getAuthenticRageDescription = (level: number) => {
-    switch (level) {
-      case 1: return 'Meh, Chillin';
-      case 2: return 'Slightly Annoyed';
-      case 3: return 'Getting Irritated';
-      case 4: return 'Clearly Frustrated';
-      case 5: return 'Pretty Angry';
-      case 6: return 'Really Mad';
-      case 7: return 'Seriously Pissed';
-      case 8: return 'Extremely Angry';
-      case 9: return 'Absolutely Furious';
-      case 10: return 'NUCLEAR RAGE';
-      default: return 'Pretty Angry';
-    }
+    if (level <= 10) return 'Meh, Chillin';
+    if (level <= 20) return 'Slightly Annoyed';
+    if (level <= 30) return 'Getting Irritated';
+    if (level <= 40) return 'Clearly Frustrated';
+    if (level <= 50) return 'Pretty Angry';
+    if (level <= 60) return 'Really Mad';
+    if (level <= 70) return 'Seriously Pissed';
+    if (level <= 80) return 'Extremely Angry';
+    if (level <= 90) return 'Absolutely Furious';
+    return 'NUCLEAR RAGE';
   };
 
   const getRageLevelColor = (level: number) => {
-    if (level <= 2) return 'text-blue-400 neon-blue';
-    if (level <= 4) return 'text-green-400 neon-green';
-    if (level <= 6) return 'text-yellow-400 neon-yellow';
-    if (level <= 8) return 'text-orange-400 neon-orange';
+    if (level <= 20) return 'text-blue-400 neon-blue';
+    if (level <= 40) return 'text-green-400 neon-green';
+    if (level <= 60) return 'text-yellow-400 neon-yellow';
+    if (level <= 80) return 'text-orange-400 neon-orange';
     return 'text-red-400 neon-red';
   };
 
   const getIntensityExamples = (level: number) => {
     const examples = {
-      1: '"I wanted to follow up..." / "ugh, this is kinda annoying" / "how lovely..."',
-      2: '"As mentioned..." / "come on, really?" / "that\'s just great"',
-      3: '"As I stated previously..." / "what the heck?" / "how delightful"',
-      4: '"This is the third time..." / "are you serious?" / "how precious"',
-      5: '"I NEED this NOW!" / "WHAT is going on?!" / "OH how WONDERFUL"',
-      6: '"THIS IS UNACCEPTABLE!" / "BRUH! This is INSANE!" / "OH MAGNIFICENT!"',
-      7: '"I AM DONE!" / "WHAT THE HELL?!" / "absolutely SPECTACULAR!"',
-      8: '"I\'VE HAD ENOUGH!" / "This is damn INSANE!" / "absolutely DIVINE!"',
-      9: '"ABSOLUTELY LIVID!" / "This is complete SHIT!" / "absolutely EXQUISITE!"',
-      10: '"FUCKING BULLSHIT!" / "LOSING MY GODDAMN MIND!" / "FUCKING PERFECT!"'
+      10: '"I wanted to follow up..." / "ugh, this is kinda annoying" / "how lovely..."',
+      20: '"As mentioned..." / "come on, really?" / "that\'s just great"',
+      30: '"As I stated previously..." / "what the heck?" / "how delightful"',
+      40: '"This is the third time..." / "are you serious?" / "how precious"',
+      50: '"I NEED this NOW!" / "WHAT is going on?!" / "OH how WONDERFUL"',
+      60: '"THIS IS UNACCEPTABLE!" / "BRUH! This is INSANE!" / "OH MAGNIFICENT!"',
+      70: '"I AM DONE!" / "WHAT THE HELL?!" / "absolutely SPECTACULAR!"',
+      80: '"I\'VE HAD ENOUGH!" / "This is damn INSANE!" / "absolutely DIVINE!"',
+      90: '"ABSOLUTELY LIVID!" / "This is complete SHIT!" / "absolutely EXQUISITE!"',
+      100: '"FUCKING BULLSHIT!" / "LOSING MY GODDAMN MIND!" / "FUCKING PERFECT!"'
     };
-    return examples[level as keyof typeof examples] || examples[5];
+    
+    // Find the closest example level
+    const exampleLevel = Math.ceil(level / 10) * 10;
+    return examples[exampleLevel as keyof typeof examples] || examples[50];
+  };
+
+  // Convert 1-100 scale to emoji mascot's 1-10 scale
+  const getMascotLevel = (level: number) => {
+    return Math.ceil(level / 10);
   };
 
   return (
@@ -84,7 +90,7 @@ export const RageSlider: React.FC<RageSliderProps> = ({
       <div className="cyber-card p-6 rounded-xl border border-[#1e293b] hover:border-blue-500/30 transition-all duration-300">
         {/* Emoji Mascot */}
         <div className="flex justify-center mb-6">
-          <EmojiMascot rageLevel={value} />
+          <EmojiMascot rageLevel={getMascotLevel(value)} />
         </div>
 
         <div className="flex items-center gap-6">
@@ -106,7 +112,7 @@ export const RageSlider: React.FC<RageSliderProps> = ({
               />
               {/* Number display positioned over the thumb */}
               <div 
-                className="absolute top-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10 text-white font-bold text-sm filter drop-shadow-lg"
+                className="absolute top-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none z-10 text-white font-bold text-xs filter drop-shadow-lg"
                 style={{ left: `${((value - min) / (max - min)) * 100}%` }}
               >
                 {value}
@@ -127,7 +133,7 @@ export const RageSlider: React.FC<RageSliderProps> = ({
         <div className="mt-4 p-3 bg-[#0a0f1b]/50 rounded-lg border border-[#1e293b]">
           <div className="flex items-center justify-between mb-1">
             <p className="text-xs text-gray-500">Level {value} Examples:</p>
-            {value >= 8 && (
+            {value >= 80 && (
               <span className="text-xs text-red-400 font-medium">⚠️ Strong Language</span>
             )}
           </div>

@@ -1,17 +1,16 @@
 /**
  * ElevenLabs Text-to-Speech Service
  * 
- * Provides high-quality voice synthesis for translated text using ElevenLabs API.
- * Now uses the centralized voice configuration system with enhanced features.
+ * Uses voices EXACTLY as they come from ElevenLabs with NO modifications.
+ * All voice settings are preserved exactly as configured in ElevenLabs.
  */
 
 import { 
   getVoiceForStyle, 
-  adjustVoiceForIntensity,
-  getAdvancedVoiceConfig,
-  preprocessTextForStyle,
+  cleanTextForTTS,
   VOICE_MODELS,
-  type VoiceConfig
+  type VoiceConfig,
+  type RageStyle
 } from '../config/elevenLabsVoices';
 
 export interface ElevenLabsConfig {
@@ -68,23 +67,6 @@ export class ElevenLabsService {
   }
 
   /**
-   * Alternative method name for backward compatibility
-   */
-  isReady(): boolean {
-    return this.isConfigured();
-  }
-
-  /**
-   * Get current configuration status
-   */
-  getStatus(): { configured: boolean; hasApiKey: boolean } {
-    return {
-      configured: this._isConfigured,
-      hasApiKey: !!this.config.apiKey && this.config.apiKey !== 'your_api_key_here'
-    };
-  }
-
-  /**
    * Configure the service with API key
    */
   configure(apiKey: string): void {
@@ -100,31 +82,31 @@ export class ElevenLabsService {
   /**
    * Generate cache key for audio
    */
-  private getCacheKey(text: string, voiceId: string, settings: VoiceConfig['voice_settings']): string {
-    return `${voiceId}-${JSON.stringify(settings)}-${text.substring(0, 50)}`;
+  private getCacheKey(text: string, voiceId: string): string {
+    return `${voiceId}-${text.substring(0, 50)}`;
   }
 
   /**
-   * Make a request to ElevenLabs API
+   * Make a request to ElevenLabs API with NO MODIFICATIONS to voice settings
    */
   private async makeRequest(request: TTSRequest): Promise<ArrayBuffer> {
     if (!this.isConfigured()) {
       throw new Error('ElevenLabs service not configured. Please provide a valid API key from https://elevenlabs.io/');
     }
 
-    console.log(`🎤 Generating speech with voice: ${request.voice_id}`);
+    console.log(`🎤 Generating speech with voice: ${request.voice_id} (NO MODIFICATIONS)`);
 
     const response = await fetch(`${this.config.baseUrl}/text-to-speech/${request.voice_id}`, {
       method: 'POST',
       headers: {
-        'Accept': 'audio/mpeg',
+        'Accept': 'audio/mp3',
         'Content-Type': 'application/json',
         'xi-api-key': this.config.apiKey
       },
       body: JSON.stringify({
         text: request.text,
         model_id: request.model_id || this.config.defaultModel,
-        voice_settings: request.voice_settings
+        voice_settings: request.voice_settings // USED EXACTLY AS PROVIDED
       })
     });
 
@@ -150,86 +132,7 @@ export class ElevenLabsService {
   }
 
   /**
-   * Enhanced text-to-speech method using voice configuration system
-   */
-  async textToSpeech(
-    text: string, 
-    style: 'corporate' | 'gamer' | 'sarcastic',
-    intensity: number
-  ): Promise<ArrayBuffer> {
-    if (!this.isConfigured()) {
-      throw new Error('ElevenLabs service not configured');
-    }
-
-    // Get voice configuration for the style
-    const voiceConfig = getVoiceForStyle(style);
-    
-    // Adjust settings based on intensity
-    const adjustedSettings = adjustVoiceForIntensity(
-      voiceConfig.voice_settings,
-      intensity
-    );
-
-    // Preprocess text for better speech delivery
-    const processedText = this.preprocessText(text, intensity);
-
-    const response = await fetch(
-      `https://api.elevenlabs.io/v1/text-to-speech/${voiceConfig.voice_id}`,
-      {
-        method: 'POST',
-        headers: {
-          'Accept': 'audio/mpeg',
-          'Content-Type': 'application/json',
-          'xi-api-key': this.config.apiKey
-        },
-        body: JSON.stringify({
-          text: processedText,
-          model_id: 'eleven_monolingual_v1',
-          voice_settings: adjustedSettings
-        })
-      }
-    );
-
-    if (!response.ok) {
-      throw new Error(`ElevenLabs API error: ${response.statusText}`);
-    }
-
-    return await response.arrayBuffer();
-  }
-
-  /**
-   * Enhanced text preprocessing for better speech
-   */
-  private preprocessText(text: string, intensity: number): string {
-    // Add pauses after punctuation for dramatic effect
-    let processed = text
-      .replace(/!/g, '! ... ')
-      .replace(/\?/g, '? ... ')
-      .replace(/\.\.\./g, ' ... ... ');
-
-    // For high intensity, add more dramatic pauses
-    if (intensity >= 7) {
-      processed = processed.replace(/,/g, ', ... ');
-    }
-
-    // Add emphasis for all caps words
-    if (intensity >= 8) {
-      processed = processed.replace(/([A-Z]{3,})/g, '<emphasis level="strong">$1</emphasis>');
-    }
-
-    return processed;
-  }
-
-  /**
-   * Get current voice info for a style
-   */
-  getCurrentVoiceInfo(style: 'corporate' | 'gamer' | 'sarcastic'): string {
-    const voice = getVoiceForStyle(style);
-    return `${voice.name} - ${voice.description}`;
-  }
-
-  /**
-   * Convert text to speech with advanced voice configuration (enhanced version)
+   * Generate speech using voice EXACTLY as configured in ElevenLabs
    */
   async generateSpeech(
     text: string, 
@@ -240,31 +143,24 @@ export class ElevenLabsService {
       throw new Error('ElevenLabs API key not configured. Please set up your API key from https://elevenlabs.io/');
     }
 
-    // Get advanced voice configuration
-    const voiceConfig = getAdvancedVoiceConfig(
-      style as 'corporate' | 'gamer' | 'sarcastic', 
-      rageLevel
-    );
+    // Get voice configuration - NO MODIFICATIONS
+    const voiceConfig = getVoiceForStyle(style as RageStyle);
+    
+    // Clean text to remove tone cues only
+    const cleanedText = cleanTextForTTS(text);
     
     // Check cache first
-    const cacheKey = this.getCacheKey(text, voiceConfig.voice_id, voiceConfig.voice_settings);
+    const cacheKey = this.getCacheKey(cleanedText, voiceConfig.voice_id);
     if (this.audioCache.has(cacheKey)) {
       console.log('🎵 Using cached audio');
       return this.audioCache.get(cacheKey)!;
     }
 
-    // Preprocess text for better speech synthesis
-    const processedText = preprocessTextForStyle(
-      text, 
-      style as 'corporate' | 'gamer' | 'sarcastic', 
-      rageLevel
-    );
-
-    // Prepare request
+    // Prepare request with EXACT voice settings from ElevenLabs
     const request: TTSRequest = {
-      text: processedText,
+      text: cleanedText,
       voice_id: voiceConfig.voice_id,
-      voice_settings: voiceConfig.voice_settings,
+      voice_settings: voiceConfig.voice_settings, // NO MODIFICATIONS
       model_id: this.config.defaultModel
     };
 
@@ -272,15 +168,15 @@ export class ElevenLabsService {
       const audioBuffer = await this.makeRequest(request);
       
       // Convert to blob URL
-      const audioBlob = new Blob([audioBuffer], { type: 'audio/mpeg' });
+      const audioBlob = new Blob([audioBuffer], { type: 'audio/mp3' });
       const audioUrl = URL.createObjectURL(audioBlob);
       
       // Cache the result
       this.audioCache.set(cacheKey, audioUrl);
       
-      console.log('✅ Speech generated successfully');
+      console.log('✅ Speech generated successfully with UNMODIFIED voice settings');
       console.log(`🎭 Voice: ${voiceConfig.name} (${voiceConfig.description})`);
-      console.log(`🎚️ Settings: Stability ${voiceConfig.voice_settings.stability}, Style ${voiceConfig.voice_settings.style}`);
+      console.log(`🎚️ Settings: EXACTLY as configured in ElevenLabs`);
       
       return audioUrl;
     } catch (error) {
@@ -290,17 +186,14 @@ export class ElevenLabsService {
   }
 
   /**
-   * Test the API connection with a style-specific test phrase
+   * Test the API connection
    */
-  async testConnection(style: 'corporate' | 'gamer' | 'sarcastic' = 'corporate'): Promise<{ success: boolean; error?: string }> {
+  async testConnection(style: RageStyle = 'corporate'): Promise<{ success: boolean; error?: string }> {
     try {
       console.log('🧪 Testing ElevenLabs connection...');
       
-      // Import test phrase function
-      const { createTestPhrase } = await import('../config/elevenLabsVoices');
-      const testText = createTestPhrase(style);
-      
-      const audioUrl = await this.generateSpeech(testText, style, 3);
+      const testText = "This is a test of the ElevenLabs voice service.";
+      const audioUrl = await this.generateSpeech(testText, style, 30);
       
       // Clean up test audio
       URL.revokeObjectURL(audioUrl);
@@ -317,59 +210,37 @@ export class ElevenLabsService {
   }
 
   /**
-   * Get available voice configurations
+   * Get voice configuration for a specific style
    */
-  getAvailableVoices(): Array<{ id: string; name: string; style: string; description: string }> {
-    const { VOICE_CONFIGS } = require('../config/elevenLabsVoices');
-    return Object.entries(VOICE_CONFIGS).map(([style, config]: [string, any]) => ({
-      id: config.voice_id,
-      name: config.name,
-      style,
-      description: config.description
-    }));
-  }
-
-  /**
-   * Get available voice models
-   */
-  getAvailableModels(): typeof VOICE_MODELS {
-    return VOICE_MODELS;
-  }
-
-  /**
-   * Set voice model quality
-   */
-  setVoiceModel(modelKey: keyof typeof VOICE_MODELS): void {
-    this.config.defaultModel = VOICE_MODELS[modelKey].model_id;
-    console.log(`🎚️ Voice model set to: ${VOICE_MODELS[modelKey].name}`);
+  getVoiceConfig(style: string): VoiceConfig {
+    return getVoiceForStyle(style as RageStyle);
   }
 
   /**
    * Clear audio cache
    */
   clearCache(): void {
-    // Revoke all blob URLs to free memory
     this.audioCache.forEach(url => URL.revokeObjectURL(url));
     this.audioCache.clear();
     console.log('🗑️ Audio cache cleared');
   }
 
   /**
-   * Get cache statistics
+   * Get current voice info for a style
    */
-  getCacheStats(): { size: number; keys: string[] } {
-    return {
-      size: this.audioCache.size,
-      keys: Array.from(this.audioCache.keys())
-    };
+  getCurrentVoiceInfo(style: RageStyle): string {
+    const voice = getVoiceForStyle(style);
+    return `${voice.name} - ${voice.description}`;
   }
 
   /**
-   * Get voice configuration for a specific style
+   * Get status
    */
-  getVoiceConfig(style: string): VoiceConfig {
-    const validStyle = style as 'corporate' | 'gamer' | 'sarcastic';
-    return getVoiceForStyle(validStyle);
+  getStatus(): { configured: boolean; hasApiKey: boolean } {
+    return {
+      configured: this._isConfigured,
+      hasApiKey: !!this.config.apiKey && this.config.apiKey !== 'your_api_key_here'
+    };
   }
 }
 

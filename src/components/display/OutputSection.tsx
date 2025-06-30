@@ -40,7 +40,7 @@ export const OutputSection: React.FC<OutputSectionProps> = ({
         </label>
         {outputText && (
           <div className="flex items-center gap-2">
-            {/* Text-to-Speech Button */}
+            {/* Text-to-Speech Button with Integrated Bleep Support */}
             <TTSButton
               text={outputText}
               style={translationStyle}

@@ -1,6 +1,6 @@
 export interface TranslationRequest {
   text: string;
-  style: 'corporate' | 'gamer' | 'sarcastic';
+  style: 'enforcer' | 'highland-howler' | 'don' | 'cracked-controller' | 'karen' | 'corporate' | 'sarcastic';
   intensity: number;
 }
 
@@ -10,202 +10,201 @@ export interface TranslationResponse {
   error?: string;
 }
 
-// Authentic rage responses based on real anger patterns
+// The Enforcer - Luther-style righteous fury with audio tags and profanity system
+const generateEnforcerRant = (text: string, intensity: number): string => {
+  let response = "";
+  
+  if (intensity <= 30) {
+    response += "[disappointed] Listen here, ";
+    response += `${text.toLowerCase()} and I'm supposed to just [frustrated] <emphasis level="moderate">accept this</emphasis>? `;
+    response += `[sarcastic] Oh, that's real nice. Real <emphasis level="moderate">professional</emphasis>.`;
+  } else if (intensity <= 60) {
+    response += "[annoyed] OH HELL NAH! ";
+    response += `[angry] ${text} and you think that's gonna <emphasis level="strong">fly</emphasis>? `;
+    response += "[mocking] I wish you would try that again! [laughing] This some **bullshit** right here!";
+  } else {
+    response += "[threatening calm] Boy if you don't... ";
+    response += `[explosive] <emphasis level="strong">${text.toUpperCase()}</emphasis> [shouting] ARE YOU **SERIOUS** RIGHT NOW?! `;
+    response += `[sputtering] I'm bout to <emphasis level="strong">LOSE IT</emphasis> over here! [exhales sharply] `;
+    response += `[mic drop] <emphasis level="strong">AND THAT'S ON PERIOD!</emphasis> Case **CLOSED**!`;
+  }
+  
+  return response;
+};
+
+// The Highland Howler - Explosive Scottish Dad with audio tags
+const generateHighlandHowlerRant = (text: string, intensity: number): string => {
+  let response = "";
+  
+  if (intensity <= 30) {
+    response += "[disappointed] Och, ";
+    response += `${text.toLowerCase()} and I'm supposed to just [frustrated] <emphasis level="moderate">sit here</emphasis> like some numpty? `;
+    response += `[sarcastic] Aye, that's <emphasis level="moderate">brilliant</emphasis>, that is.`;
+  } else if (intensity <= 60) {
+    response += `[annoyed] For crying out <emphasis level="strong">LOUD</emphasis>! `;
+    response += `[angry] ${text} - what in the name of the <emphasis level="strong">wee man</emphasis> is this? `;
+    response += `[mocking] Ya absolute <emphasis level="strong">weapon</emphasis>! [laughing] This is pure <emphasis level="strong">mental</emphasis>!`;
+  } else {
+    response += "[threatening calm] What in the name of... ";
+    response += `[explosive] **BLOODY HELL!** [shouting] ${text.toUpperCase()} ya daft wee <emphasis level="strong">BAMPOT</emphasis>! `;
+    response += `[sputtering] I'll do it ma<emphasis level="strong">SELF</emphasis> before I deal with this <emphasis level="strong">nonsense</emphasis>! [exhales sharply] `;
+    response += `[boiling] Away and bile yer <emphasis level="strong">HEID</emphasis>, the lot of ye!`;
+  }
+  
+  return response;
+};
+
+// The Don - NY Italian-American with audio tags
+const generateDonRant = (text: string, intensity: number): string => {
+  let response = "";
+  
+  if (intensity <= 30) {
+    response += "[disappointed] Ay, listen here - ";
+    response += `${text.toLowerCase()} and you think that's <emphasis level="moderate">acceptable</emphasis>? `;
+    response += `[frustrated] What am I, chopped <emphasis level="moderate">liver</emphasis> here?`;
+  } else if (intensity <= 60) {
+    response += `[annoyed] What's ya <emphasis level="strong">PROBLEM</emphasis> here? `;
+    response += `[angry] ${text} - you gotta be <emphasis level="strong">kiddin'</emphasis> me! `;
+    response += `[mocking] Ya <emphasis level="strong">mook</emphasis>! [laughing] This is <emphasis level="strong">ridiculous</emphasis>!`;
+  } else {
+    response += "[threatening calm] You come to me... ";
+    response += `[explosive] <emphasis level="strong">FUGGEDABOUTIT!</emphasis> [shouting] ${text.toUpperCase()} ya <emphasis level="strong">GAVONE</emphasis>! `;
+    response += "[furious calm] You're breakin' my **BALLS** here! [offended] ";
+    response += `[yelling] Don't make me come down there, <emphasis level="strong">capisce</emphasis>?`;
+  }
+  
+  return response;
+};
+
+// The Cracked Controller - Gen-Z Latino Gamer with audio tags
+const generateCrackedControllerRant = (text: string, intensity: number): string => {
+  let response = "";
+  
+  if (intensity <= 30) {
+    response += "[disappointed] Bruh, ";
+    response += `${text.toLowerCase()} and I'm supposed to just [frustrated] <emphasis level="moderate">deal with this</emphasis>? `;
+    response += `[sarcastic] That's <emphasis level="moderate">cap</emphasis>, no shot.`;
+  } else if (intensity <= 60) {
+    response += `[annoyed] NAH <emphasis level="strong">BRO</emphasis>! `;
+    response += `[angry] ${text} - this is straight <emphasis level="strong">TRASH</emphasis>! `;
+    response += `[mock disbelief] Skill <emphasis level="strong">ISSUE</emphasis> much? [laughing] ¡No <emphasis level="strong">mames</emphasis>!`;
+  } else {
+    response += "[threatening calm] Brooooo... ";
+    response += `[explosive] <prosody rate="1.3" pitch="+15%">**WHAT THE SHIT!**</prosody> [screaming] ${text.toUpperCase()} and I'm getting <emphasis level="strong">CLAPPED</emphasis>! `;
+    response += `[panicked] I'm about to <emphasis level="strong">UNINSTALL</emphasis> this whole thing! [hyperventilating] `;
+    response += `[rage quit] <emphasis level="strong">RATIO + L + BOZO!</emphasis> Touching <emphasis level="strong">GRASS</emphasis> after this!`;
+  }
+  
+  return response;
+};
+
+// Karen - Suburban Entitlement with audio tags
+const generateKarenRant = (text: string, intensity: number): string => {
+  let response = "";
+  
+  if (intensity <= 30) {
+    response += "[fake-nice] Excuse me, but ";
+    response += `${text.toLowerCase()} and that's simply [frustrated] <emphasis level="moderate">unacceptable</emphasis>. `;
+    response += `[sarcastic] I'm a <emphasis level="moderate">paying customer</emphasis> here.`;
+  } else if (intensity <= 60) {
+    response += `[annoyed] I'm <emphasis level="strong">SORRY</emphasis>, but `;
+    response += `[angry] ${text} - this is <emphasis level="strong">RIDICULOUS</emphasis>! `;
+    response += `[condescending] I want to speak to your <emphasis level="strong">MANAGER</emphasis>! [mocking] Do you know who I <emphasis level="strong">AM</emphasis>?`;
+  } else {
+    response += "[threatening calm] This is completely... ";
+    response += `[explosive] <emphasis level="strong">UNACCEPTABLE!</emphasis> [screeching] ${text.toUpperCase()} and I'm <emphasis level="strong">CALLING CORPORATE</emphasis>! `;
+    response += `[dead calm] My husband is a <emphasis level="strong">LAWYER</emphasis> and I'm posting this on <emphasis level="strong">FACEBOOK</emphasis>! `;
+    response += `[nuclear] I will be leaving a **DAMN** <emphasis level="strong">REVIEW</emphasis>!`;
+  }
+  
+  return response;
+};
+
+// Corporate - Professional passive-aggressive meltdown with audio tags
+const generateCorporateRant = (text: string, intensity: number): string => {
+  let response = "";
+  
+  if (intensity <= 30) {
+    response += "[professional calm] As per my previous email, ";
+    response += `${text.toLowerCase()} and I [building frustration] <emphasis level="moderate">need clarification</emphasis> on this matter. `;
+    response += `[sarcastic] Please <emphasis level="moderate">advise</emphasis> how we can move forward.`;
+  } else if (intensity <= 60) {
+    response += `[frustrated] I <emphasis level="strong">SHOULDN'T</emphasis> have to explain this again! `;
+    response += `[angry] ${text} - this is the <emphasis level="strong">THIRD TIME</emphasis> I've addressed this! `;
+    response += `[barely contained] Please advise how we can get some <emphasis level="strong">ACTUAL RESULTS</emphasis>!`;
+  } else {
+    response += `[threatening calm] I've had <emphasis level="strong">ENOUGH</emphasis>. `;
+    response += `[explosive] <emphasis level="strong">${text.toUpperCase()}</emphasis> [shouting] and this is <emphasis level="strong">ABSOLUTELY UNACCEPTABLE</emphasis>! `;
+    response += `[professional fury] I'm **DONE** with this <emphasis level="strong">incompetence</emphasis>! `;
+    response += `[mic drop] Please advise how we can escalate this to someone who <emphasis level="strong">ACTUALLY DOES THEIR JOB</emphasis>!`;
+  }
+  
+  return response;
+};
+
+// Sarcastic - Intellectual destruction with audio tags
+const generateSarcasticRant = (text: string, intensity: number): string => {
+  let response = "";
+  
+  if (intensity <= 30) {
+    response += `[dripping sarcasm] Oh, how <emphasis level="moderate">lovely</emphasis>. `;
+    response += `${text.toLowerCase()} - [mock enthusiasm] truly <emphasis level="moderate">enlightening</emphasis>. `;
+    response += `[intellectual superiority] What a <emphasis level="moderate">delightful</emphasis> experience.`;
+  } else if (intensity <= 60) {
+    response += `[mock enthusiasm] <emphasis level="strong">WOW</emphasis>, `;
+    response += `[sarcastic] ${text} - I'm just <emphasis level="strong">THRILLED</emphasis> to deal with this! `;
+    response += `[dripping sarcasm] How absolutely <emphasis level="strong">RIVETING</emphasis>! What a <emphasis level="strong">masterpiece</emphasis> of communication!`;
+  } else {
+    response += `[threatening calm] Oh, <emphasis level="strong">MAGNIFICENT</emphasis>. `;
+    response += `[explosive sarcasm] <emphasis level="strong">${text.toUpperCase()}</emphasis> [mock enthusiasm] - truly, your competence knows <emphasis level="strong">NO BOUNDS</emphasis>! `;
+    response += `[intellectual destruction] What a <emphasis level="strong">DELIGHTFUL</emphasis> way to waste everyone's time! `;
+    response += `[devastating wit] Absolutely <emphasis level="strong">EXQUISITE</emphasis> work here!`;
+  }
+  
+  return response;
+};
+
+// Main translation function with proper persona routing
 const mockTranslate = async (request: TranslationRequest): Promise<TranslationResponse> => {
-  // Simulate API delay
   await new Promise(resolve => setTimeout(resolve, 800 + Math.random() * 1200));
   
   const { text, style, intensity } = request;
   
-  // Extract context without repeating input
-  const extractContext = (text: string): string => {
-    const lowerText = text.toLowerCase();
-    if (lowerText.includes('credit') || lowerText.includes('recognition')) return 'credit';
-    if (lowerText.includes('meeting')) return 'meeting';
-    if (lowerText.includes('document') || lowerText.includes('report')) return 'document';
-    if (lowerText.includes('help')) return 'assistance';
-    if (lowerText.includes('review')) return 'review';
-    if (lowerText.includes('fix') || lowerText.includes('problem')) return 'issue';
-    return 'request';
-  };
+  let translation = "";
   
-  const context = extractContext(text);
-  let translatedText = '';
-  
-  // Generate authentic rage responses based on intensity
   switch (style) {
+    case 'enforcer':
+      translation = generateEnforcerRant(text, intensity);
+      break;
+    case 'highland-howler':
+      translation = generateHighlandHowlerRant(text, intensity);
+      break;
+    case 'don':
+      translation = generateDonRant(text, intensity);
+      break;
+    case 'cracked-controller':
+      translation = generateCrackedControllerRant(text, intensity);
+      break;
+    case 'karen':
+      translation = generateKarenRant(text, intensity);
+      break;
     case 'corporate':
-      translatedText = getCorporateRage(context, intensity);
+      translation = generateCorporateRant(text, intensity);
       break;
-      
-    case 'gamer':
-      translatedText = getGamerRage(context, intensity);
-      break;
-      
     case 'sarcastic':
-      translatedText = getSarcasticRage(context, intensity);
+      translation = generateSarcasticRant(text, intensity);
       break;
-      
     default:
-      translatedText = `This ${context} situation is frustrating. I need this resolved.`;
+      translation = `[Mock Response] ${style.toUpperCase()} Level ${intensity}: ${text} - Please configure AI for dynamic responses!`;
   }
   
   return {
-    translatedText,
+    translatedText: translation,
     success: true
   };
 };
 
-// Corporate rage responses by intensity level with REAL profanity at high levels
-const getCorporateRage = (context: string, intensity: number): string => {
-  const responses = {
-    1: [
-      `I wanted to follow up on this ${context} matter. Could we please address this?`,
-      `Just checking in about the ${context} situation. When might this be resolved?`
-    ],
-    2: [
-      `As mentioned, I need an update on this ${context}. Please prioritize this.`,
-      `Per my email, this ${context} requires attention. Let's get this handled.`
-    ],
-    3: [
-      `As I stated previously, this ${context} needs immediate action. This is important.`,
-      `I need to reiterate that this ${context} is still pending. Please resolve this.`
-    ],
-    4: [
-      `This is the third time I'm asking about this ${context}. I need this handled NOW.`,
-      `I'm losing patience with this ${context} situation. This requires urgent attention.`
-    ],
-    5: [
-      `I NEED this ${context} resolved immediately! This is completely unacceptable.`,
-      `This ${context} situation is RIDICULOUS. I demand immediate action.`
-    ],
-    6: [
-      `THIS IS ABSOLUTELY UNACCEPTABLE! This ${context} has gone on far too long.`,
-      `I CANNOT BELIEVE this ${context} is still an issue! Fix this NOW.`
-    ],
-    7: [
-      `I AM DONE with this ${context} nonsense! This ends TODAY.`,
-      `This ${context} situation is ABSOLUTELY RIDICULOUS! I've had ENOUGH.`
-    ],
-    8: [
-      `I HAVE HAD ENOUGH of this ${context} disaster! This is damn UNACCEPTABLE.`,
-      `THIS ENDS NOW! This ${context} situation is beyond hell RIDICULOUS.`
-    ],
-    9: [
-      `I AM ABSOLUTELY LIVID about this ${context}! This is beyond damn acceptable.`,
-      `THIS IS COMPLETE SHIT! This ${context} situation is driving me CRAZY.`
-    ],
-    10: [
-      `I AM DONE WITH THIS FUCKING ${context} BULLSHIT! This is COMPLETE goddamn NONSENSE!`,
-      `WHAT THE FUCK IS GOING ON with this ${context}?! This is ABSOLUTELY fucking INSANE!`
-    ]
-  };
-  
-  const levelResponses = responses[intensity as keyof typeof responses] || responses[5];
-  return levelResponses[Math.floor(Math.random() * levelResponses.length)];
-};
-
-// Gamer rage responses by intensity level with REAL profanity at high levels
-const getGamerRage = (context: string, intensity: number): string => {
-  const responses = {
-    1: [
-      `Ugh, this ${context} thing is kinda annoying. Can we fix this?`,
-      `Seriously? This ${context} is bugging me. Come on.`
-    ],
-    2: [
-      `Come on, this ${context} is getting old. Really?`,
-      `This ${context} is starting to tick me off. Fix it please.`
-    ],
-    3: [
-      `Dude, this ${context} is really annoying me. What the heck?`,
-      `This ${context} is driving me nuts. Can we please sort this out?`
-    ],
-    4: [
-      `Are you serious with this ${context}? This is getting ridiculous.`,
-      `This ${context} is really starting to piss me off. Come ON.`
-    ],
-    5: [
-      `WHAT is going on with this ${context}?! This is RIDICULOUS.`,
-      `ARE YOU KIDDING ME with this ${context}? This is insane!`
-    ],
-    6: [
-      `BRUH! This ${context} is absolutely INSANE! What the hell?`,
-      `This ${context} is driving me CRAZY! ARE YOU SERIOUS right now?`
-    ],
-    7: [
-      `WHAT THE HELL is this ${context} nonsense?! This is ABSOLUTELY insane!`,
-      `ARE YOU FREAKING SERIOUS?! This ${context} is completely RIDICULOUS!`
-    ],
-    8: [
-      `WHAT THE HELL is wrong with this ${context}?! This is damn INSANE!`,
-      `I'M LOSING MY MIND over this ${context}! This is complete CRAP!`
-    ],
-    9: [
-      `WHAT THE ACTUAL HELL?! This ${context} is driving me ABSOLUTELY shit INSANE!`,
-      `ARE YOU OUT OF YOUR DAMN MIND?! This ${context} is COMPLETELY fucked!`
-    ],
-    10: [
-      `WHAT THE FUCK IS THIS ${context} BULLSHIT?! I'M LOSING MY GODDAMN MIND!`,
-      `ARE YOU FUCKING KIDDING ME?! This ${context} is ABSOLUTELY FUCKING INSANE!`
-    ]
-  };
-  
-  const levelResponses = responses[intensity as keyof typeof responses] || responses[5];
-  return levelResponses[Math.floor(Math.random() * levelResponses.length)];
-};
-
-// Sarcastic rage responses by intensity level with REAL profanity at high levels
-const getSarcasticRage = (context: string, intensity: number): string => {
-  const responses = {
-    1: [
-      `Oh how lovely, another ${context} situation. That's just great.`,
-      `Well that's fantastic, this ${context} is exactly what I needed today.`
-    ],
-    2: [
-      `How wonderful, this ${context} is going so well. Absolutely brilliant.`,
-      `Oh that's just perfect, this ${context} is such a delight to deal with.`
-    ],
-    3: [
-      `How absolutely delightful, this ${context} is just spectacular. So impressive.`,
-      `Oh magnificent, this ${context} situation is exactly what I hoped for.`
-    ],
-    4: [
-      `How absolutely precious, this ${context} is such a masterpiece. Truly inspiring.`,
-      `Oh what a brilliant display of ${context} management. Simply outstanding.`
-    ],
-    5: [
-      `OH how WONDERFUL, this ${context} is absolutely RIVETING! What a masterpiece.`,
-      `How absolutely THRILLING, this ${context} situation is just SPECTACULAR!`
-    ],
-    6: [
-      `OH MAGNIFICENT! This ${context} is absolutely DIVINE! What a BRILLIANT display.`,
-      `How absolutely EXQUISITE, this ${context} is just PHENOMENAL! Truly OUTSTANDING.`
-    ],
-    7: [
-      `OH how absolutely SPECTACULAR! This ${context} is just DIVINE! What BRILLIANT work.`,
-      `How absolutely STUNNING, this ${context} is a true MASTERPIECE of incompetence!`
-    ],
-    8: [
-      `OH how absolutely DIVINE! This ${context} is just damn PHENOMENAL! What a STUNNING example.`,
-      `How absolutely EXQUISITE, this ${context} is truly a hell of a MAGNIFICENT disaster!`
-    ],
-    9: [
-      `OH how absolutely EXQUISITE! This ${context} is just shit PHENOMENAL! What a DIVINE disaster.`,
-      `How absolutely SPECTACULAR, this ${context} is truly a damn MASTERPIECE of bullshit!`
-    ],
-    10: [
-      `OH how absolutely FUCKING PERFECT! This ${context} is just GODDAMN SPECTACULAR bullshit!`,
-      `How absolutely FUCKING DIVINE! This ${context} is a true MASTERPIECE of complete shit!`
-    ]
-  };
-  
-  const levelResponses = responses[intensity as keyof typeof responses] || responses[5];
-  return levelResponses[Math.floor(Math.random() * levelResponses.length)];
-};
-
-// Main translation function
 export const translateText = async (request: TranslationRequest): Promise<TranslationResponse> => {
-  // Input validation
   if (!request.text?.trim()) {
     return {
       translatedText: '',
@@ -238,7 +237,6 @@ class RateLimiter {
 
   canMakeRequest(): boolean {
     const now = Date.now();
-    // Remove old requests outside the time window
     this.requests = this.requests.filter(time => now - time < this.timeWindow);
     
     if (this.requests.length >= this.maxRequests) {
@@ -257,4 +255,4 @@ class RateLimiter {
   }
 }
 
-export const rateLimiter = new RateLimiter(10, 60000); // 10 requests per minute
+export const rateLimiter = new RateLimiter(10, 60000);

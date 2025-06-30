@@ -1,8 +1,8 @@
 /**
- * OpenRouter AI Service
+ * OpenRouter AI Service - Audio Tag Persona Engine
  * 
- * Provides real AI translation capabilities using OpenRouter's unified API.
- * Optimized for Mixtral-8x7b-instruct and other high-quality models.
+ * Uses audio tags for emphasis and ** ONLY for actual profanity that needs bleeping.
+ * Each persona has unique emotional patterns with proper audio markup.
  */
 
 export interface OpenRouterConfig {
@@ -232,23 +232,6 @@ class OpenRouterService {
   }
 
   /**
-   * Extract key context from input without repeating it
-   */
-  private extractContext(text: string): string {
-    const lowerText = text.toLowerCase();
-    
-    // Detect main topic
-    if (lowerText.includes('credit') || lowerText.includes('recognition')) return 'credit/recognition';
-    if (lowerText.includes('meeting') || lowerText.includes('schedule')) return 'meeting';
-    if (lowerText.includes('document') || lowerText.includes('report')) return 'document';
-    if (lowerText.includes('help') || lowerText.includes('assist')) return 'assistance';
-    if (lowerText.includes('review') || lowerText.includes('feedback')) return 'review';
-    if (lowerText.includes('fix') || lowerText.includes('problem')) return 'issue';
-    
-    return 'request';
-  }
-
-  /**
    * Make a request to OpenRouter API
    */
   private async makeRequest(request: OpenRouterRequest): Promise<OpenRouterResponse> {
@@ -296,33 +279,31 @@ class OpenRouterService {
   }
 
   /**
-   * Generate ultra-concise rage translation (optimized for Mixtral)
+   * Audio Tag Persona Engine - Uses audio tags for emphasis, ** only for profanity
    */
   async translateText(
     text: string, 
-    style: 'corporate' | 'gamer' | 'sarcastic', 
-    intensity: number
+    persona: 'enforcer' | 'highland-howler' | 'don' | 'cracked-controller' | 'karen' | 'corporate' | 'sarcastic', 
+    rageLevel: number
   ): Promise<string> {
     if (!this.isReady()) {
       throw new Error('OpenRouter API key not configured. Please set up your API key from https://openrouter.ai/keys');
     }
 
-    const context = this.extractContext(text);
-    const systemPrompt = this.buildAuthenticRagePrompt(style, intensity);
-    const userPrompt = `Create a brief ${style} rage response about ${context}. Maximum 2 sentences.`;
+    const systemPrompt = this.buildAudioTagPersonaPrompt(persona, rageLevel);
+    const userPrompt = text; // Direct user input
 
-    // Ultra-restrictive parameters for minimal output
     const request: OpenRouterRequest = {
       model: this.config.model,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: userPrompt }
       ],
-      max_tokens: 80, // Drastically reduced
-      temperature: 0.7,
-      top_p: 0.8,
-      frequency_penalty: 0.3,
-      presence_penalty: 0.2
+      max_tokens: 80, // VERY SHORT responses
+      temperature: 0.9, // High creativity for expressive personas
+      top_p: 0.9,
+      frequency_penalty: 0.5, // Avoid repetition
+      presence_penalty: 0.3
     };
 
     try {
@@ -333,12 +314,21 @@ class OpenRouterService {
         throw new Error('No content received from AI model');
       }
 
-      // Additional length check - truncate if too long
-      const sentences = content.split(/[.!?]+/).filter(s => s.trim());
-      const truncated = sentences.slice(0, 2).join('. ').trim();
+      // Clean up the response but preserve audio tags and profanity markers
+      let cleanedContent = content.trim();
       
-      console.log('🎭 Ultra-concise translation generated');
-      return truncated + (truncated.endsWith('.') || truncated.endsWith('!') || truncated.endsWith('?') ? '' : '!');
+      // Remove any quotes that might wrap the entire response
+      if (cleanedContent.startsWith('"') && cleanedContent.endsWith('"')) {
+        cleanedContent = cleanedContent.slice(1, -1);
+      }
+      
+      // Ensure it ends with proper punctuation
+      if (!/[.!?]$/.test(cleanedContent)) {
+        cleanedContent += '!';
+      }
+      
+      console.log('🎭 Audio tag persona translation generated');
+      return cleanedContent;
     } catch (error) {
       console.error('❌ Translation failed:', error);
       throw error;
@@ -346,110 +336,121 @@ class OpenRouterService {
   }
 
   /**
-   * Build authentic rage prompt based on real anger patterns
+   * Build persona prompts with audio tags for emphasis and ** only for profanity
    */
-  private buildAuthenticRagePrompt(style: string, intensity: number): string {
-    const rageLevel = this.getAuthenticRageLevel(intensity);
-    
-    const stylePrompts = {
-      corporate: `Create a brief corporate rage response. ${rageLevel.corporate}`,
-      gamer: `Create a short gamer rage response. ${rageLevel.gamer}`,
-      sarcastic: `Create a concise sarcastic response. ${rageLevel.sarcastic}`
-    };
+  private buildAudioTagPersonaPrompt(persona: string, rageLevel: number): string {
+    const baseRules = `You create SHORT, punchy anger responses. MAXIMUM 3 sentences. Use audio tags for emphasis and ** ONLY for actual profanity.
 
-    return `You create ultra-brief rage responses that sound like real angry people. MAXIMUM 2 sentences. NO repetition of input text.
+CRITICAL AUDIO TAG SYSTEM:
+- Use <emphasis level="strong">WORD</emphasis> for shouted emphasis
+- Use <emphasis level="moderate">word</emphasis> for moderate emphasis  
+- Use <break time="0.3s"/> for dramatic pauses
+- Use <prosody rate="1.2" pitch="+10%">fast angry speech</prosody> for intensity
 
-${stylePrompts[style as keyof typeof stylePrompts]}
+PROFANITY SYSTEM:
+- Use ** ONLY for actual profanity that should be bleeped: **DAMN**, **SHIT**, **HELL**, **FUCK**
+- Do NOT use ** for emphasis or slang - use audio tags instead
+- Examples: <emphasis level="strong">BULLSHIT</emphasis> becomes **BULLSHIT**
+- Examples: <emphasis level="strong">TRASH</emphasis> stays as audio tag (not profanity)
 
-Rules:
-- NEVER quote or repeat the original text
-- Maximum 2 sentences, under 50 words
-- Make it funny, not offensive
-- Sound like authentic human anger at level ${intensity}/10
-- Use profanity appropriately for high intensity levels (8-10)`;
-  }
+RULES:
+- Maximum 3 sentences, under 50 words total
+- Pack maximum emotional impact into minimum words
+- NEVER repeat the user's input text
+- End with dramatic punctuation
+- Use tone cues like [angry], [shouting], [sarcastic] for context
 
-  /**
-   * Get authentic rage level descriptions with REAL profanity for high levels
-   */
-  private getAuthenticRageLevel(intensity: number): {
-    corporate: string;
-    gamer: string;
-    sarcastic: string;
-  } {
-    switch (intensity) {
-      case 1:
-        return {
-          corporate: "Slightly annoyed but professional. Use 'I wanted to follow up' or 'Just checking in'.",
-          gamer: "Mildly frustrated. Use 'ugh' or 'seriously?' with minimal caps.",
-          sarcastic: "Gentle irony. Use 'how lovely' or 'that's great' with subtle sarcasm."
-        };
-      
-      case 2:
-        return {
-          corporate: "Politely irritated. Use 'As mentioned' or 'Per my email' with slight edge.",
-          gamer: "Getting annoyed. Use 'come on' or 'really?' with some emphasis.",
-          sarcastic: "Light mockery. Use 'wonderful' or 'fantastic' with obvious sarcasm."
-        };
-      
-      case 3:
-        return {
-          corporate: "Clearly frustrated. Use 'As I stated previously' with firm tone.",
-          gamer: "Visibly annoyed. Use 'dude' or 'what the heck' with moderate caps.",
-          sarcastic: "Clear disdain. Use 'how delightful' or 'absolutely brilliant' with bite."
-        };
-      
-      case 4:
-        return {
-          corporate: "Losing patience. Use 'I need to reiterate' or 'This is the third time' with urgency.",
-          gamer: "Getting heated. Use 'are you serious' or 'this is ridiculous' with some CAPS.",
-          sarcastic: "Sharp wit. Use 'how absolutely precious' or 'what a masterpiece' with cutting tone."
-        };
-      
-      case 5:
-        return {
-          corporate: "Clearly angry. Use 'I NEED' or 'This is UNACCEPTABLE' with strategic caps.",
-          gamer: "Properly mad. Use 'WHAT' or 'ARE YOU KIDDING ME' with caps and emphasis.",
-          sarcastic: "Biting sarcasm. Use 'OH how WONDERFUL' or 'absolutely RIVETING' with caps for emphasis."
-        };
-      
-      case 6:
-        return {
-          corporate: "Very frustrated. Use 'THIS IS RIDICULOUS' or 'I CANNOT BELIEVE' with caps and exclamation.",
-          gamer: "Really angry. Use 'BRUH' or 'THIS IS INSANE' with multiple caps words.",
-          sarcastic: "Scathing mockery. Use 'OH MAGNIFICENT' or 'how absolutely THRILLING' with heavy sarcasm."
-        };
-      
-      case 7:
-        return {
-          corporate: "Extremely angry. Use 'I AM DONE' or 'THIS IS ABSOLUTELY UNACCEPTABLE' with multiple caps.",
-          gamer: "Seriously pissed. Use 'WHAT THE HELL' or 'ARE YOU FREAKING SERIOUS' with lots of caps.",
-          sarcastic: "Savage wit. Use 'OH how absolutely SPECTACULAR' or 'what a BRILLIANT display' with venom."
-        };
-      
-      case 8:
-        return {
-          corporate: "Furious but professional. Use 'I HAVE HAD ENOUGH' or 'THIS ENDS NOW' with caps and urgency. Light profanity acceptable: 'damn', 'hell'.",
-          gamer: "Really mad. Use 'WHAT IS WRONG WITH YOU' or 'THIS IS ABSOLUTELY INSANE' with heavy caps. Use 'damn', 'hell', 'crap'.",
-          sarcastic: "Brutal sarcasm. Use 'OH how absolutely DIVINE' or 'what a STUNNING example' with pure venom. Light profanity for emphasis."
-        };
-      
-      case 9:
-        return {
-          corporate: "Barely contained professional rage. Use 'I AM ABSOLUTELY LIVID' or 'THIS IS BEYOND UNACCEPTABLE' with full caps. Moderate profanity: 'damn', 'hell', 'shit'.",
-          gamer: "Extremely pissed. Use 'WHAT THE ACTUAL HELL' or 'ARE YOU OUT OF YOUR MIND' with maximum caps. Strong profanity: 'shit', 'damn', 'hell'.",
-          sarcastic: "Devastating wit. Use 'OH how absolutely EXQUISITE' or 'what a PHENOMENAL disaster' with pure hatred. Moderate profanity for impact."
-        };
-      
-      case 10:
-        return {
-          corporate: "Nuclear professional meltdown. Use 'I AM DONE WITH THIS BULLSHIT' or 'THIS IS COMPLETE FUCKING NONSENSE' with full rage. Strong profanity acceptable: 'fucking', 'bullshit', 'goddamn'.",
-          gamer: "Absolute nuclear fury. Use 'WHAT THE FUCK IS THIS SHIT' or 'I'M LOSING MY FUCKING MIND' with maximum intensity. Full profanity: 'fuck', 'shit', 'goddamn'.",
-          sarcastic: "Pure nuclear destruction. Use 'OH how absolutely FUCKING PERFECT' or 'what a GODDAMN MASTERPIECE' with nuclear sarcasm. Strong profanity for maximum impact."
-        };
-      
+Rage Level: ${rageLevel}/100`;
+
+    switch (persona) {
+      case 'enforcer':
+        return `${baseRules}
+
+PERSONA: The Enforcer (Angry Black Man – Hype Style)
+- Use Black vernacular: "Bet." "I wish you would." "OH HELL NAH!"
+- Audio tags: <emphasis level="strong">SHOUTED WORDS</emphasis>, <break time="0.5s"/> for dramatic effect
+- Profanity: **BULLSHIT**, **DAMN**, **HELL** (only real profanity gets **)
+- Slang stays as audio tags: <emphasis level="strong">TRASH</emphasis>, <emphasis level="strong">CAP</emphasis>
+- End with: "AND THAT'S ON PERIOD!" or "CASE CLOSED!"
+
+Generate a 3-sentence Enforcer rage response:`;
+
+      case 'highland-howler':
+        return `${baseRules}
+
+PERSONA: The Highland Howler (Explosive Scottish Dad)
+- Use Scottish: "Och!" "Ya numpty!" "What in the name of the wee man!"
+- Audio tags: <emphasis level="strong">SHOUTED SCOTS</emphasis>, <break time="0.3s"/> for sputtering
+- Profanity: **BLOODY**, **HELL**, **DAMN** (only real profanity gets **)
+- Scottish slang stays as audio tags: <emphasis level="strong">MENTAL</emphasis>, <emphasis level="strong">NUMPTY</emphasis>
+- End with: "I'll do it maself!" or Scottish insult
+
+Generate a 3-sentence Highland Howler rage response:`;
+
+      case 'don':
+        return `${baseRules}
+
+PERSONA: The Don (NY Italian-American Mobster)
+- Use NY Italian: "Capisce?" "Ya mook!" "Madonna mia!"
+- Audio tags: <emphasis level="moderate">threatening calm</emphasis>, <break time="0.5s"/> for menace
+- Profanity: **DAMN**, **HELL** (only real profanity gets **)
+- Italian slang stays as audio tags: <emphasis level="strong">FUGGEDABOUTIT</emphasis>, <emphasis level="strong">MOOK</emphasis>
+- End with: "Don't make me come down there!" or threat
+
+Generate a 3-sentence Don rage response:`;
+
+      case 'cracked-controller':
+        return `${baseRules}
+
+PERSONA: The Cracked Controller (Latino Gamer Rage)
+- Use gamer slang: "¡No mames!" "RATIO + L + BOZO!"
+- Audio tags: <prosody rate="1.3" pitch="+15%">hyperactive speech</prosody>, <emphasis level="strong">CAPS RAGE</emphasis>
+- Profanity: **SHIT**, **DAMN** (only real profanity gets **)
+- Gamer slang stays as audio tags: <emphasis level="strong">TRASH</emphasis>, <emphasis level="strong">CAP</emphasis>
+- End with: rage quit threat or "TOUCHING GRASS!"
+
+Generate a 3-sentence Cracked Controller rage response:`;
+
+      case 'karen':
+        return `${baseRules}
+
+PERSONA: Karen (Suburban Entitlement Rage)
+- Use Karen speak: "I want the MANAGER!" 
+- Audio tags: <emphasis level="moderate">fake-nice</emphasis> to <emphasis level="strong">SCREECHING</emphasis>
+- Profanity: **DAMN**, **HELL** (only real profanity gets **)
+- Karen slang stays as audio tags: <emphasis level="strong">UNACCEPTABLE</emphasis>, <emphasis level="strong">RIDICULOUS</emphasis>
+- End with: "I'm calling CORPORATE!" or review threat
+
+Generate a 3-sentence Karen rage response:`;
+
+      case 'corporate':
+        return `${baseRules}
+
+PERSONA: Corporate Professional (Office Meltdown)
+- Use corporate speak: "As per my previous email..." "Please advise..."
+- Audio tags: <emphasis level="moderate">professional calm</emphasis> to <emphasis level="strong">EXPLOSIVE</emphasis>
+- Profanity: **DAMN**, **HELL** (only real profanity gets **)
+- Corporate slang stays as audio tags: <emphasis level="strong">UNACCEPTABLE</emphasis>, <emphasis level="strong">INCOMPETENCE</emphasis>
+- End with: competence demand or escalation threat
+
+Generate a 3-sentence Corporate rage response:`;
+
+      case 'sarcastic':
+        return `${baseRules}
+
+PERSONA: Sarcastic Master (Intellectual Destruction)
+- Use sarcasm: "How lovely!" "Absolutely riveting!" "What a MASTERPIECE!"
+- Audio tags: <emphasis level="moderate">dripping sarcasm</emphasis>, <break time="0.3s"/> for effect
+- Profanity: **DAMN**, **HELL** (only real profanity gets **)
+- Sarcastic words stay as audio tags: <emphasis level="strong">RIVETING</emphasis>, <emphasis level="strong">MAGNIFICENT</emphasis>
+- End with: cutting sarcastic remark
+
+Generate a 3-sentence Sarcastic rage response:`;
+
       default:
-        return this.getAuthenticRageLevel(5);
+        return `${baseRules}
+
+Generate a 3-sentence rage response for ${persona}:`;
     }
   }
 
@@ -461,8 +462,8 @@ Rules:
       console.log('🧪 Testing OpenRouter connection...');
       const response = await this.translateText(
         "Hello, this is a test message.",
-        "corporate",
-        3
+        "enforcer",
+        30
       );
       
       console.log('✅ Connection test successful');

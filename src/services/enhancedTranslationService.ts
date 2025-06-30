@@ -3,10 +3,12 @@
  * 
  * Integrates OpenRouter AI service with fallback to mock translation.
  * Provides seamless switching between AI and mock modes.
+ * Now prioritizes AI translation for dynamic responses and cleans output for users.
  */
 
 import { openRouterService } from './openRouterService';
 import { translateText as mockTranslate, TranslationRequest, TranslationResponse, rateLimiter } from './translationService';
+import type { RageStyle } from '../config/elevenLabsVoices';
 
 export interface EnhancedTranslationResponse extends TranslationResponse {
   usedAI: boolean;
@@ -14,8 +16,40 @@ export interface EnhancedTranslationResponse extends TranslationResponse {
   tokensUsed?: number;
 }
 
+/**
+ * Clean translated text for end user display by removing tone cues and single asterisks
+ * Preserves double asterisks for profanity bleeping
+ */
+const cleanTextForUser = (text: string): string => {
+  let cleanedText = text;
+  
+  // Remove tone cues like [explosive energy], [screaming], etc.
+  cleanedText = cleanedText.replace(/\[([^\]]+)\]/g, '');
+  
+  // Remove single asterisks (emphasis) but preserve double asterisks (profanity)
+  // First, temporarily replace double asterisks with a placeholder
+  cleanedText = cleanedText.replace(/\*\*([^*]+)\*\*/g, '___PROFANITY_MARKER___$1___PROFANITY_MARKER___');
+  
+  // Now remove any remaining single asterisks
+  cleanedText = cleanedText.replace(/\*/g, '');
+  
+  // Restore double asterisks for profanity
+  cleanedText = cleanedText.replace(/___PROFANITY_MARKER___([^_]+)___PROFANITY_MARKER___/g, '**$1**');
+  
+  // Remove multiple spaces and clean up
+  cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
+  
+  // Remove leading/trailing punctuation that might cause issues
+  cleanedText = cleanedText.replace(/^[,.\s]+|[,.\s]+$/g, '');
+  
+  // Clean up any double spaces that might remain
+  cleanedText = cleanedText.replace(/\s{2,}/g, ' ');
+  
+  return cleanedText;
+};
+
 class EnhancedTranslationService {
-  private useAI: boolean = false;
+  private useAI: boolean = true; // Default to AI enabled
 
   constructor() {
     // Check if OpenRouter is configured on initialization
@@ -26,7 +60,14 @@ class EnhancedTranslationService {
    * Update AI status based on OpenRouter configuration
    */
   updateAIStatus(): void {
-    this.useAI = openRouterService.isReady();
+    const isAIReady = openRouterService.isReady();
+    this.useAI = isAIReady; // Auto-enable AI if available
+    
+    if (isAIReady) {
+      console.log('🤖 AI translation enabled - dynamic responses active');
+    } else {
+      console.log('⚠️ AI not configured - using fallback responses');
+    }
   }
 
   /**
@@ -48,9 +89,9 @@ class EnhancedTranslationService {
     const openRouterStatus = openRouterService.getStatus();
     return {
       aiAvailable: this.isAIAvailable(),
-      usingAI: this.useAI,
+      usingAI: this.useAI && this.isAIAvailable(),
       model: openRouterStatus.model,
-      service: this.useAI ? 'openrouter' : 'mock'
+      service: (this.useAI && this.isAIAvailable()) ? 'openrouter' : 'mock'
     };
   }
 
@@ -62,10 +103,12 @@ class EnhancedTranslationService {
       throw new Error('AI service not configured. Please set up OpenRouter first.');
     }
     this.useAI = useAI;
+    console.log(`🔄 AI translation ${useAI ? 'enabled' : 'disabled'}`);
   }
 
   /**
-   * Main translation function with AI/mock fallback
+   * Main translation function with AI prioritized for dynamic responses
+   * Now cleans output text for end users
    */
   async translateText(request: TranslationRequest): Promise<EnhancedTranslationResponse> {
     // Input validation
@@ -101,41 +144,47 @@ class EnhancedTranslationService {
     // Update AI status in case configuration changed
     this.updateAIStatus();
 
-    // Try AI translation first if available and enabled
+    // Prioritize AI translation for dynamic responses
     if (this.useAI && this.isAIAvailable()) {
       try {
-        console.log('🤖 Using AI translation via OpenRouter');
-        const translatedText = await openRouterService.translateText(
+        console.log('🤖 Using AI translation for dynamic response generation');
+        const rawTranslatedText = await openRouterService.translateText(
           request.text,
-          request.style,
+          request.style as RageStyle,
           request.intensity
         );
 
+        // Clean the text for end user display
+        const cleanedText = cleanTextForUser(rawTranslatedText);
+
         return {
-          translatedText,
+          translatedText: cleanedText,
           success: true,
           usedAI: true,
           model: openRouterService.getCurrentModel().name
         };
       } catch (error) {
-        console.warn('AI translation failed, falling back to mock:', error);
+        console.warn('⚠️ AI translation failed, falling back to mock:', error);
         
-        // Fall back to mock translation
+        // Fall back to mock translation with clear indication
         const mockResponse = await mockTranslate(request);
         return {
           ...mockResponse,
+          translatedText: mockResponse.success ? cleanTextForUser(mockResponse.translatedText) : mockResponse.translatedText,
           usedAI: false,
-          error: mockResponse.error || `AI translation failed: ${error instanceof Error ? error.message : 'Unknown error'}. Using mock translation.`
+          error: `AI unavailable - using fallback. Configure OpenRouter for dynamic responses.`
         };
       }
     }
 
-    // Use mock translation
-    console.log('🎭 Using mock translation service');
+    // Use mock translation with clear indication that AI should be used
+    console.log('📝 Using mock translation - configure AI for dynamic responses');
     const mockResponse = await mockTranslate(request);
     return {
       ...mockResponse,
-      usedAI: false
+      translatedText: mockResponse.success ? cleanTextForUser(mockResponse.translatedText) : mockResponse.translatedText,
+      usedAI: false,
+      error: mockResponse.success ? 'Using mock responses. Enable AI for dynamic generation.' : mockResponse.error
     };
   }
 

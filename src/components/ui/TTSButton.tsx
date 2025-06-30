@@ -1,8 +1,8 @@
 /**
- * Text-to-Speech Button Component
+ * TTSButton Component
  * 
- * Provides audio playback functionality for translated text using ElevenLabs.
- * Integrates with the voice configuration system for style-specific voices.
+ * Text-to-Speech button with integrated bleep support.
+ * Automatically handles both regular and censored audio playback.
  */
 
 import React from 'react';
@@ -10,9 +10,9 @@ import { Volume2, VolumeX, Loader2 } from 'lucide-react';
 import { useTextToSpeech } from '../../hooks/useTextToSpeech';
 import { cn } from '../../lib/utils';
 
-export interface TTSButtonProps {
+interface TTSButtonProps {
   text: string;
-  style?: 'corporate' | 'gamer' | 'sarcastic';
+  style?: string;
   rageLevel?: number;
   size?: 'sm' | 'md' | 'lg';
   variant?: 'default' | 'outline' | 'ghost';
@@ -31,72 +31,80 @@ export const TTSButton: React.FC<TTSButtonProps> = ({
 }) => {
   const { speak, isLoading, isPlaying, error, isAvailable, stop, clearError } = useTextToSpeech();
 
-  const handleSpeak = async () => {
-    try {
-      if (isPlaying) {
-        stop();
-        return;
-      }
-
+  const handleClick = async () => {
+    if (isPlaying) {
+      stop();
+    } else {
       clearError();
-      
-      // Pass style and intensity to the speech generation
       await speak(text, style, rageLevel);
-    } catch (error) {
-      console.error('Speech failed:', error);
     }
   };
 
-  // Don't render if TTS is not available
+  const getSizeClasses = () => {
+    switch (size) {
+      case 'sm':
+        return 'px-2 py-1 text-sm';
+      case 'lg':
+        return 'px-6 py-3 text-lg';
+      default:
+        return 'px-3 py-2';
+    }
+  };
+
+  const getVariantClasses = () => {
+    switch (variant) {
+      case 'outline':
+        return 'border border-blue-500/50 text-blue-400 hover:bg-blue-500/10';
+      case 'ghost':
+        return 'text-blue-400 hover:bg-blue-500/10';
+      default:
+        return 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border border-blue-500/50';
+    }
+  };
+
   if (!isAvailable) {
-    return null;
-  }
-
-  const sizeClasses = {
-    sm: 'p-1.5',
-    md: 'p-2',
-    lg: 'p-3'
-  };
-
-  const variantClasses = {
-    default: 'bg-blue-500/20 text-blue-400 hover:bg-blue-500/30 border-blue-500/30 hover:border-blue-500/50',
-    outline: 'border-2 border-gray-500/30 text-gray-400 hover:border-blue-500/50 hover:text-blue-400',
-    ghost: 'text-gray-400 hover:text-blue-400 hover:bg-blue-500/10'
-  };
-
-  const iconSize = {
-    sm: 14,
-    md: 16,
-    lg: 20
-  }[size];
-
-  return (
-    <div className="flex flex-col items-center gap-1">
+    return (
       <button
-        onClick={handleSpeak}
-        disabled={disabled || isLoading}
+        disabled
         className={cn(
-          'flex items-center justify-center rounded-lg font-medium transition-all duration-300 transform hover:scale-105 border',
-          sizeClasses[size],
-          variantClasses[variant],
-          'hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]',
-          disabled && 'opacity-50 cursor-not-allowed',
+          'flex items-center gap-2 rounded-lg font-medium transition-all duration-300',
+          getSizeClasses(),
+          'bg-gray-500/20 text-gray-500 cursor-not-allowed border border-gray-500/30',
           className
         )}
-        title={isPlaying ? 'Stop speech' : 'Listen to translation'}
-        aria-label={isPlaying ? 'Stop speech' : 'Listen to translation'}
+        title="Text-to-speech not available"
+      >
+        <VolumeX size={size === 'sm' ? 14 : size === 'lg' ? 20 : 16} />
+        <span>TTS Unavailable</span>
+      </button>
+    );
+  }
+
+  return (
+    <div className="flex flex-col gap-1">
+      <button
+        onClick={handleClick}
+        disabled={disabled || isLoading || !text.trim()}
+        className={cn(
+          'flex items-center gap-2 rounded-lg font-medium transition-all duration-300 transform hover:scale-105',
+          getSizeClasses(),
+          getVariantClasses(),
+          'hover:shadow-[0_0_20px_rgba(59,130,246,0.3)]',
+          (disabled || isLoading || !text.trim()) && 'opacity-50 cursor-not-allowed hover:scale-100',
+          className
+        )}
+        aria-label={isPlaying ? 'Stop audio' : 'Play audio'}
       >
         {isLoading ? (
-          <Loader2 size={iconSize} className="animate-spin" />
-        ) : isPlaying ? (
-          <VolumeX size={iconSize} />
+          <Loader2 size={size === 'sm' ? 14 : size === 'lg' ? 20 : 16} className="animate-spin" />
         ) : (
-          <Volume2 size={iconSize} />
+          <Volume2 size={size === 'sm' ? 14 : size === 'lg' ? 20 : 16} />
         )}
+        <span>Listen</span>
       </button>
       
       {error && (
-        <div className="text-xs text-red-400 max-w-32 text-center">
+        <div className="text-xs text-red-400 max-w-32 truncate" title={error}>
           {error}
         </div>
       )}

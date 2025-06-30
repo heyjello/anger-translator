@@ -2,50 +2,36 @@
  * Enhanced Translation Service
  * 
  * Integrates OpenRouter AI service with fallback to mock translation.
- * Provides seamless switching between AI and mock modes.
- * Now prioritizes AI translation for dynamic responses and cleans output for users.
+ * Now properly cleans audio tags for display while preserving them for TTS.
  */
 
 import { openRouterService } from './openRouterService';
 import { translateText as mockTranslate, TranslationRequest, TranslationResponse, rateLimiter } from './translationService';
+import { cleanTextForDisplay } from '../utils/textProcessing';
 import type { RageStyle } from '../config/elevenLabsVoices';
 
 export interface EnhancedTranslationResponse extends TranslationResponse {
   usedAI: boolean;
   model?: string;
   tokensUsed?: number;
+  rawText?: string; // Keep raw text with audio tags for TTS
 }
 
 /**
- * Clean translated text for end user display by removing tone cues and single asterisks
- * Preserves double asterisks for profanity bleeping
+ * Keep raw text with audio tags for TTS processing
  */
-const cleanTextForUser = (text: string): string => {
-  let cleanedText = text;
+const preserveRawTextForTTS = (text: string): string => {
+  // Only remove tone cues, keep audio tags and profanity markers
+  let rawText = text;
   
   // Remove tone cues like [explosive energy], [screaming], etc.
-  cleanedText = cleanedText.replace(/\[([^\]]+)\]/g, '');
+  rawText = rawText.replace(/\[([^\]]+)\]/g, '');
   
-  // Remove single asterisks (emphasis) but preserve double asterisks (profanity)
-  // First, temporarily replace double asterisks with a placeholder
-  cleanedText = cleanedText.replace(/\*\*([^*]+)\*\*/g, '___PROFANITY_MARKER___$1___PROFANITY_MARKER___');
+  // Keep audio tags and profanity markers intact
+  // Just clean up spacing
+  rawText = rawText.replace(/\s+/g, ' ').trim();
   
-  // Now remove any remaining single asterisks
-  cleanedText = cleanedText.replace(/\*/g, '');
-  
-  // Restore double asterisks for profanity
-  cleanedText = cleanedText.replace(/___PROFANITY_MARKER___([^_]+)___PROFANITY_MARKER___/g, '**$1**');
-  
-  // Remove multiple spaces and clean up
-  cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
-  
-  // Remove leading/trailing punctuation that might cause issues
-  cleanedText = cleanedText.replace(/^[,.\s]+|[,.\s]+$/g, '');
-  
-  // Clean up any double spaces that might remain
-  cleanedText = cleanedText.replace(/\s{2,}/g, ' ');
-  
-  return cleanedText;
+  return rawText;
 };
 
 class EnhancedTranslationService {
@@ -64,7 +50,7 @@ class EnhancedTranslationService {
     this.useAI = isAIReady; // Auto-enable AI if available
     
     if (isAIReady) {
-      console.log('🤖 AI translation enabled - dynamic responses active');
+      console.log('🤖 AI translation enabled - DeepSeek v3 dynamic responses active');
     } else {
       console.log('⚠️ AI not configured - using fallback responses');
     }
@@ -108,7 +94,7 @@ class EnhancedTranslationService {
 
   /**
    * Main translation function with AI prioritized for dynamic responses
-   * Now cleans output text for end users
+   * Now properly handles audio tags and provides both clean and raw text
    */
   async translateText(request: TranslationRequest): Promise<EnhancedTranslationResponse> {
     // Input validation
@@ -147,18 +133,25 @@ class EnhancedTranslationService {
     // Prioritize AI translation for dynamic responses
     if (this.useAI && this.isAIAvailable()) {
       try {
-        console.log('🤖 Using AI translation for dynamic response generation');
+        console.log('🤖 Using DeepSeek v3 for dynamic response generation');
         const rawTranslatedText = await openRouterService.translateText(
           request.text,
           request.style as RageStyle,
           request.intensity
         );
 
-        // Clean the text for end user display
-        const cleanedText = cleanTextForUser(rawTranslatedText);
+        // Clean the text for end user display using the proper cleaning function
+        const cleanedText = cleanTextForDisplay(rawTranslatedText);
+        
+        // Preserve raw text for TTS
+        const rawText = preserveRawTextForTTS(rawTranslatedText);
+
+        console.log('🧹 Text cleaned for display:', cleanedText);
+        console.log('🎤 Raw text preserved for TTS:', rawText);
 
         return {
           translatedText: cleanedText,
+          rawText: rawText,
           success: true,
           usedAI: true,
           model: openRouterService.getCurrentModel().name
@@ -166,13 +159,29 @@ class EnhancedTranslationService {
       } catch (error) {
         console.warn('⚠️ AI translation failed, falling back to mock:', error);
         
-        // Fall back to mock translation with clear indication
+        // Enhanced error handling for specific OpenRouter issues
+        let fallbackError = 'AI unavailable - using fallback responses.';
+        
+        if (error instanceof Error) {
+          if (error.message.includes('OpenRouter Privacy Settings Issue')) {
+            fallbackError = 'AI disabled due to privacy settings. Please enable prompt training in your OpenRouter account settings, then refresh the page.';
+          } else if (error.message.includes('Invalid OpenRouter API key')) {
+            fallbackError = 'Invalid API key. Please check your OpenRouter configuration.';
+          } else if (error.message.includes('Insufficient credits')) {
+            fallbackError = 'Insufficient OpenRouter credits. Please add credits to your account.';
+          } else if (error.message.includes('Rate limit exceeded')) {
+            fallbackError = 'OpenRouter rate limit exceeded. Please wait before trying again.';
+          }
+        }
+        
+        // Fall back to mock translation with enhanced error context
         const mockResponse = await mockTranslate(request);
         return {
           ...mockResponse,
-          translatedText: mockResponse.success ? cleanTextForUser(mockResponse.translatedText) : mockResponse.translatedText,
+          translatedText: mockResponse.success ? cleanTextForDisplay(mockResponse.translatedText) : mockResponse.translatedText,
+          rawText: mockResponse.success ? preserveRawTextForTTS(mockResponse.translatedText) : mockResponse.translatedText,
           usedAI: false,
-          error: `AI unavailable - using fallback. Configure OpenRouter for dynamic responses.`
+          error: mockResponse.success ? fallbackError : mockResponse.error
         };
       }
     }
@@ -182,7 +191,8 @@ class EnhancedTranslationService {
     const mockResponse = await mockTranslate(request);
     return {
       ...mockResponse,
-      translatedText: mockResponse.success ? cleanTextForUser(mockResponse.translatedText) : mockResponse.translatedText,
+      translatedText: mockResponse.success ? cleanTextForDisplay(mockResponse.translatedText) : mockResponse.translatedText,
+      rawText: mockResponse.success ? preserveRawTextForTTS(mockResponse.translatedText) : mockResponse.translatedText,
       usedAI: false,
       error: mockResponse.success ? 'Using mock responses. Enable AI for dynamic generation.' : mockResponse.error
     };

@@ -2,7 +2,7 @@
  * Bleep Sound Service
  * 
  * Handles censorship beep sound effects for profanity replacement.
- * Optimized for natural conversational flow with quick, punchy bleeps.
+ * Optimized for natural conversational flow with quick, seamless bleeps.
  */
 
 export interface BleepConfig {
@@ -33,14 +33,14 @@ export class BleepSoundService {
   }
 
   /**
-   * Generate a classic TV-style censor beep with faster timing
+   * Generate a seamless TV-style censor beep optimized for natural speech flow
    */
   async generateBleep(config: BleepConfig = {
     frequency: 1000,
-    duration: 0.3,      // Shorter default duration for better flow
-    volume: 0.7,
-    fadeIn: 0.02,       // Very quick fade in
-    fadeOut: 0.02       // Very quick fade out
+    duration: 0.2,      // Very short for seamless flow
+    volume: 0.6,        // Slightly quieter to blend better
+    fadeIn: 0.01,       // Instant attack
+    fadeOut: 0.01       // Instant release
   }): Promise<void> {
     if (!this.audioContext) {
       console.warn('Audio context not available');
@@ -59,11 +59,11 @@ export class BleepSoundService {
     const oscillator = this.audioContext.createOscillator();
     const gainNode = this.audioContext.createGain();
 
-    // Configure oscillator
-    oscillator.type = 'sine'; // Classic beep sound
+    // Configure oscillator for clean beep sound
+    oscillator.type = 'sine'; // Clean sine wave for professional beep
     oscillator.frequency.setValueAtTime(frequency, currentTime);
 
-    // Configure volume envelope with very quick fade in/out for natural flow
+    // Configure volume envelope for seamless integration
     gainNode.gain.setValueAtTime(0, currentTime);
     gainNode.gain.linearRampToValueAtTime(volume, currentTime + fadeIn);
     gainNode.gain.linearRampToValueAtTime(volume, currentTime + duration - fadeOut);
@@ -73,66 +73,47 @@ export class BleepSoundService {
     oscillator.connect(gainNode);
     gainNode.connect(this.audioContext.destination);
 
-    // Play the beep
+    // Play the beep with precise timing
     oscillator.start(currentTime);
     oscillator.stop(currentTime + duration);
 
-    console.log(`🔊 Playing bleep: ${frequency}Hz for ${duration}s`);
+    console.log(`🔊 Playing seamless bleep: ${frequency}Hz for ${duration}s`);
   }
 
   /**
-   * Play multiple bleeps for longer censored words
-   */
-  async playMultipleBleeps(count: number, interval: number = 0.05): Promise<void> {
-    for (let i = 0; i < count; i++) {
-      await this.generateBleep({
-        frequency: 1000,
-        duration: 0.2,      // Shorter bleeps for rapid fire
-        volume: 0.7,
-        fadeIn: 0.01,       // Very quick fades
-        fadeOut: 0.01
-      });
-      
-      if (i < count - 1) {
-        await new Promise(resolve => setTimeout(resolve, interval * 1000));
-      }
-    }
-  }
-
-  /**
-   * Create a bleep sound based on text length with optimized timing
+   * Create a bleep sound based on text length with optimized timing for speech flow
    */
   async bleepForText(text: string): Promise<void> {
     const cleanText = text.replace(/\*\*/g, ''); // Remove ** markers
     
-    // Optimized duration calculation for better conversational flow
+    // Optimized duration calculation for seamless speech integration
     let duration: number;
     if (cleanText.length <= 3) {
-      duration = 0.25;    // Short words get quick bleeps
+      duration = 0.15;    // Very short words get quick bleeps
     } else if (cleanText.length <= 6) {
-      duration = 0.35;    // Medium words
+      duration = 0.2;     // Medium words
     } else {
-      duration = 0.5;     // Longer words, but cap at 0.5s for flow
+      duration = 0.3;     // Longer words, but keep it short for flow
     }
     
     await this.generateBleep({
       frequency: 1000,
       duration,
-      volume: 0.7,
-      fadeIn: 0.02,       // Quick attack for natural speech flow
-      fadeOut: 0.02       // Quick release
+      volume: 0.6,        // Balanced volume for natural integration
+      fadeIn: 0.01,       // Instant attack for crisp sound
+      fadeOut: 0.01       // Instant release for seamless flow
     });
   }
 
   /**
-   * Different bleep styles for different contexts - all optimized for conversation
+   * Different bleep styles optimized for natural conversation flow
    */
   async playStyleBleep(style: 'tv' | 'radio' | 'harsh' | 'gentle' = 'tv'): Promise<void> {
     const configs = {
-      tv: { frequency: 1000, duration: 0.3, volume: 0.7, fadeIn: 0.02, fadeOut: 0.02 },
-      radio: { frequency: 800, duration: 0.4, volume: 0.6, fadeIn: 0.03, fadeOut: 0.03 },
-      harsh: { frequency: 1200, duration: 0.25, volume: 0.8, fadeIn: 0.01, fadeOut: 0.01 },
-      gentle: { frequency: 600, duration: 0.35, volume: 0.5, fadeIn: 0.05, fadeOut: 0.05 }
+      tv: { frequency: 1000, duration: 0.2, volume: 0.6, fadeIn: 0.01, fadeOut: 0.01 },
+      radio: { frequency: 800, duration: 0.25, volume: 0.5, fadeIn: 0.02, fadeOut: 0.02 },
+      harsh: { frequency: 1200, duration: 0.15, volume: 0.7, fadeIn: 0.005, fadeOut: 0.005 },
+      gentle: { frequency: 600, duration: 0.3, volume: 0.4, fadeIn: 0.03, fadeOut: 0.03 }
     };
 
     await this.generateBleep(configs[style]);
@@ -144,7 +125,7 @@ export class BleepSoundService {
   async loadBleepAudio(audioUrl: string): Promise<void> {
     try {
       this.bleepAudio = new Audio(audioUrl);
-      this.bleepAudio.volume = 0.7;
+      this.bleepAudio.volume = 0.6; // Balanced volume
       await this.bleepAudio.play();
       console.log('🔊 Playing pre-recorded bleep');
     } catch (error) {
@@ -165,18 +146,18 @@ export class BleepSoundService {
   }
 
   /**
-   * Test the bleep system with conversational timing
+   * Test the bleep system with optimized settings
    */
   async testBleep(): Promise<void> {
-    console.log('🧪 Testing bleep sound system...');
+    console.log('🧪 Testing seamless bleep sound system...');
     await this.generateBleep({
       frequency: 1000,
-      duration: 0.3,      // Shorter test duration
-      volume: 0.5,
-      fadeIn: 0.02,
-      fadeOut: 0.02
+      duration: 0.2,      // Short test duration
+      volume: 0.5,        // Moderate test volume
+      fadeIn: 0.01,
+      fadeOut: 0.01
     });
-    console.log('✅ Bleep test complete');
+    console.log('✅ Seamless bleep test complete');
   }
 
   /**

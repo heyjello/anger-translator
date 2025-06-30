@@ -2,7 +2,7 @@
  * OutputSection Component
  * 
  * Displays the translated text with action buttons for copy, clear, share, and TTS.
- * Handles loading states and provides visual feedback for user actions.
+ * Now properly handles cleaned text display while using raw text for TTS.
  */
 
 import React from 'react';
@@ -11,6 +11,7 @@ import { TTSButton } from '../ui/TTSButton';
 
 interface OutputSectionProps {
   outputText: string;
+  rawText?: string; // Raw text with audio tags for TTS
   onCopy: () => void;
   onClear: () => void;
   onShare: () => void;
@@ -23,6 +24,7 @@ interface OutputSectionProps {
 
 export const OutputSection: React.FC<OutputSectionProps> = ({
   outputText,
+  rawText,
   onCopy,
   onClear,
   onShare,
@@ -40,9 +42,9 @@ export const OutputSection: React.FC<OutputSectionProps> = ({
         </label>
         {outputText && (
           <div className="flex items-center gap-2">
-            {/* Text-to-Speech Button with Integrated Bleep Support */}
+            {/* Text-to-Speech Button with Raw Text for Audio Tags */}
             <TTSButton
-              text={outputText}
+              text={rawText || outputText} // Use raw text if available for TTS
               style={translationStyle}
               rageLevel={rageLevel}
               size="md"
@@ -97,8 +99,14 @@ export const OutputSection: React.FC<OutputSectionProps> = ({
         {outputText ? (
           <div className="animate-slide-in">
             <div className="text-gray-100 font-bold text-lg leading-relaxed">
+              {/* Display cleaned text without audio tags */}
               {outputText}
             </div>
+            {rawText && rawText !== outputText && (
+              <div className="mt-2 text-xs text-gray-500 italic">
+                Audio enhanced version available for text-to-speech
+              </div>
+            )}
           </div>
         ) : (
           <div className="text-gray-500 italic text-lg flex items-center justify-center h-28">

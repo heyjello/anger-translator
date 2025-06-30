@@ -1,13 +1,12 @@
 /**
  * ElevenLabs Text-to-Speech Service
  * 
- * Uses voices EXACTLY as they come from ElevenLabs with NO modifications.
- * All voice settings are preserved exactly as configured in ElevenLabs.
+ * Updated for ElevenLabs v3 format with proper audio tag support.
+ * Uses text with audio tags directly without XML processing.
  */
 
 import { 
   getVoiceForStyle, 
-  cleanTextForTTS,
   VOICE_MODELS,
   type VoiceConfig,
   type RageStyle
@@ -26,11 +25,11 @@ export interface TTSRequest {
   model_id?: string;
 }
 
-// Default configuration
+// Default configuration for ElevenLabs v3
 const DEFAULT_CONFIG: ElevenLabsConfig = {
   apiKey: '',
   baseUrl: 'https://api.elevenlabs.io/v1',
-  defaultModel: VOICE_MODELS.standard.model_id
+  defaultModel: VOICE_MODELS.turbo.model_id // Use turbo v2.5 for v3 features
 };
 
 export class ElevenLabsService {
@@ -87,52 +86,7 @@ export class ElevenLabsService {
   }
 
   /**
-   * Make a request to ElevenLabs API with NO MODIFICATIONS to voice settings
-   */
-  private async makeRequest(request: TTSRequest): Promise<ArrayBuffer> {
-    if (!this.isConfigured()) {
-      throw new Error('ElevenLabs service not configured. Please provide a valid API key from https://elevenlabs.io/');
-    }
-
-    console.log(`🎤 Generating speech with voice: ${request.voice_id} (NO MODIFICATIONS)`);
-
-    const response = await fetch(`${this.config.baseUrl}/text-to-speech/${request.voice_id}`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'audio/mp3',
-        'Content-Type': 'application/json',
-        'xi-api-key': this.config.apiKey
-      },
-      body: JSON.stringify({
-        text: request.text,
-        model_id: request.model_id || this.config.defaultModel,
-        voice_settings: request.voice_settings // USED EXACTLY AS PROVIDED
-      })
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      console.error('❌ ElevenLabs API error:', errorData);
-      
-      if (response.status === 401) {
-        throw new Error('Invalid API key. Please check your ElevenLabs API key from https://elevenlabs.io/');
-      }
-      
-      if (response.status === 429) {
-        throw new Error('Rate limit exceeded. Please wait before making another request.');
-      }
-      
-      throw new Error(
-        errorData.detail?.message || 
-        `ElevenLabs API error: ${response.status} ${response.statusText}`
-      );
-    }
-
-    return await response.arrayBuffer();
-  }
-
-  /**
-   * Generate speech using voice EXACTLY as configured in ElevenLabs
+   * Generate speech using ElevenLabs v3 format with audio tags
    */
   async generateSpeech(
     text: string, 
@@ -143,40 +97,69 @@ export class ElevenLabsService {
       throw new Error('ElevenLabs API key not configured. Please set up your API key from https://elevenlabs.io/');
     }
 
-    // Get voice configuration - NO MODIFICATIONS
+    // Get voice configuration
     const voiceConfig = getVoiceForStyle(style as RageStyle);
     
-    // Clean text to remove tone cues only
-    const cleanedText = cleanTextForTTS(text);
-    
     // Check cache first
-    const cacheKey = this.getCacheKey(cleanedText, voiceConfig.voice_id);
+    const cacheKey = this.getCacheKey(text, voiceConfig.voice_id);
     if (this.audioCache.has(cacheKey)) {
       console.log('🎵 Using cached audio');
       return this.audioCache.get(cacheKey)!;
     }
 
-    // Prepare request with EXACT voice settings from ElevenLabs
-    const request: TTSRequest = {
-      text: cleanedText,
-      voice_id: voiceConfig.voice_id,
-      voice_settings: voiceConfig.voice_settings, // NO MODIFICATIONS
-      model_id: this.config.defaultModel
-    };
+    console.log(`🎤 Generating speech with ElevenLabs v3 - Voice: ${voiceConfig.name}`);
+    console.log(`📝 Text with audio tags: ${text.substring(0, 100)}...`);
 
     try {
-      const audioBuffer = await this.makeRequest(request);
-      
-      // Convert to blob URL
-      const audioBlob = new Blob([audioBuffer], { type: 'audio/mp3' });
+      const response = await fetch(
+        `${this.config.baseUrl}/text-to-speech/${voiceConfig.voice_id}`,
+        {
+          method: 'POST',
+          headers: {
+            'Accept': 'audio/mpeg',
+            'Content-Type': 'application/json',
+            'xi-api-key': this.config.apiKey
+          },
+          body: JSON.stringify({
+            text: text, // Text with proper [audio tags], no XML processing
+            model_id: this.config.defaultModel, // eleven_turbo_v2_5 for v3 features
+            voice_settings: {
+              ...voiceConfig.voice_settings,
+              stability: 0.3, // Lower for more expression with v3
+              similarity_boost: 0.7
+            }
+          })
+        }
+      );
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        console.error('❌ ElevenLabs API error:', errorData);
+        
+        if (response.status === 401) {
+          throw new Error('Invalid API key. Please check your ElevenLabs API key from https://elevenlabs.io/');
+        }
+        
+        if (response.status === 429) {
+          throw new Error('Rate limit exceeded. Please wait before making another request.');
+        }
+        
+        throw new Error(
+          errorData.detail?.message || 
+          `ElevenLabs API error: ${response.status} ${response.statusText}`
+        );
+      }
+
+      // Convert response to blob URL
+      const audioBlob = await response.blob();
       const audioUrl = URL.createObjectURL(audioBlob);
       
       // Cache the result
       this.audioCache.set(cacheKey, audioUrl);
       
-      console.log('✅ Speech generated successfully with UNMODIFIED voice settings');
+      console.log('✅ Speech generated successfully with ElevenLabs v3');
       console.log(`🎭 Voice: ${voiceConfig.name} (${voiceConfig.description})`);
-      console.log(`🎚️ Settings: EXACTLY as configured in ElevenLabs`);
+      console.log(`🎚️ Model: ${this.config.defaultModel} with enhanced expression`);
       
       return audioUrl;
     } catch (error) {
@@ -190,15 +173,15 @@ export class ElevenLabsService {
    */
   async testConnection(style: RageStyle = 'corporate'): Promise<{ success: boolean; error?: string }> {
     try {
-      console.log('🧪 Testing ElevenLabs connection...');
+      console.log('🧪 Testing ElevenLabs v3 connection...');
       
-      const testText = "This is a test of the ElevenLabs voice service.";
+      const testText = "This is a test of the ElevenLabs voice service with enhanced expression.";
       const audioUrl = await this.generateSpeech(testText, style, 30);
       
       // Clean up test audio
       URL.revokeObjectURL(audioUrl);
       
-      console.log('✅ Connection test successful');
+      console.log('✅ ElevenLabs v3 connection test successful');
       return { success: true };
     } catch (error) {
       console.error('❌ Connection test failed:', error);
@@ -236,11 +219,40 @@ export class ElevenLabsService {
   /**
    * Get status
    */
-  getStatus(): { configured: boolean; hasApiKey: boolean } {
+  getStatus(): { configured: boolean; hasApiKey: boolean; model: string } {
     return {
       configured: this._isConfigured,
-      hasApiKey: !!this.config.apiKey && this.config.apiKey !== 'your_api_key_here'
+      hasApiKey: !!this.config.apiKey && this.config.apiKey !== 'your_api_key_here',
+      model: this.config.defaultModel
     };
+  }
+
+  /**
+   * Test speech generation with different character styles
+   */
+  async testCharacterVoices(): Promise<void> {
+    const testPhrases = {
+      corporate: "As per my previous email, this needs immediate attention.",
+      gamer: "This is absolutely ridiculous! I'm about to rage quit!",
+      sarcastic: "Oh, how absolutely delightful. What a masterpiece.",
+      karen: "I want to speak to your manager RIGHT NOW!",
+      enforcer: "OH HELL NAH! You must be joking right now!"
+    };
+
+    console.log('🧪 Testing character voices with ElevenLabs v3...');
+    
+    for (const [style, phrase] of Object.entries(testPhrases)) {
+      try {
+        console.log(`🎭 Testing ${style} voice...`);
+        const audioUrl = await this.generateSpeech(phrase, style, 50);
+        URL.revokeObjectURL(audioUrl); // Clean up immediately
+        console.log(`✅ ${style} voice test successful`);
+      } catch (error) {
+        console.error(`❌ ${style} voice test failed:`, error);
+      }
+    }
+    
+    console.log('🎉 Character voice testing complete');
   }
 }
 

@@ -72,7 +72,7 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   enforcer: {
-    voice_id: "pNInz6obpgDQGcFmaJgB", // Adam (reused)
+    voice_id: "ujTRvH905hCgW1uUwWye", // Adam (reused)
     name: "Adam",
     description: "Strong male voice for Enforcer",
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }

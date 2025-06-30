@@ -86,7 +86,7 @@ export const SecureApiKeyInput: React.FC<SecureApiKeyInputProps> = ({
       case 'openrouter':
         return 'Format: sk-or-v1-[64 hex characters]';
       case 'elevenlabs':
-        return 'Format: xi_[32 alphanumeric characters]';
+        return 'Format: xi_[32 characters] or sk_[32-64 hex characters]';
       default:
         return '';
     }

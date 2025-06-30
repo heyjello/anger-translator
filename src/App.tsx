@@ -142,21 +142,32 @@ function App() {
     const currentStyle = selectedStyle;
     const currentRageLevel = rageLevel;
 
-    // Call the enhanced translation service
-    await translate({
-      text: inputText,
-      style: selectedStyle,
-      intensity: rageLevel * 10 // Convert 1-10 to 10-100 for internal processing
-    });
+    try {
+      // Call the enhanced translation service
+      await translate({
+        text: inputText,
+        style: selectedStyle,
+        intensity: rageLevel * 10 // Convert 1-10 to 10-100 for internal processing
+      });
 
-    // Check if translation was successful and add to history
-    // We need to wait a bit for the state to update
-    setTimeout(() => {
-      if (outputText && !translationError) {
-        addToHistory(currentInput, outputText, currentStyle, currentRageLevel);
-      }
-    }, 200);
+      // Add to history immediately after successful translation
+      // We'll check for the result in a useEffect that watches for outputText changes
+      console.log('✅ Translation completed, waiting for result...');
+    } catch (error) {
+      console.error('❌ Translation failed:', error);
+    }
   };
+
+  // Add to history when translation completes successfully
+  React.useEffect(() => {
+    if (outputText && !translationError && !isLoading) {
+      // Only add to history if this is a new translation (not from clearing/reusing)
+      const lastHistoryItem = translationHistory[0];
+      if (!lastHistoryItem || lastHistoryItem.translatedText !== outputText) {
+        addToHistory(inputText, outputText, selectedStyle, rageLevel);
+      }
+    }
+  }, [outputText, translationError, isLoading, inputText, selectedStyle, rageLevel, addToHistory, translationHistory]);
 
   // Handle input change with validation
   const handleInputChange = (newText: string) => {
@@ -221,11 +232,13 @@ function App() {
         {/* Animated background elements */}
         <BackgroundAnimation />
 
-        {/* Particle Effect */}
-        <ParticleEffect 
-          isActive={showParticles} 
-          onComplete={() => setShowParticles(false)} 
-        />
+        {/* Particle Effect - Lower z-index to prevent overlay issues */}
+        <div className="relative z-0">
+          <ParticleEffect 
+            isActive={showParticles} 
+            onComplete={() => setShowParticles(false)} 
+          />
+        </div>
 
         <div className="w-full relative z-10 px-4 sm:px-6 lg:px-8 py-8">
           
@@ -308,7 +321,7 @@ function App() {
             <div className="space-y-6">
               
               {/* Input Section */}
-              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 lg:p-6">
+              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 lg:p-6 relative z-20">
                 <InputSection
                   value={inputText}
                   onChange={handleInputChange}
@@ -320,7 +333,7 @@ function App() {
               </div>
 
               {/* Style Selector */}
-              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 lg:p-6">
+              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 lg:p-6 relative z-20">
                 <StyleSelector
                   selectedStyle={selectedStyle}
                   onStyleSelect={setSelectedStyle}
@@ -329,7 +342,7 @@ function App() {
               </div>
 
               {/* Circular Rage Meter */}
-              <div className="bg-slate-800/50 backdrop-blur-xl rounded-3xl border border-slate-700/50 p-6 lg:p-8">
+              <div className="bg-slate-800/50 backdrop-blur-xl rounded-3xl border border-slate-700/50 p-6 lg:p-8 relative z-20">
                 <CircularRageMeter
                   value={rageLevel}
                   onChange={setRageLevel}
@@ -343,7 +356,7 @@ function App() {
               </div>
 
               {/* Output Section */}
-              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 lg:p-6">
+              <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-4 lg:p-6 relative z-20">
                 <OutputSection
                   outputText={outputText}
                   rawText={rawOutputText} // Pass raw text for TTS

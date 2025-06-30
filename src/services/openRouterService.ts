@@ -1,8 +1,8 @@
 /**
- * OpenRouter AI Service - Audio Tag Persona Engine
+ * OpenRouter AI Service - DeepSeek v3 Dynamic Translation Engine
  * 
- * Uses audio tags for emphasis and ** ONLY for actual profanity that needs bleeping.
- * Each persona has unique emotional patterns with proper audio markup.
+ * Uses DeepSeek v3 for dynamic, varied responses that transform user input
+ * while maintaining the original message's meaning and context.
  */
 
 export interface OpenRouterConfig {
@@ -44,21 +44,29 @@ export interface OpenRouterResponse {
   };
 }
 
-// Default configuration optimized for Mixtral
+// Default configuration optimized for DeepSeek v3
 const DEFAULT_CONFIG: OpenRouterConfig = {
   apiKey: '', // Will be set from environment or user input
-  model: 'mistralai/mixtral-8x7b-instruct', // Your specified model
+  model: 'deepseek/deepseek-chat-v3-0324:free', // DeepSeek v3 free model
   baseUrl: 'https://openrouter.ai/api/v1'
 };
 
-// Available models with their characteristics (Mixtral featured prominently)
+// Available models with DeepSeek v3 featured prominently
 export const AVAILABLE_MODELS = {
+  'deepseek/deepseek-chat-v3-0324:free': {
+    name: 'DeepSeek Chat v3 (Free)',
+    description: 'High-quality reasoning model with excellent instruction following',
+    maxTokens: 8192,
+    costPer1kTokens: 0,
+    recommended: true,
+    strengths: ['Creative writing', 'Instruction following', 'Dynamic responses', 'Free usage']
+  },
   'mistralai/mixtral-8x7b-instruct': {
     name: 'Mixtral 8x7B Instruct',
     description: 'High-quality instruction-following model with excellent reasoning',
     maxTokens: 32768,
     costPer1kTokens: 0.00024,
-    recommended: true,
+    recommended: false,
     strengths: ['Creative writing', 'Instruction following', 'Humor generation']
   },
   'anthropic/claude-3-haiku': {
@@ -66,39 +74,23 @@ export const AVAILABLE_MODELS = {
     description: 'Fast, intelligent, and cost-effective',
     maxTokens: 4096,
     costPer1kTokens: 0.00025,
-    recommended: true,
-    strengths: ['Speed', 'Cost efficiency', 'General tasks']
-  },
-  'anthropic/claude-3-sonnet': {
-    name: 'Claude 3 Sonnet',
-    description: 'Balanced performance and intelligence',
-    maxTokens: 4096,
-    costPer1kTokens: 0.003,
     recommended: false,
-    strengths: ['Balanced performance', 'Reasoning', 'Analysis']
+    strengths: ['Speed', 'Cost efficiency', 'General tasks']
   },
   'openai/gpt-4o-mini': {
     name: 'GPT-4o Mini',
     description: 'OpenAI\'s efficient model',
     maxTokens: 4096,
     costPer1kTokens: 0.00015,
-    recommended: true,
-    strengths: ['Cost efficiency', 'General tasks', 'Speed']
-  },
-  'openai/gpt-4o': {
-    name: 'GPT-4o',
-    description: 'OpenAI\'s most capable model',
-    maxTokens: 4096,
-    costPer1kTokens: 0.005,
     recommended: false,
-    strengths: ['Highest capability', 'Complex reasoning', 'Multimodal']
+    strengths: ['Cost efficiency', 'General tasks', 'Speed']
   },
   'meta-llama/llama-3.1-8b-instruct:free': {
     name: 'Llama 3.1 8B (Free)',
     description: 'Free open-source model',
     maxTokens: 2048,
     costPer1kTokens: 0,
-    recommended: true,
+    recommended: false,
     strengths: ['Free usage', 'Open source', 'Good performance']
   }
 } as const;
@@ -177,7 +169,7 @@ class OpenRouterService {
   /**
    * Configure the service with API key and model
    */
-  configure(apiKey: string, model: ModelId = 'mistralai/mixtral-8x7b-instruct'): void {
+  configure(apiKey: string, model: ModelId = 'deepseek/deepseek-chat-v3-0324:free'): void {
     if (!apiKey || apiKey === 'your_api_key_here') {
       throw new Error('Please provide a valid OpenRouter API key');
     }
@@ -221,7 +213,7 @@ class OpenRouterService {
    * Get information about the current model
    */
   getCurrentModel(): typeof AVAILABLE_MODELS[ModelId] {
-    return AVAILABLE_MODELS[this.config.model as ModelId] || AVAILABLE_MODELS['mistralai/mixtral-8x7b-instruct'];
+    return AVAILABLE_MODELS[this.config.model as ModelId] || AVAILABLE_MODELS['deepseek/deepseek-chat-v3-0324:free'];
   }
 
   /**
@@ -279,7 +271,7 @@ class OpenRouterService {
   }
 
   /**
-   * Audio Tag Persona Engine - Uses audio tags for emphasis, ** only for profanity
+   * Dynamic Translation Engine - Transforms user input while preserving meaning
    */
   async translateText(
     text: string, 
@@ -290,20 +282,19 @@ class OpenRouterService {
       throw new Error('OpenRouter API key not configured. Please set up your API key from https://openrouter.ai/keys');
     }
 
-    const systemPrompt = this.buildAudioTagPersonaPrompt(persona, rageLevel);
-    const userPrompt = text; // Direct user input
+    // Build dynamic prompt that actually uses the user's input
+    const prompt = this.buildDynamicTransformationPrompt(text, persona, rageLevel);
 
     const request: OpenRouterRequest = {
       model: this.config.model,
       messages: [
-        { role: 'system', content: systemPrompt },
-        { role: 'user', content: userPrompt }
+        { role: 'user', content: prompt }
       ],
-      max_tokens: 80, // VERY SHORT responses
-      temperature: 0.9, // High creativity for expressive personas
+      max_tokens: 150, // Allow for longer, more dynamic responses
+      temperature: 0.9, // High creativity for varied responses
       top_p: 0.9,
-      frequency_penalty: 0.5, // Avoid repetition
-      presence_penalty: 0.3
+      frequency_penalty: 0.6, // Avoid repetition
+      presence_penalty: 0.4
     };
 
     try {
@@ -314,7 +305,7 @@ class OpenRouterService {
         throw new Error('No content received from AI model');
       }
 
-      // Clean up the response but preserve audio tags and profanity markers
+      // Clean up the response but preserve natural speech patterns
       let cleanedContent = content.trim();
       
       // Remove any quotes that might wrap the entire response
@@ -322,12 +313,12 @@ class OpenRouterService {
         cleanedContent = cleanedContent.slice(1, -1);
       }
       
-      // Ensure it ends with proper punctuation
+      // Ensure it ends with proper punctuation for anger
       if (!/[.!?]$/.test(cleanedContent)) {
         cleanedContent += '!';
       }
       
-      console.log('🎭 Audio tag persona translation generated');
+      console.log('🎭 Dynamic translation generated with DeepSeek v3');
       return cleanedContent;
     } catch (error) {
       console.error('❌ Translation failed:', error);
@@ -336,121 +327,106 @@ class OpenRouterService {
   }
 
   /**
-   * Build persona prompts with audio tags for emphasis and ** only for profanity
+   * Build dynamic transformation prompts that actually use the user's input
    */
-  private buildAudioTagPersonaPrompt(persona: string, rageLevel: number): string {
-    const baseRules = `You create SHORT, punchy anger responses. MAXIMUM 3 sentences. Use audio tags for emphasis and ** ONLY for actual profanity.
+  private buildDynamicTransformationPrompt(text: string, persona: string, rageLevel: number): string {
+    const basePrompt = `Transform this message into an angry ${persona} rant while keeping the exact same topic/subject matter:
 
-CRITICAL AUDIO TAG SYSTEM:
-- Use <emphasis level="strong">WORD</emphasis> for shouted emphasis
-- Use <emphasis level="moderate">word</emphasis> for moderate emphasis  
-- Use <break time="0.3s"/> for dramatic pauses
-- Use <prosody rate="1.2" pitch="+10%">fast angry speech</prosody> for intensity
+Original message: "${text}"
 
-PROFANITY SYSTEM:
-- Use ** ONLY for actual profanity that should be bleeped: **DAMN**, **SHIT**, **HELL**, **FUCK**
-- Do NOT use ** for emphasis or slang - use audio tags instead
-- Examples: <emphasis level="strong">BULLSHIT</emphasis> becomes **BULLSHIT**
-- Examples: <emphasis level="strong">TRASH</emphasis> stays as audio tag (not profanity)
+Rules:
+1. Keep the core message/topic identical - just change the delivery to angry
+2. Match the ${persona} style exactly
+3. Anger level: ${rageLevel}/100 (scale intensity accordingly)
+4. Use natural speech patterns, not a script
+5. Include profanity as f*ck, sh*t, d*mn, etc. (with asterisks for bleeping)
+6. Make it feel like a real person losing their composure
+7. NEVER repeat the original text - transform it completely
+8. Maximum 3 sentences, punchy and impactful`;
 
-RULES:
-- Maximum 3 sentences, under 50 words total
-- Pack maximum emotional impact into minimum words
-- NEVER repeat the user's input text
-- End with dramatic punctuation
-- Use tone cues like [angry], [shouting], [sarcastic] for context
-
-Rage Level: ${rageLevel}/100`;
-
+    // Add persona-specific instructions
     switch (persona) {
       case 'enforcer':
-        return `${baseRules}
+        return `${basePrompt}
 
-PERSONA: The Enforcer (Angry Black Man – Hype Style)
-- Use Black vernacular: "Bet." "I wish you would." "OH HELL NAH!"
-- Audio tags: <emphasis level="strong">SHOUTED WORDS</emphasis>, <break time="0.5s"/> for dramatic effect
-- Profanity: **BULLSHIT**, **DAMN**, **HELL** (only real profanity gets **)
-- Slang stays as audio tags: <emphasis level="strong">TRASH</emphasis>, <emphasis level="strong">CAP</emphasis>
-- End with: "AND THAT'S ON PERIOD!" or "CASE CLOSED!"
+ENFORCER STYLE (Angry Black Man - Righteous Fury):
+- Use Black vernacular: "OH HELL NAH!", "I wish you would", "Bet", "And that's on PERIOD!"
+- Righteous indignation and moral authority
+- Call out disrespect and demand better
+- End with authority: "CASE CLOSED!" or "AND THAT'S FINAL!"
 
-Generate a 3-sentence Enforcer rage response:`;
+Transform the message now:`;
 
       case 'highland-howler':
-        return `${baseRules}
+        return `${basePrompt}
 
-PERSONA: The Highland Howler (Explosive Scottish Dad)
-- Use Scottish: "Och!" "Ya numpty!" "What in the name of the wee man!"
-- Audio tags: <emphasis level="strong">SHOUTED SCOTS</emphasis>, <break time="0.3s"/> for sputtering
-- Profanity: **BLOODY**, **HELL**, **DAMN** (only real profanity gets **)
-- Scottish slang stays as audio tags: <emphasis level="strong">MENTAL</emphasis>, <emphasis level="strong">NUMPTY</emphasis>
-- End with: "I'll do it maself!" or Scottish insult
+HIGHLAND HOWLER STYLE (Explosive Scottish Dad):
+- Use Scottish expressions: "Och!", "Ya numpty!", "What in the name of the wee man!"
+- Explosive, sputtering anger with Scottish accent
+- Threaten to "do it maself" 
+- Use Scottish insults: "bampot", "weapon", "daft"
 
-Generate a 3-sentence Highland Howler rage response:`;
+Transform the message now:`;
 
       case 'don':
-        return `${baseRules}
+        return `${basePrompt}
 
-PERSONA: The Don (NY Italian-American Mobster)
-- Use NY Italian: "Capisce?" "Ya mook!" "Madonna mia!"
-- Audio tags: <emphasis level="moderate">threatening calm</emphasis>, <break time="0.5s"/> for menace
-- Profanity: **DAMN**, **HELL** (only real profanity gets **)
-- Italian slang stays as audio tags: <emphasis level="strong">FUGGEDABOUTIT</emphasis>, <emphasis level="strong">MOOK</emphasis>
-- End with: "Don't make me come down there!" or threat
+THE DON STYLE (NY Italian-American Mobster):
+- Use NY Italian expressions: "Capisce?", "Ya mook!", "Madonna mia!", "Fuggedaboutit!"
+- Threatening calm that builds to explosion
+- Reference respect and family honor
+- End with veiled threats or "Don't make me come down there!"
 
-Generate a 3-sentence Don rage response:`;
+Transform the message now:`;
 
       case 'cracked-controller':
-        return `${baseRules}
+        return `${basePrompt}
 
-PERSONA: The Cracked Controller (Latino Gamer Rage)
-- Use gamer slang: "¡No mames!" "RATIO + L + BOZO!"
-- Audio tags: <prosody rate="1.3" pitch="+15%">hyperactive speech</prosody>, <emphasis level="strong">CAPS RAGE</emphasis>
-- Profanity: **SHIT**, **DAMN** (only real profanity gets **)
-- Gamer slang stays as audio tags: <emphasis level="strong">TRASH</emphasis>, <emphasis level="strong">CAP</emphasis>
-- End with: rage quit threat or "TOUCHING GRASS!"
+CRACKED CONTROLLER STYLE (Gen-Z Latino Gamer):
+- Use gamer/Gen-Z slang: "¡No mames!", "RATIO + L + BOZO!", "This is straight trash!"
+- Hyperactive, panicked energy
+- Reference gaming: "uninstall", "rage quit", "touching grass"
+- Mix English and Spanish expressions
 
-Generate a 3-sentence Cracked Controller rage response:`;
+Transform the message now:`;
 
       case 'karen':
-        return `${baseRules}
+        return `${basePrompt}
 
-PERSONA: Karen (Suburban Entitlement Rage)
-- Use Karen speak: "I want the MANAGER!" 
-- Audio tags: <emphasis level="moderate">fake-nice</emphasis> to <emphasis level="strong">SCREECHING</emphasis>
-- Profanity: **DAMN**, **HELL** (only real profanity gets **)
-- Karen slang stays as audio tags: <emphasis level="strong">UNACCEPTABLE</emphasis>, <emphasis level="strong">RIDICULOUS</emphasis>
-- End with: "I'm calling CORPORATE!" or review threat
+KAREN STYLE (Suburban Entitlement Rage):
+- Start fake-nice then escalate to screeching
+- Demand managers, threaten reviews and corporate calls
+- Use entitled language: "I'm a paying customer!", "This is unacceptable!"
+- Reference husband's job, social media threats
 
-Generate a 3-sentence Karen rage response:`;
+Transform the message now:`;
 
       case 'corporate':
-        return `${baseRules}
+        return `${basePrompt}
 
-PERSONA: Corporate Professional (Office Meltdown)
-- Use corporate speak: "As per my previous email..." "Please advise..."
-- Audio tags: <emphasis level="moderate">professional calm</emphasis> to <emphasis level="strong">EXPLOSIVE</emphasis>
-- Profanity: **DAMN**, **HELL** (only real profanity gets **)
-- Corporate slang stays as audio tags: <emphasis level="strong">UNACCEPTABLE</emphasis>, <emphasis level="strong">INCOMPETENCE</emphasis>
-- End with: competence demand or escalation threat
+CORPORATE STYLE (Professional Office Meltdown):
+- Use corporate buzzwords: "As per my previous email", "Please advise", "Moving forward"
+- Passive-aggressive that builds to professional fury
+- Reference competence, escalation, and proper procedures
+- Maintain professional tone while expressing rage
 
-Generate a 3-sentence Corporate rage response:`;
+Transform the message now:`;
 
       case 'sarcastic':
-        return `${baseRules}
+        return `${basePrompt}
 
-PERSONA: Sarcastic Master (Intellectual Destruction)
-- Use sarcasm: "How lovely!" "Absolutely riveting!" "What a MASTERPIECE!"
-- Audio tags: <emphasis level="moderate">dripping sarcasm</emphasis>, <break time="0.3s"/> for effect
-- Profanity: **DAMN**, **HELL** (only real profanity gets **)
-- Sarcastic words stay as audio tags: <emphasis level="strong">RIVETING</emphasis>, <emphasis level="strong">MAGNIFICENT</emphasis>
-- End with: cutting sarcastic remark
+SARCASTIC STYLE (Intellectual Destruction):
+- Dripping sarcasm: "How lovely!", "Absolutely riveting!", "What a masterpiece!"
+- Intellectual superiority with cutting wit
+- Use sophisticated vocabulary to deliver devastating insults
+- Mock with fake enthusiasm and backhanded compliments
 
-Generate a 3-sentence Sarcastic rage response:`;
+Transform the message now:`;
 
       default:
-        return `${baseRules}
+        return `${basePrompt}
 
-Generate a 3-sentence rage response for ${persona}:`;
+Transform the message now:`;
     }
   }
 
@@ -459,7 +435,7 @@ Generate a 3-sentence rage response for ${persona}:`;
    */
   async testConnection(): Promise<{ success: boolean; model: string; error?: string }> {
     try {
-      console.log('🧪 Testing OpenRouter connection...');
+      console.log('🧪 Testing OpenRouter connection with DeepSeek v3...');
       const response = await this.translateText(
         "Hello, this is a test message.",
         "enforcer",
@@ -514,10 +490,10 @@ Generate a 3-sentence rage response for ${persona}:`;
     free: ModelId;
   } {
     return {
-      best: 'mistralai/mixtral-8x7b-instruct', // Your choice - excellent for creative tasks
+      best: 'deepseek/deepseek-chat-v3-0324:free', // DeepSeek v3 - excellent and free
       fastest: 'anthropic/claude-3-haiku',
-      cheapest: 'openai/gpt-4o-mini',
-      free: 'meta-llama/llama-3.1-8b-instruct:free'
+      cheapest: 'deepseek/deepseek-chat-v3-0324:free', // Free model
+      free: 'deepseek/deepseek-chat-v3-0324:free'
     };
   }
 }

@@ -114,6 +114,7 @@ function App() {
     };
     
     setTranslationHistory(prev => [newItem, ...prev.slice(0, 19)]); // Keep last 20 items
+    console.log('📝 Translation added to history:', newItem);
   }, []);
 
   // Handle translation with validation
@@ -136,23 +137,25 @@ function App() {
     
     console.log('⏳ Starting translation...');
 
+    // Store the current input values before translation
+    const currentInput = inputText;
+    const currentStyle = selectedStyle;
+    const currentRageLevel = rageLevel;
+
     // Call the enhanced translation service
-    const result = await translate({
+    await translate({
       text: inputText,
       style: selectedStyle,
       intensity: rageLevel * 10 // Convert 1-10 to 10-100 for internal processing
     });
 
-    // Add to history only after successful translation and only when translate button is clicked
-    if (result !== false) { // Check if translation was successful
-      // We need to wait a bit for the translation to complete and outputText to be set
-      setTimeout(() => {
-        if (outputText && inputText) {
-          addToHistory(inputText, outputText, selectedStyle, rageLevel);
-          console.log('📝 Translation added to history');
-        }
-      }, 100);
-    }
+    // Check if translation was successful and add to history
+    // We need to wait a bit for the state to update
+    setTimeout(() => {
+      if (outputText && !translationError) {
+        addToHistory(currentInput, outputText, currentStyle, currentRageLevel);
+      }
+    }, 200);
   };
 
   // Handle input change with validation

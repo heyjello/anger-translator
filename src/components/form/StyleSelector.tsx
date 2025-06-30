@@ -36,7 +36,7 @@ const STYLE_OPTIONS: StyleOption[] = [
     id: 'gamer',
     name: 'Gamer Rage Translator',
     emoji: '🎮',
-    description: 'Gen-Z Latino gamer meltdown',
+    description: 'Gen-Z gamer meltdown',
     color: 'green',
     glowColor: 'rgba(34, 197, 94, 0.3)'
   },

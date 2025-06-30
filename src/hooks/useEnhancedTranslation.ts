@@ -2,7 +2,7 @@
  * Enhanced Translation Hook
  * 
  * React hook that uses the enhanced translation service with AI capabilities.
- * Provides the same interface as useTranslation but with AI features.
+ * Now properly handles both cleaned and raw text for display and TTS.
  */
 
 import { useState, useCallback } from 'react';
@@ -13,6 +13,7 @@ export interface UseEnhancedTranslationResult {
   translate: (request: TranslationRequest) => Promise<void>;
   isLoading: boolean;
   result: string;
+  rawResult: string; // Raw text with audio tags for TTS
   error: string | null;
   isRateLimited: boolean;
   timeUntilNextRequest: number;
@@ -35,6 +36,7 @@ export interface UseEnhancedTranslationResult {
 export const useEnhancedTranslation = (): UseEnhancedTranslationResult => {
   const [isLoading, setIsLoading] = useState(false);
   const [result, setResult] = useState('');
+  const [rawResult, setRawResult] = useState(''); // For TTS with audio tags
   const [error, setError] = useState<string | null>(null);
   const [isRateLimited, setIsRateLimited] = useState(false);
   const [timeUntilNextRequest, setTimeUntilNextRequest] = useState(0);
@@ -51,6 +53,7 @@ export const useEnhancedTranslation = (): UseEnhancedTranslationResult => {
     setIsLoading(true);
     setError(null);
     setResult('');
+    setRawResult('');
     setIsRateLimited(false);
     setUsedAI(false);
     setAiModel(undefined);
@@ -59,7 +62,8 @@ export const useEnhancedTranslation = (): UseEnhancedTranslationResult => {
       const response: EnhancedTranslationResponse = await enhancedTranslationService.translateText(request);
       
       if (response.success) {
-        setResult(response.translatedText);
+        setResult(response.translatedText); // Cleaned text for display
+        setRawResult(response.rawText || response.translatedText); // Raw text for TTS
         setUsedAI(response.usedAI);
         setAiModel(response.model);
         
@@ -95,6 +99,7 @@ export const useEnhancedTranslation = (): UseEnhancedTranslationResult => {
 
   const clearResult = useCallback(() => {
     setResult('');
+    setRawResult('');
     setUsedAI(false);
     setAiModel(undefined);
   }, []);
@@ -118,6 +123,7 @@ export const useEnhancedTranslation = (): UseEnhancedTranslationResult => {
     translate,
     isLoading,
     result,
+    rawResult,
     error,
     isRateLimited,
     timeUntilNextRequest,

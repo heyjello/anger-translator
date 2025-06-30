@@ -2,7 +2,7 @@
  * Enhanced TTS Service
  * 
  * Combines ElevenLabs TTS with bleep sound effects for censored profanity.
- * Words surrounded by ** are treated as profanity and replaced with bleeps.
+ * Now optimized for natural speech flow with minimal pauses.
  */
 
 import { elevenLabsService } from './elevenLabsService';
@@ -18,9 +18,11 @@ export interface EnhancedTTSOptions {
 
 export class EnhancedTTSService {
   private currentAudio: HTMLAudioElement | null = null;
+  private isPlaying: boolean = false;
 
   /**
    * Process text and play with bleep replacements for profanity
+   * Optimized for natural conversational flow
    */
   async speakWithBleeps(
     text: string, 
@@ -30,6 +32,7 @@ export class EnhancedTTSService {
 
     // Stop any currently playing audio
     this.stopCurrentAudio();
+    this.isPlaying = true;
 
     if (!options.enableBleeps || !this.hasProfanityMarkers(text)) {
       // No profanity bleeps needed, use regular TTS
@@ -41,21 +44,23 @@ export class EnhancedTTSService {
       } catch (error) {
         console.error('❌ Regular TTS failed:', error);
         throw error;
+      } finally {
+        this.isPlaying = false;
       }
       return;
     }
 
     console.log('🔊 Profanity detected, using enhanced TTS with bleeps');
 
-    // Split text into segments with profanity markers
-    const segments = this.parseTextWithProfanity(text);
-    console.log('📝 Parsed segments:', segments.length);
-    
-    for (let i = 0; i < segments.length; i++) {
-      const segment = segments[i];
-      console.log(`🎯 Processing segment ${i + 1}/${segments.length}:`, segment.type);
+    try {
+      // Split text into segments with profanity markers
+      const segments = this.parseTextWithProfanity(text);
+      console.log('📝 Parsed segments:', segments.length);
       
-      try {
+      for (let i = 0; i < segments.length; i++) {
+        const segment = segments[i];
+        console.log(`🎯 Processing segment ${i + 1}/${segments.length}:`, segment.type);
+        
         if (segment.type === 'text' && segment.content.trim()) {
           // Speak the clean text
           console.log('🗣️ Generating speech for clean text segment');
@@ -67,23 +72,22 @@ export class EnhancedTTSService {
           );
           await this.playAudio(audioUrl);
         } else if (segment.type === 'profanity') {
-          // Play bleep sound for profanity
+          // Play bleep sound for profanity with minimal delay
           console.log('🔊 Playing bleep for profanity:', segment.content);
           await bleepSoundService.bleepForText(segment.content);
         }
         
-        // Minimal pause between segments for natural flow
-        if (i < segments.length - 1) {
-          await new Promise(resolve => setTimeout(resolve, 50));
-        }
-      } catch (error) {
-        console.error(`❌ Failed to process segment ${i + 1}:`, error);
-        // Continue with next segment instead of throwing
-        console.log(`⏭️ Continuing with next segment after error in segment ${i + 1}`);
+        // NO pause between segments for natural flow
+        // The audio and bleeps should flow seamlessly
       }
+      
+      console.log('✅ Enhanced TTS playback complete');
+    } catch (error) {
+      console.error('❌ Enhanced TTS failed:', error);
+      throw error;
+    } finally {
+      this.isPlaying = false;
     }
-    
-    console.log('✅ Enhanced TTS playback complete');
   }
 
   /**
@@ -94,13 +98,16 @@ export class EnhancedTTSService {
   }
 
   /**
-   * Clean text for speech by removing tone cues but preserving profanity markers
+   * Clean text for speech by removing tone cues but preserving ElevenLabs v3 audio tags
    */
   private cleanTextForSpeech(text: string): string {
     let cleanedText = text;
     
     // Remove tone cues like [explosive energy], [screaming], etc.
     cleanedText = cleanedText.replace(/\[([^\]]+)\]/g, '');
+    
+    // Keep ElevenLabs v3 audio tags for proper speech synthesis
+    // <emphasis>, <break>, <prosody> tags should be preserved
     
     // Remove multiple spaces and clean up
     cleanedText = cleanedText.replace(/\s+/g, ' ').trim();
@@ -140,7 +147,7 @@ export class EnhancedTTSService {
   }
 
   /**
-   * Play audio from URL with robust error handling and cleanup
+   * Play audio from URL with optimized timing for natural flow
    */
   private async playAudio(audioUrl: string): Promise<void> {
     return new Promise((resolve, reject) => {
@@ -212,26 +219,22 @@ export class EnhancedTTSService {
         rejectOnce(new Error('Audio playback was aborted'));
       };
 
-      // Set source and attempt to play
+      // Set source and attempt to play immediately for natural flow
       audio.src = audioUrl;
       
-      // Add a small delay to ensure the audio element is ready
-      setTimeout(() => {
-        if (!isResolved) {
-          audio.play().catch(error => {
-            console.error('❌ Audio play() failed:', error);
-            rejectOnce(new Error(`Failed to start audio playback: ${error.message}`));
-          });
-        }
-      }, 10);
+      // Play immediately without delay for seamless flow
+      audio.play().catch(error => {
+        console.error('❌ Audio play() failed:', error);
+        rejectOnce(new Error(`Failed to start audio playback: ${error.message}`));
+      });
 
-      // Add a timeout to prevent hanging promises
+      // Reduced timeout for faster flow
       setTimeout(() => {
         if (!isResolved) {
           console.warn('⚠️ Audio playback timeout');
           rejectOnce(new Error('Audio playback timeout'));
         }
-      }, 30000); // 30 second timeout
+      }, 15000); // 15 second timeout (reduced from 30)
     });
   }
 
@@ -245,13 +248,21 @@ export class EnhancedTTSService {
       this.currentAudio = null;
       console.log('🛑 Stopped current audio playback');
     }
+    this.isPlaying = false;
+  }
+
+  /**
+   * Check if TTS is currently playing
+   */
+  isCurrentlyPlaying(): boolean {
+    return this.isPlaying;
   }
 
   /**
    * Test the enhanced TTS with profanity bleeps
    */
   async testEnhancedTTS(): Promise<void> {
-    const testText = "This is a test of the enhanced TTS system with **DAMN** profanity words!";
+    const testText = "This is a test of the enhanced TTS system with **damn** profanity words!";
     
     console.log('🧪 Testing enhanced TTS with profanity bleeps...');
     await this.speakWithBleeps(testText, {

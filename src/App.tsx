@@ -38,7 +38,8 @@ function App() {
   const { 
     translate, 
     isLoading, 
-    result: outputText, 
+    result: outputText,
+    rawResult: rawOutputText, // Raw text with audio tags for TTS
     error: translationError, 
     isRateLimited,
     timeUntilNextRequest,
@@ -332,6 +333,7 @@ function App() {
               <div className="bg-slate-800/50 backdrop-blur-xl rounded-2xl border border-slate-700/50 p-6 h-full">
                 <OutputSection
                   outputText={outputText}
+                  rawText={rawOutputText} // Pass raw text for TTS
                   onCopy={() => handleCopyToClipboard()}
                   onClear={handleClearOutput}
                   onShare={handleShare}

@@ -54,9 +54,9 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   karen: {
-    voice_id: "opAH2ij5oCyMnsDUGrpR", // YOUR CUSTOM Karen voice
-    name: "Karen",
-    description: "Custom Karen voice",
+    voice_id: "EXAVITQu4vr4xnSDxMaL", // Bella
+    name: "Bella",
+    description: "Female voice for Karen persona",
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   'scottish-dad': {
@@ -66,33 +66,33 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   'ny-italian': {
-    voice_id: "CaYmcrR5WjNfLsVo7ReL", // YOUR CUSTOM NY Italian voice
-    name: "NY Italian",
-    description: "Custom NY Italian voice",
+    voice_id: "2EiwWnXFnvU5JabPnv8n", // Clyde
+    name: "Clyde",
+    description: "American male voice for NY Italian",
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   enforcer: {
-    voice_id: "ujTRvH905hCgW1uUwWye", // YOUR CUSTOM Enforcer voice
-    name: "Enforcer",
-    description: "Custom Enforcer voice",
+    voice_id: "pNInz6obpgDQGcFmaJgB", // Adam (reused)
+    name: "Adam",
+    description: "Strong male voice for Enforcer",
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   'highland-howler': {
-    voice_id: "cTMt3eRoD8RF6F0MIt0q", // YOUR CUSTOM Highland Howler voice
-    name: "Highland Howler",
-    description: "Custom Scottish Highland voice",
+    voice_id: "VR6AewLTigWG4xSOukaG", // Arnold (good for Scottish)
+    name: "Arnold",
+    description: "Deep voice for Highland Howler",
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   don: {
-    voice_id: "CaYmcrR5WjNfLsVo7ReL", // YOUR CUSTOM NY Italian voice (reused for Don)
-    name: "Don",
-    description: "Custom NY Italian voice for Don persona",
+    voice_id: "2EiwWnXFnvU5JabPnv8n", // Clyde (good for Don)
+    name: "Clyde",
+    description: "Authoritative voice for Don persona",
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   },
   'cracked-controller': {
     voice_id: "ErXwobaYiN019PkySvjV", // Antoni (good for energetic gamer)
     name: "Antoni",
-    description: "High energy male voice for cracked gamer",
+    description: "High energy voice for cracked gamer",
     voice_settings: { ...DEFAULT_VOICE_SETTINGS }
   }
 };
@@ -118,7 +118,7 @@ export const getAdvancedVoiceConfig = (
   return getVoiceForStyle(style); // NO MODIFICATIONS
 };
 
-// Voice model configurations
+// Voice model configurations for ElevenLabs v3
 export const VOICE_MODELS = {
   standard: {
     model_id: 'eleven_monolingual_v1',
@@ -133,17 +133,17 @@ export const VOICE_MODELS = {
     cost_multiplier: 1.5
   },
   turbo: {
-    model_id: 'eleven_turbo_v2',
-    name: 'Turbo Speed',
-    description: 'Fastest generation, good quality',
+    model_id: 'eleven_turbo_v2_5',
+    name: 'Turbo v2.5',
+    description: 'Fastest generation with ElevenLabs v3 features',
     cost_multiplier: 0.8
   }
 } as const;
 
 /**
- * Clean text for TTS - removes tone cues, preserves audio tags and profanity markers
+ * Clean text for TTS - preserves ElevenLabs v3 audio tags and profanity markers
  * - Removes [tone cues] completely (not needed for TTS)
- * - Preserves <audio>tags</audio> for ElevenLabs processing
+ * - Preserves <audio>tags</audio> for ElevenLabs v3 processing
  * - Preserves **profanity** markers for bleeping system
  */
 export const cleanTextForTTS = (text: string): string => {
@@ -152,7 +152,7 @@ export const cleanTextForTTS = (text: string): string => {
   // Remove tone cues like [explosive energy], [screaming], etc.
   cleanedText = cleanedText.replace(/\[([^\]]+)\]/g, '');
   
-  // Keep audio tags like <emphasis>, <break>, <prosody> for ElevenLabs
+  // Keep ElevenLabs v3 audio tags like <emphasis>, <break>, <prosody>
   // Keep **profanity** markers for bleeping system
   
   // Remove multiple spaces and clean up
@@ -173,9 +173,10 @@ export const cleanTextForUser = (text: string): string => {
   // Remove tone cues like [explosive energy], [screaming], etc.
   cleanedText = cleanedText.replace(/\[([^\]]+)\]/g, '');
   
-  // Remove audio tags but keep the content
+  // Remove ElevenLabs v3 audio tags but keep the content
   cleanedText = cleanedText.replace(/<emphasis[^>]*>([^<]+)<\/emphasis>/g, '$1');
-  cleanedText = cleanedText.replace(/<break[^>]*>/g, '');
+  cleanedText = cleanedText.replace(/<break[^>]*\/>/g, ' ');
+  cleanedText = cleanedText.replace(/<break[^>]*><\/break>/g, ' ');
   cleanedText = cleanedText.replace(/<prosody[^>]*>([^<]+)<\/prosody>/g, '$1');
   cleanedText = cleanedText.replace(/<[^>]+>/g, ''); // Remove any remaining tags
   
@@ -224,10 +225,5 @@ export const ALL_VOICE_IDS = {
   rachel: "21m00Tcm4TlvDq8ikWAM",
   clyde: "2EiwWnXFnvU5JabPnv8n",
   bella: "EXAVITQu4vr4xnSDxMaL",
-  dorothy: "ThT5KcBeYPX3keUQqHPh",
-  // YOUR CUSTOM VOICES
-  highlandHowler: "cTMt3eRoD8RF6F0MIt0q",
-  karen: "opAH2ij5oCyMnsDUGrpR",
-  nyItalian: "CaYmcrR5WjNfLsVo7ReL",
-  enforcer: "ujTRvH905hCgW1uUwWye"
+  dorothy: "ThT5KcBeYPX3keUQqHPh"
 } as const;

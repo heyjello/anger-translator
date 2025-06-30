@@ -95,14 +95,14 @@ export const VOICE_CONFIGS: VoiceStyleMap = {
     }
   },
   enforcer: {
-    voice_id: "ujTRvH905hCgW1uUwWye  ", // Arnold - deep, authoritative
+    voice_id: "ujTRvH905hCgW1uUwWye", // Enforcer voice (removed extra space)
     name: "Enforcer",
     description: "Deep, intimidating voice for law enforcement rage",
     voice_settings: {
-      stability: 0.8,
-      similarity_boost: 0.8,
-      style: 0.4,
-      use_speaker_boost: true
+      stability: 0.9, // Higher stability for consistent deep tone
+      similarity_boost: 0.9, // Higher similarity to maintain voice characteristics
+      style: 0.2, // Lower style to prevent pitch changes
+      use_speaker_boost: false // Disable speaker boost to prevent pitch alteration
     }
   },
   'highland-howler': {
@@ -159,13 +159,23 @@ export const getVoiceForStyle = (style: RageStyle): VoiceConfig => {
   return VOICE_CONFIGS[style];
 };
 
-// Adjust voice settings based on rage intensity
+// Adjust voice settings based on rage intensity (modified for Enforcer)
 export const adjustVoiceForIntensity = (
   baseSettings: VoiceConfig['voice_settings'], 
   intensity: number
 ): VoiceConfig['voice_settings'] => {
   // Higher intensity = less stability, more style/emotion
   const intensityFactor = intensity / 10;
+  
+  // Special handling for Enforcer to maintain deep voice characteristics
+  if (baseSettings.style !== undefined && baseSettings.style <= 0.2) {
+    // This is likely the Enforcer voice - be more conservative with adjustments
+    return {
+      ...baseSettings,
+      stability: Math.max(0.7, baseSettings.stability - (intensityFactor * 0.1)), // Minimal stability reduction
+      style: Math.min(0.4, (baseSettings.style || 0.2) + (intensityFactor * 0.1)) // Minimal style increase
+    };
+  }
   
   return {
     ...baseSettings,
@@ -217,13 +227,28 @@ export const getEmotionalPreset = (rageLevel: number): keyof typeof EMOTIONAL_PR
   return 'nuclear';
 };
 
-// Advanced voice configuration with style-specific adjustments
+// Advanced voice configuration with style-specific adjustments (modified for Enforcer)
 export const getAdvancedVoiceConfig = (
   style: RageStyle,
   intensity: number
 ): VoiceConfig => {
   const baseConfig = getVoiceForStyle(style);
   const emotionalPreset = EMOTIONAL_PRESETS[getEmotionalPreset(intensity)];
+  
+  // Special handling for Enforcer to maintain deep voice characteristics
+  if (style === 'enforcer') {
+    const conservativeSettings = {
+      stability: Math.max(0.7, baseConfig.voice_settings.stability - (intensity / 100)), // Very minimal reduction
+      similarity_boost: Math.max(0.8, baseConfig.voice_settings.similarity_boost), // Keep high similarity
+      style: Math.min(0.4, (baseConfig.voice_settings.style || 0.2) + (intensity / 50)), // Gentle style increase
+      use_speaker_boost: false // Keep disabled to prevent pitch changes
+    };
+    
+    return {
+      ...baseConfig,
+      voice_settings: conservativeSettings
+    };
+  }
   
   // Special handling for gamer and cracked-controller styles - more erratic at higher intensities
   if (style === 'gamer' || style === 'cracked-controller') {
@@ -295,7 +320,7 @@ export const cleanTextForTTS = (text: string): string => {
   return cleanedText;
 };
 
-// Text preprocessing for better speech synthesis (now with tone cue removal)
+// Text preprocessing for better speech synthesis (now with tone cue removal and Enforcer optimization)
 export const preprocessTextForStyle = (
   text: string, 
   style: RageStyle,
@@ -364,12 +389,10 @@ export const preprocessTextForStyle = (
       break;
 
     case 'enforcer':
-      // Add law enforcement emphasis and authoritative pauses
-      processedText = processedText.replace(/(STOP|FREEZE|HANDS UP|COMPLY|VIOLATION)/g, '<emphasis level="strong">$1</emphasis>');
+      // Add law enforcement emphasis and authoritative pauses - NO PITCH CHANGES
+      processedText = processedText.replace(/(STOP|FREEZE|HANDS UP|COMPLY|VIOLATION|OH HELL NAH|ARE YOU SERIOUS)/g, '<emphasis level="strong">$1</emphasis>');
       processedText = processedText.replace(/,/g, ', <break time="0.3s"/>');
-      if (intensity >= 6) {
-        processedText = `<prosody rate="0.9" pitch="-10%">${processedText}</prosody>`;
-      }
+      // NO prosody changes to maintain deep voice characteristics
       break;
 
     case 'don':
@@ -382,8 +405,8 @@ export const preprocessTextForStyle = (
       break;
   }
 
-  // Intensity-based adjustments
-  if (intensity >= 8) {
+  // Intensity-based adjustments (skip for Enforcer to maintain voice characteristics)
+  if (intensity >= 8 && style !== 'enforcer') {
     processedText = processedText.replace(/([A-Z]{3,})/g, '<emphasis level="strong">$1</emphasis>');
   }
 
@@ -399,7 +422,7 @@ export const createTestPhrase = (style: RageStyle): string => {
     karen: "Excuse me, I want to speak to your manager RIGHT NOW! This is completely unacceptable and I'm calling corporate!",
     'scottish-dad': "Och, for crying out loud! What in the bloody hell were ye thinking, laddie? I'm not angry, just... deeply disappointed in ye!",
     'ny-italian': "Ay, what's ya problem here? You gotta be kiddin' me with this! Fuggedaboutit - I'm done with this nonsense, capisce?",
-    enforcer: "STOP right there! You're in violation of protocol! COMPLY immediately or face the consequences!",
+    enforcer: "OH HELL NAH! You must be joking if you think I'm gonna let this slide! ARE YOU SERIOUS RIGHT NOW?",
     'highland-howler': "BY THE HIGHLANDS! What manner of foolishness is this?! Ye've dishonored the clan with yer incompetence!",
     don: "You come to me... on this day... with such disrespect? This is not how we do business in the famiglia, capisce?",
     'cracked-controller': "YOOO THIS CONTROLLER IS STRAIGHT TRASH! I'M ABOUT TO THROW THIS THING THROUGH THE WALL! NO CAP!"
@@ -419,6 +442,7 @@ export const ALL_VOICE_IDS = {
   bella: "EXAVITQu4vr4xnSDxMaL",
   dorothy: "ThT5KcBeYPX3keUQqHPh",
   karen: "opAH2ij5oCyMnsDUGrpR",
+  enforcer: "ujTRvH905hCgW1uUwWye",
   vinny: "VR6AewLTigWG4xSOukaG" // Using Arnold's voice for NY Italian
 } as const;
 
@@ -465,6 +489,12 @@ export const VOICE_CHARACTERISTICS = {
     accent: 'Scottish',
     age: 'Middle-aged',
     tone: 'Gruff, Disappointed'
+  },
+  [ALL_VOICE_IDS.enforcer]: {
+    gender: 'Male',
+    accent: 'American',
+    age: 'Adult',
+    tone: 'Deep, Intimidating, Authoritative'
   },
   [ALL_VOICE_IDS.vinny]: {
     gender: 'Male',
